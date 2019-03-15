@@ -1,0 +1,5 @@
+Description:
+    Install the engine in host app.
+
+Example:
+    rails generate power_api:install
