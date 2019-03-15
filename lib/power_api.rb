@@ -1,3 +1,8 @@
+require "active_model_serializers"
+require "responders"
+require "simple_token_authentication"
+require "versionist"
+
 require "power_api/engine"
 
 module PowerApi

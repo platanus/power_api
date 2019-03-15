@@ -21,6 +21,11 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", ">= 4.2.0"
 
+  s.add_dependency "active_model_serializers", "~> 0.10.0"
+  s.add_dependency "responders"
+  s.add_dependency "simple_token_authentication", "~> 1.0"
+  s.add_dependency "versionist", "~> 1.0"
+
   s.add_development_dependency "coveralls"
   s.add_development_dependency "factory_bot_rails"
   s.add_development_dependency "guard-rspec"
