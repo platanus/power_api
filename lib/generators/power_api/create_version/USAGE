@@ -1,0 +1,5 @@
+Description:
+    Creates new API version
+
+Example:
+    rails generate power_api:create_version 1
