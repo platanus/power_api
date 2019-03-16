@@ -8,6 +8,7 @@ class PowerApi::CreateVersionGenerator < Rails::Generators::Base
 
     version_one? ? add_first_version_route : add_new_version_route
     add_base_controller
+    add_serializers_directory
   end
 
   private
@@ -56,6 +57,10 @@ class PowerApi::CreateVersionGenerator < Rails::Generators::Base
       "version_base_controller.rb.erb",
       "app/controllers/api/v#{version_number}/base_controller.rb"
     )
+  end
+
+  def add_serializers_directory
+    create_file "app/serializers/api/v#{version_number}/.gitkeep"
   end
 
   def insert_into_routes(line, &block)
