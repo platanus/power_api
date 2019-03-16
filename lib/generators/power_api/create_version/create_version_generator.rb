@@ -4,10 +4,10 @@ class PowerApi::CreateVersionGenerator < Rails::Generators::Base
   argument :version_number, type: :string, required: true
 
   def modify_routes
-    return unless validate_version_number!
-    return add_first_version_route if version_one?
+    return unless version_number_valid?
 
-    add_new_version_route
+    version_one? ? add_first_version_route : add_new_version_route
+    add_base_controller
   end
 
   private
@@ -16,8 +16,15 @@ class PowerApi::CreateVersionGenerator < Rails::Generators::Base
     version_number.to_i == 1
   end
 
-  def validate_version_number!
+  def version_number_valid?
     !!Integer(version_number, 10)
+
+    if !version_number.to_i.positive?
+      puts("Vesion number must be greater than 0")
+      return false
+    end
+
+    true
   rescue ArgumentError, TypeError
     puts("Invalid version number: #{version_number}. Must be an Integer value.")
     false
@@ -42,6 +49,13 @@ class PowerApi::CreateVersionGenerator < Rails::Generators::Base
 
       ROUTE
     end
+  end
+
+  def add_base_controller
+    template(
+      "version_base_controller.rb.erb",
+      "app/controllers/api/v#{version_number}/base_controller.rb"
+    )
   end
 
   def insert_into_routes(line, &block)
