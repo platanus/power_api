@@ -14,4 +14,8 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
     generate "rswag:api:install"
     generate "rswag:specs:install"
   end
+
+  def install_first_version
+    generate "power_api:create_version 1"
+  end
 end
