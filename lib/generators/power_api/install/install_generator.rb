@@ -8,4 +8,10 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
   def create_ams_initializer
     template "ams_initializer.rb", "config/initializers/active_model_serializers.rb"
   end
+
+  def install_rswag
+    generate "rswag:ui:install"
+    generate "rswag:api:install"
+    generate "rswag:specs:install"
+  end
 end

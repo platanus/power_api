@@ -23,6 +23,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency "active_model_serializers", "~> 0.10.0"
   s.add_dependency "responders"
+  s.add_dependency "rswag-api"
+  s.add_dependency "rswag-specs"
+  s.add_dependency "rswag-ui"
   s.add_dependency "simple_token_authentication", "~> 1.0"
   s.add_dependency "versionist", "~> 1.0"
 

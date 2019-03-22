@@ -1,5 +1,8 @@
 require "active_model_serializers"
 require "responders"
+require "rswag/api"
+require "rswag/ui"
+require "rswag/specs"
 require "simple_token_authentication"
 require "versionist"
 
