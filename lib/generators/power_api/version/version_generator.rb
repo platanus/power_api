@@ -1,4 +1,4 @@
-class PowerApi::CreateVersionGenerator < Rails::Generators::Base
+class PowerApi::VersionGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
   argument :version_number, type: :string, required: true
