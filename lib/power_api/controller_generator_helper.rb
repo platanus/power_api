@@ -7,6 +7,10 @@ module PowerApi
       assign_resource_name(config[:resource_name])
     end
 
+    def get_controller_path
+      "app/controllers/api/v#{version_number}/#{plural_resource}_controller.rb"
+    end
+
     def generate_controller_tpl
       <<~CONTROLLER
         class Api::V#{version_number}::#{camel_resource}Controller < Api::V#{version_number}::BaseController

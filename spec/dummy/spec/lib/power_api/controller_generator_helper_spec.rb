@@ -102,4 +102,14 @@ describe PowerApi::ControllerGeneratorHelper do
 
     it { expect(perform).to eq(template) }
   end
+
+  describe "#get_controller_path" do
+    let(:expected_path) { "app/controllers/api/v1/blogs_controller.rb" }
+
+    def perform
+      subject.get_controller_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
 end
