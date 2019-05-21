@@ -8,7 +8,10 @@ module PowerApi
     end
 
     initializer "initialize" do
+      require_relative "./version_helper"
+      require_relative "./resource_helper"
       require_relative "./controller_generator_helper"
+      require_relative "./version_generator_helper"
     end
   end
 end
