@@ -9,7 +9,6 @@ module PowerApi
 
     initializer "initialize" do
       # Require here all your engine's classes.
-      require_relative "./example_class"
       require_relative "./template_generator"
     end
   end
