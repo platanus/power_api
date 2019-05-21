@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PowerApi::TemplateGenerator do
+describe PowerApi::ControllerGeneratorHelper do
   let(:version_number) { "1" }
   let(:resource_name) { "blog" }
   let(:init_params) do
@@ -57,5 +57,49 @@ describe PowerApi::TemplateGenerator do
     let(:resource_name) { "" }
 
     it { expect { subject }.to raise_error("missing resource name") }
+  end
+
+  describe "generate_controller_tpl" do
+    let(:template) do
+      <<~CONTROLLER
+        class Api::V1::BlogController < Api::V1::BaseController
+          def index
+            respond_with Blog.all
+          end
+
+          def show
+            respond_with blog
+          end
+
+          def create
+            respond_with Blog.create!(blog_params)
+          end
+
+          def update
+            respond_with blog.update!(blog_params)
+          end
+
+          def destroy
+            blog.destroy!
+          end
+
+          private
+
+          def blog
+            @blog ||= Blog.find_by!(id: params[:id])
+          end
+
+          def blog_params
+            params.require(:blog).permit(:name)
+          end
+        end
+      CONTROLLER
+    end
+
+    def perform
+      subject.generate_controller_tpl
+    end
+
+    it { expect(perform).to eq(template) }
   end
 end
