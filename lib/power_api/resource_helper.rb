@@ -1,14 +1,14 @@
 module PowerApi
   module ResourceHelper
     def resource_name
-      raise "Not implemented"
+      raise NotImplementedError.new("resource_name not implemented")
     end
 
     def validate_resource_name!(resources)
-      fail "missing resource name" if resources.blank?
+      raise GeneratorError.new("missing resource name") if resources.blank?
 
       if !resource_is_active_record_model?(resources)
-        fail "resource is not an active record model"
+        raise GeneratorError.new("resource is not an active record model")
       end
 
       true

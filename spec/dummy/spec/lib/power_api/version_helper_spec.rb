@@ -34,7 +34,7 @@ describe PowerApi::VersionHelper do
         end
       end
 
-      it { expect { perform }.to raise_error("Not implemented") }
+      it { expect { perform }.to raise_error("version_number not implemented") }
     end
   end
 

@@ -34,7 +34,7 @@ describe PowerApi::ResourceHelper do
         end
       end
 
-      it { expect { perform }.to raise_error("Not implemented") }
+      it { expect { perform }.to raise_error("resource_name not implemented") }
     end
   end
 
