@@ -10,5 +10,9 @@ module PowerApi
 
       true
     end
+
+    def first_version?
+      version_number.to_i == 1
+    end
   end
 end

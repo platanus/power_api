@@ -79,4 +79,18 @@ describe PowerApi::VersionHelper do
       it { expect { perform }.to raise_error("invalid version number") }
     end
   end
+
+  describe "#first_version?" do
+    def perform
+      subject.first_version?
+    end
+
+    it { expect(perform).to eq(true) }
+
+    context "when version in not first version" do
+      let(:version_number) { "2" }
+
+      it { expect(perform).to eq(false) }
+    end
+  end
 end

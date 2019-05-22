@@ -5,14 +5,14 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def create_controller
     create_file(
-      tpl_generator.get_controller_path,
-      tpl_generator.generate_controller_tpl
+      generator_helper.get_controller_path,
+      generator_helper.generate_controller_tpl
     )
   end
 
   private
 
-  def tpl_generator
+  def generator_helper
     PowerApi::ControllerGeneratorHelper.new(
       version_number: version_number,
       resource_name: file_name
