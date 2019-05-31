@@ -2,20 +2,30 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
   def create_api_base_controller
-    template "api_base_controller.rb", "app/controllers/api/base_controller.rb"
+    create_file(helper.api_base_controller_path, helper.api_base_controller_tpl)
   end
 
   def create_ams_initializer
-    template "ams_initializer.rb", "config/initializers/active_model_serializers.rb"
+    create_file(helper.ams_initializer_path, helper.ams_initializer_tpl)
   end
 
   def install_rswag
     generate "rswag:ui:install"
     generate "rswag:api:install"
     generate "rswag:specs:install"
+
+    create_file(helper.swagger_helper_path, helper.swagger_helper_tpl, force: true)
+    create_file(helper.spec_swagger_path)
+    create_file(helper.spec_integration_path)
   end
 
   def install_first_version
-    generate "power_api:create_version 1"
+    generate "power_api:version 1"
+  end
+
+  private
+
+  def helper
+    PowerApi::InstallGeneratorHelper.new
   end
 end
