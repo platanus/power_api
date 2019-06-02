@@ -15,5 +15,7 @@ RSpec.configure do |config|
   # document below. You can override this behavior by adding a swagger_doc tag to the
   # the root example_group in your specs, e.g. describe '...', swagger_doc: 'v2/swagger.json'
   config.swagger_docs = {
+    'v2/swagger.json' => API_V2,
+    'v1/swagger.json' => API_V1
   }
 end

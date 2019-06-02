@@ -134,4 +134,42 @@ describe PowerApi::VersionGeneratorHelper do
       it { expect(perform).to eq(expected_path) }
     end
   end
+
+  describe "#swagger_helper_api_definition_line" do
+    let(:expected_path) do
+      "config.swagger_docs = {\n"
+    end
+
+    def perform
+      subject.swagger_helper_api_definition_line
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#swagger_helper_api_definition" do
+    let(:expected_tpl) do
+      <<-VERSION
+    'v1/swagger.json' => API_V1
+      VERSION
+    end
+
+    def perform
+      subject.swagger_helper_api_definition
+    end
+
+    it { expect(perform).to eq(expected_tpl) }
+
+    context "with another version" do
+      let(:version_number) { "2" }
+
+      let(:expected_tpl) do
+        <<-VERSION
+    'v2/swagger.json' => API_V2,
+        VERSION
+      end
+
+      it { expect(perform).to eq(expected_tpl) }
+    end
+  end
 end

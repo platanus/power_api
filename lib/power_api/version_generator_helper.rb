@@ -58,5 +58,38 @@ defaults: { format: 'json' }"
     def serializers_path
       "app/serializers/api/v#{version_number}/.gitkeep"
     end
+
+    def swagger_schemas_path
+      "spec/swagger/v#{version_number}/schemas/.gitkeep"
+    end
+
+    def swagger_definition_path
+      "spec/swagger/v#{version_number}/definition.rb"
+    end
+
+    def swagger_definition_template
+      <<~DEFINITION
+        API_V#{version_number} = {
+          swagger: '2.0',
+          info: {
+            title: 'API V#{version_number}',
+            version: 'v#{version_number}'
+          },
+          basePath: '/api',
+          definitions: {
+          }
+        }
+      DEFINITION
+    end
+
+    def swagger_helper_api_definition_line
+      "config.swagger_docs = {\n"
+    end
+
+    def swagger_helper_api_definition
+      content = "    'v#{version_number}/swagger.json' => API_V#{version_number}"
+      content = "#{content}," unless first_version?
+      "#{content}\n"
+    end
   end
 end
