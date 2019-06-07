@@ -65,4 +65,24 @@ describe PowerApi::ControllerGeneratorHelper do
 
     it { expect(perform).to eq(expected_path) }
   end
+
+  describe "#routes_line_to_inject_resource" do
+    let(:expected_line) { /Api::V1[^\n]*/ }
+
+    def perform
+      subject.routes_line_to_inject_resource
+    end
+
+    it { expect(perform).to eq(expected_line) }
+  end
+
+  describe "#resource_route_template" do
+    let(:expected_tpl) {   "\n      resources :blogs" }
+
+    def perform
+      subject.resource_route_template
+    end
+
+    it { expect(perform).to eq(expected_tpl) }
+  end
 end

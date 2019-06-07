@@ -51,5 +51,13 @@ module PowerApi
         end
       CONTROLLER
     end
+
+    def routes_line_to_inject_resource
+      /Api::V#{version_number}[^\n]*/
+    end
+
+    def resource_route_template
+      "\n      resources :#{plural_resource}"
+    end
   end
 end

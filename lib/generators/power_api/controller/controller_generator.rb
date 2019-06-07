@@ -5,14 +5,22 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def create_controller
     create_file(
-      generator_helper.get_controller_path,
-      generator_helper.generate_controller_tpl
+      helper.get_controller_path,
+      helper.generate_controller_tpl
+    )
+  end
+
+  def add_routes
+    insert_into_file(
+      "config/routes.rb",
+      helper.resource_route_template,
+      after: helper.routes_line_to_inject_resource
     )
   end
 
   private
 
-  def generator_helper
+  def helper
     PowerApi::ControllerGeneratorHelper.new(
       version_number: version_number,
       resource_name: file_name
