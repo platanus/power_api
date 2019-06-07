@@ -3,11 +3,8 @@ module PowerApi
     include ResourceHelper
     include VersionHelper
 
-    attr_reader :version_number
-
     def initialize(config)
-      validate_version_number!(config[:version_number])
-      @version_number = config[:version_number]
+      self.version_number = config[:version_number]
       self.resource_name = config[:resource_name]
     end
 

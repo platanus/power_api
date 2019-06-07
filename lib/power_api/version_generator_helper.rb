@@ -2,11 +2,8 @@ module PowerApi
   class VersionGeneratorHelper
     include VersionHelper
 
-    attr_reader :version_number
-
     def initialize(config)
-      validate_version_number!(config[:version_number])
-      @version_number = config[:version_number]
+      self.version_number = config[:version_number]
     end
 
     def routes_line_to_inject_new_version

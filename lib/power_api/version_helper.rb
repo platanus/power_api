@@ -1,14 +1,12 @@
 module PowerApi
   module VersionHelper
     def version_number
-      raise NotImplementedError.new("version_number not implemented")
+      @version_number
     end
 
-    def validate_version_number!(version_number)
-      version = version_number.to_s.to_i
-      raise GeneratorError.new("invalid version number") if version < 1
-
-      true
+    def version_number=(value)
+      @version_number = value.to_s.to_i
+      raise GeneratorError.new("invalid version number") if version_number < 1
     end
 
     def first_version?
