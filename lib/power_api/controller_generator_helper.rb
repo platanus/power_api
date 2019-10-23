@@ -6,6 +6,7 @@ module PowerApi
     def initialize(config)
       self.version_number = config[:version_number]
       self.resource_name = config[:resource_name]
+      self.resource_attributes = config[:resource_attributes]
     end
 
     def get_controller_path
@@ -14,7 +15,7 @@ module PowerApi
 
     def generate_controller_tpl
       <<~CONTROLLER
-        class Api::V#{version_number}::#{camel_resource}Controller < Api::V#{version_number}::BaseController
+        class Api::V#{version_number}::#{camel_plural_resource}Controller < Api::V#{version_number}::BaseController
           def index
             respond_with #{camel_resource}.all
           end
@@ -42,7 +43,9 @@ module PowerApi
           end
 
           def #{snake_case_resource}_params
-            params.require(:#{snake_case_resource}).permit(:name)
+            params.require(:#{snake_case_resource}).permit(
+              #{resource_attributes_names.map { |a| ":#{a}" }.join(', ')}
+            )
           end
         end
       CONTROLLER

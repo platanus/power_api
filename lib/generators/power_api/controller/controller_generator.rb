@@ -2,6 +2,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
   argument :version_number, type: :string, required: true
+  class_option :attributes, type: 'array', default: [], aliases: '-a'
 
   def create_controller
     create_file(
@@ -21,9 +22,10 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   private
 
   def helper
-    PowerApi::ControllerGeneratorHelper.new(
+    @helper ||= PowerApi::ControllerGeneratorHelper.new(
       version_number: version_number,
-      resource_name: file_name
+      resource_name: file_name,
+      resource_attributes: options[:attributes]
     )
   end
 end

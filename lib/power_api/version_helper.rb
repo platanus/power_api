@@ -1,16 +1,18 @@
 module PowerApi
   module VersionHelper
-    def version_number
-      @version_number
-    end
+    extend ActiveSupport::Concern
 
-    def version_number=(value)
-      @version_number = value.to_s.to_i
-      raise GeneratorError.new("invalid version number") if version_number < 1
-    end
+    included do
+      attr_reader :version_number
 
-    def first_version?
-      version_number.to_i == 1
+      def version_number=(value)
+        @version_number = value.to_s.to_i
+        raise GeneratorError.new("invalid version number") if version_number < 1
+      end
+
+      def first_version?
+        version_number.to_i == 1
+      end
     end
   end
 end

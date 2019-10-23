@@ -26,6 +26,6 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
   private
 
   def helper
-    PowerApi::InstallGeneratorHelper.new
+    @helper ||= PowerApi::InstallGeneratorHelper.new
   end
 end

@@ -1,6 +1,8 @@
 require "rails_helper"
 
 describe PowerApi::ControllerGeneratorHelper do
+  subject { described_class.new(init_params) }
+
   let(:version_number) { "1" }
   let(:resource_name) { "blog" }
   let(:init_params) do
@@ -9,8 +11,6 @@ describe PowerApi::ControllerGeneratorHelper do
       resource_name: resource_name
     }
   end
-
-  subject { described_class.new(init_params) }
 
   describe "generate_controller_tpl" do
     let(:template) do
@@ -43,7 +43,9 @@ describe PowerApi::ControllerGeneratorHelper do
           end
 
           def blog_params
-            params.require(:blog).permit(:name)
+            params.require(:blog).permit(
+              :title, :body, :created_at, :updated_at
+            )
           end
         end
       CONTROLLER

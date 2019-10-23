@@ -1,22 +1,24 @@
 describe PowerApi::ResourceHelper do
+  subject(:resourceable) { TestClass.new(resource_name, resource_attributes) }
+
   let(:resource_name) { "blog" }
+  let(:resource_attributes) { nil }
   let(:class_definition) do
     Proc.new do
-      include PowerApi::ResourceHelper
+      include ::PowerApi::ResourceHelper
 
-      def initialize(resource_name)
+      def initialize(resource_name, resource_attributes)
         self.resource_name = resource_name
+        self.resource_attributes = resource_attributes
       end
     end
   end
 
   before { create_test_class(&class_definition) }
 
-  subject { TestClass.new(resource_name) }
-
   describe "#resource_name" do
     def perform
-      subject.resource_name
+      resourceable.resource_name
     end
 
     it { expect(perform).to eq("blog") }
@@ -26,19 +28,90 @@ describe PowerApi::ResourceHelper do
     context "with invalid resource name" do
       let(:resource_name) { "ticket" }
 
-      it { expect { subject }.to raise_error("resource is not an active record model") }
+      it { expect { resourceable }.to raise_error("invalid resource name") }
     end
 
     context "with missing resource name" do
       let(:resource_name) { "" }
 
-      it { expect { subject }.to raise_error("missing resource name") }
+      it { expect { resourceable }.to raise_error("invalid resource name") }
+    end
+
+    context "when resource is not an active record model" do
+      let(:resource_name) { "power_api" }
+
+      it { expect { resourceable }.to raise_error("resource is not an active record model") }
+    end
+  end
+
+  describe "#resource_attributes" do
+    let(:expected_attributes) do
+      [
+        { name: :title, type: :string },
+        { name: :body, type: :text },
+        { name: :created_at, type: :datetime },
+        { name: :updated_at, type: :datetime }
+      ]
+    end
+
+    def perform
+      resourceable.resource_attributes
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+
+    context "with selected attributes" do
+      let(:resource_attributes) { %w{title body} }
+      let(:expected_attributes) do
+        [
+          { name: :title, type: :string },
+          { name: :body, type: :text }
+        ]
+      end
+
+      it { expect(perform).to eq(expected_attributes) }
+    end
+
+    context "with attributes not present in model" do
+      let(:resource_attributes) { %w{title bloody} }
+      let(:expected_attributes) do
+        [
+          { name: :title, type: :string }
+        ]
+      end
+
+      it { expect(perform).to eq(expected_attributes) }
+    end
+  end
+
+  describe "#resource_attributes_names" do
+    let(:expected_attributes) do
+      [
+        :title,
+        :body,
+        :created_at,
+        :updated_at
+      ]
+    end
+
+    def perform
+      resourceable.resource_attributes_names
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+  end
+
+  describe "#resource_attributes=" do
+    context "with provided attributes resulting in empty attributes config" do
+      let(:resource_attributes) { %w{invalid attrs} }
+
+      it { expect { resourceable }.to raise_error("at least one attribute must be added") }
     end
   end
 
   describe "#camel_resource" do
     def perform
-      subject.camel_resource
+      resourceable.camel_resource
     end
 
     it { expect(perform).to eq("Blog") }
@@ -46,7 +119,7 @@ describe PowerApi::ResourceHelper do
 
   describe "#plural_resource" do
     def perform
-      subject.plural_resource
+      resourceable.plural_resource
     end
 
     it { expect(perform).to eq("blogs") }
@@ -54,7 +127,7 @@ describe PowerApi::ResourceHelper do
 
   describe "#resource_class" do
     def perform
-      subject.resource_class
+      resourceable.resource_class
     end
 
     it { expect(perform).to eq(Blog) }
@@ -62,7 +135,7 @@ describe PowerApi::ResourceHelper do
 
   describe "#snake_case_resource" do
     def perform
-      subject.snake_case_resource
+      resourceable.snake_case_resource
     end
 
     it { expect(perform).to eq("blog") }

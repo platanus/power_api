@@ -1,4 +1,4 @@
 module PowerApi
-  class BaseController < ActionController
+  class BaseController < ApplicationController
   end
 end
