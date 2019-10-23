@@ -101,6 +101,18 @@ describe PowerApi::ResourceHelper do
     it { expect(perform).to eq(expected_attributes) }
   end
 
+  describe "#resource_attributes_symbols_text_list" do
+    let(:expected_result) do
+      ":title, :body, :created_at, :updated_at"
+    end
+
+    def perform
+      resourceable.resource_attributes_symbols_text_list
+    end
+
+    it { expect(perform).to eq(expected_result) }
+  end
+
   describe "#resource_attributes=" do
     context "with provided attributes resulting in empty attributes config" do
       let(:resource_attributes) { %w{invalid attrs} }

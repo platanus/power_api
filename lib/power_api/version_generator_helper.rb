@@ -48,6 +48,9 @@ defaults: { format: 'json' }"
     def base_controller_template
       <<~CONTROLLER
         class Api::V#{version_number}::BaseController < Api::BaseController
+          before_action do
+            self.namespace_for_serializer = ::Api::V#{version_number}
+          end
         end
       CONTROLLER
     end

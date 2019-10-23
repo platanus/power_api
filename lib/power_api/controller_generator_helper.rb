@@ -44,7 +44,7 @@ module PowerApi
 
           def #{snake_case_resource}_params
             params.require(:#{snake_case_resource}).permit(
-              #{resource_attributes_names.map { |a| ":#{a}" }.join(', ')}
+              #{resource_attributes_symbols_text_list}
             )
           end
         end
@@ -57,6 +57,20 @@ module PowerApi
 
     def resource_route_template
       "\n      resources :#{plural_resource}"
+    end
+
+    def get_serializer_path
+      "app/serializers/api/v#{version_number}/#{snake_case_resource}_serializer.rb"
+    end
+
+    def generate_serializer_tpl
+      <<~SERIALIZER
+        class Api::V#{version_number}::#{camel_resource}Serializer < ActiveModel::Serializer
+          type :#{snake_case_resource}
+
+          attributes #{resource_attributes_symbols_text_list}
+        end
+      SERIALIZER
     end
   end
 end

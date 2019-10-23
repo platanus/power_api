@@ -15,7 +15,7 @@ describe PowerApi::ControllerGeneratorHelper do
   describe "generate_controller_tpl" do
     let(:template) do
       <<~CONTROLLER
-        class Api::V1::BlogController < Api::V1::BaseController
+        class Api::V1::BlogsController < Api::V1::BaseController
           def index
             respond_with Blog.all
           end
@@ -86,5 +86,33 @@ describe PowerApi::ControllerGeneratorHelper do
     end
 
     it { expect(perform).to eq(expected_tpl) }
+  end
+
+  describe "#get_serializer_path" do
+    let(:expected_path) { "app/serializers/api/v1/blog_serializer.rb" }
+
+    def perform
+      subject.get_serializer_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "generate_serializer_tpl" do
+    let(:template) do
+      <<~SERIALIZER
+        class Api::V1::BlogSerializer < ActiveModel::Serializer
+          type :blog
+
+          attributes :title, :body, :created_at, :updated_at
+        end
+      SERIALIZER
+    end
+
+    def perform
+      subject.generate_serializer_tpl
+    end
+
+    it { expect(perform).to eq(template) }
   end
 end

@@ -52,6 +52,10 @@ module PowerApi
         resource_attributes.map { |attr| attr[:name] }
       end
 
+      def resource_attributes_symbols_text_list
+        resource_attributes_names.map { |a| ":#{a}" }.join(', ')
+      end
+
       def format_attributes(attrs)
         columns = resource_class.columns.inject([]) do |memo, col|
           col_name = col.name.to_sym
