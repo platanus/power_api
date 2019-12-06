@@ -24,6 +24,11 @@ module Api::Error
       respond_api_error(:bad_request, message: "invalid_attributes",
                                       errors: exception.record.errors)
     end
+
+    rescue_from "PowerApi::InvalidVersion" do |exception|
+      respond_api_error(:bad_request, message: "invalid_api_version",
+                                      errors: exception.message)
+    end
   end
 
   def respond_api_error(status, error = {})
