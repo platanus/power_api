@@ -1,5 +1,7 @@
 module PowerApi
   class BaseController < ApplicationController
+    include Rails::Pagination
+
     include Api::Error
     include Api::Deprecated
     include Api::Versioned

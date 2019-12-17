@@ -23,6 +23,10 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
     generate "power_api:version 1"
   end
 
+  def install_api_pagination
+    create_file(helper.api_pagination_tpl_path, helper.api_pagination_tpl, force: true)
+  end
+
   private
 
   def helper
