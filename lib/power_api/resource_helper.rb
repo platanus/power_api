@@ -36,6 +36,10 @@ module PowerApi
         false
       end
 
+      def upcase_resource
+        snake_case_resource.upcase
+      end
+
       def camel_resource
         resource_name.camelize
       end
@@ -65,7 +69,13 @@ module PowerApi
           col_name = col.name.to_sym
           next memo if col_name == :id
 
-          memo << { name: col_name, type: col.type }
+          memo << {
+            name: col_name,
+            type: col.type,
+            swagger_type: get_swagger_type(col.type),
+            example: get_attribute_example(col.type, col_name)
+          }
+
           memo
         end
 
@@ -73,6 +83,32 @@ module PowerApi
 
         attrs = attrs.map(&:to_sym)
         columns.select { |col| attrs.include?(col[:name]) }
+      end
+
+      def get_swagger_type(data_type)
+        case data_type
+        when :integer
+          :integer
+        when :float, :decimal
+          :float
+        else
+          :string
+        end
+      end
+
+      def get_attribute_example(data_type, col_name)
+        case data_type
+        when :date
+          "'1984-06-04'"
+        when :datetime
+          "'1984-06-04 09:00'"
+        when :integer
+          rand(1000)
+        when :float, :decimal
+          (rand(100) / 200.0).round(2)
+        else
+          "'Some #{col_name}'"
+        end
       end
     end
   end

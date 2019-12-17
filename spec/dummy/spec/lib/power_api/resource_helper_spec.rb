@@ -24,6 +24,14 @@ describe PowerApi::ResourceHelper do
     it { expect(perform).to eq("blog") }
   end
 
+  describe "#upcase_resource" do
+    def perform
+      resourceable.upcase_resource
+    end
+
+    it { expect(perform).to eq("BLOG") }
+  end
+
   describe "#resource_name=" do
     context "with invalid resource name" do
       let(:resource_name) { "ticket" }
@@ -47,10 +55,10 @@ describe PowerApi::ResourceHelper do
   describe "#resource_attributes" do
     let(:expected_attributes) do
       [
-        { name: :title, type: :string },
-        { name: :body, type: :text },
-        { name: :created_at, type: :datetime },
-        { name: :updated_at, type: :datetime }
+        { name: :title, type: :string, swagger_type: :string, example: "'Some title'" },
+        { name: :body, type: :text, swagger_type: :string, example: "'Some body'" },
+        { name: :created_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'" },
+        { name: :updated_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'" }
       ]
     end
 
@@ -64,8 +72,8 @@ describe PowerApi::ResourceHelper do
       let(:resource_attributes) { %w{title body} }
       let(:expected_attributes) do
         [
-          { name: :title, type: :string },
-          { name: :body, type: :text }
+          { name: :title, type: :string, swagger_type: :string, example: "'Some title'" },
+          { name: :body, type: :text, swagger_type: :string, example: "'Some body'" }
         ]
       end
 
@@ -76,7 +84,7 @@ describe PowerApi::ResourceHelper do
       let(:resource_attributes) { %w{title bloody} }
       let(:expected_attributes) do
         [
-          { name: :title, type: :string }
+          { name: :title, type: :string, swagger_type: :string, example: "'Some title'" }
         ]
       end
 

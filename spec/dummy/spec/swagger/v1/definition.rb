@@ -6,5 +6,6 @@ API_V1 = {
   },
   basePath: '/api',
   definitions: {
+    blog: BLOG_SCHEMA
   }
 }

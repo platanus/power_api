@@ -124,7 +124,7 @@ describe PowerApi::ControllerGeneratorHelper do
   end
 
   describe "#resource_route_template" do
-    let(:expected_tpl) {   "\n      resources :blogs" }
+    let(:expected_tpl) { "\n      resources :blogs" }
 
     def perform
       subject.resource_route_template
@@ -159,5 +159,95 @@ describe PowerApi::ControllerGeneratorHelper do
     end
 
     it { expect(perform).to eq(template) }
+  end
+
+  describe "#get_swagger_schema_path" do
+    let(:expected_path) { "spec/swagger/v1/schemas/blog_schema.rb" }
+
+    def perform
+      subject.get_swagger_schema_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#get_swagger_schema_tpl" do
+    let(:template) do
+      <<~SCHEMA
+        BLOG_SCHEMA = {
+          type: :object,
+          properties: {
+            id: { type: :string, example: '1' },
+            type: { type: :string, example: 'blog' },
+            attributes: {
+              type: :object,
+              properties: {
+                title: { type: :string, example: 'Some title' },
+                body: { type: :string, example: 'Some body' },
+                created_at: { type: :string, example: '1984-06-04 09:00' },
+                updated_at: { type: :string, example: '1984-06-04 09:00' }
+              },
+              required: [
+                :title,
+                :body,
+                :created_at,
+                :updated_at
+              ]
+            }
+          },
+          required: [
+            :id,
+            :type,
+            :attributes
+          ]
+        }
+      SCHEMA
+    end
+
+    def perform
+      subject.get_swagger_schema_tpl
+    end
+
+    it { expect(perform).to eq(template) }
+  end
+
+  describe "#swagger_definition_line_to_inject_schema" do
+    let(:expected_line) { /definitions: {/ }
+
+    def perform
+      subject.swagger_definition_line_to_inject_schema
+    end
+
+    it { expect(perform).to eq(expected_line) }
+  end
+
+  describe "#swagger_definition_entry" do
+    let(:expected_entry) { "\n    blog: BLOG_SCHEMA," }
+
+    def perform
+      subject.swagger_definition_entry
+    end
+
+    it { expect(perform).to eq(expected_entry) }
+  end
+
+  describe "#get_swagger_schema_path" do
+    let(:expected_path) { "spec/swagger/v1/schemas/blog_schema.rb" }
+
+    def perform
+      subject.get_swagger_schema_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#get_swagger_version_definition_path" do
+    let(:expected_path) { "spec/swagger/v1/definition.rb" }
+
+    def perform
+      subject.get_swagger_version_definition_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
   end
 end
