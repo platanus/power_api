@@ -3,10 +3,13 @@ module PowerApi
     include ResourceHelper
     include VersionHelper
 
+    attr_reader :use_paginator
+
     def initialize(config)
       self.version_number = config[:version_number]
       self.resource_name = config[:resource_name]
       self.resource_attributes = config[:resource_attributes]
+      @use_paginator = config[:use_paginator]
     end
 
     def get_controller_path
@@ -17,7 +20,7 @@ module PowerApi
       <<~CONTROLLER
         class Api::V#{version_number}::#{camel_plural_resource}Controller < Api::V#{version_number}::BaseController
           def index
-            respond_with #{camel_resource}.all
+            respond_with #{index_resources}
           end
 
           def show
@@ -49,6 +52,13 @@ module PowerApi
           end
         end
       CONTROLLER
+    end
+
+    def index_resources
+      all_resources = "#{camel_resource}.all"
+      return all_resources unless use_paginator
+
+      "paginate(#{all_resources})"
     end
 
     def routes_line_to_inject_resource

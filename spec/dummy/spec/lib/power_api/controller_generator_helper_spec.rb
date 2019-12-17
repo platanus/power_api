@@ -5,10 +5,12 @@ describe PowerApi::ControllerGeneratorHelper do
 
   let(:version_number) { "1" }
   let(:resource_name) { "blog" }
+  let(:use_paginator) { false }
   let(:init_params) do
     {
       version_number: version_number,
-      resource_name: resource_name
+      resource_name: resource_name,
+      use_paginator: use_paginator
     }
   end
 
@@ -56,6 +58,49 @@ describe PowerApi::ControllerGeneratorHelper do
     end
 
     it { expect(perform).to eq(template) }
+
+    context "with true use_paginator option" do
+      let(:use_paginator) { true }
+      let(:template) do
+        <<~CONTROLLER
+          class Api::V1::BlogsController < Api::V1::BaseController
+            def index
+              respond_with paginate(Blog.all)
+            end
+
+            def show
+              respond_with blog
+            end
+
+            def create
+              respond_with Blog.create!(blog_params)
+            end
+
+            def update
+              respond_with blog.update!(blog_params)
+            end
+
+            def destroy
+              blog.destroy!
+            end
+
+            private
+
+            def blog
+              @blog ||= Blog.find_by!(id: params[:id])
+            end
+
+            def blog_params
+              params.require(:blog).permit(
+                :title, :body, :created_at, :updated_at
+              )
+            end
+          end
+        CONTROLLER
+      end
+
+      it { expect(perform).to eq(template) }
+    end
   end
 
   describe "#get_controller_path" do
