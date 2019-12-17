@@ -2,4 +2,4 @@ Description:
     Create a new API controller for a given version
 
 Example:
-    rails generate power_api:controller blog 1
+    rails generate power_api:controller blog

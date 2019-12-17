@@ -1,8 +1,21 @@
 class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
-  argument :version_number, type: :string, required: true
-  class_option :attributes, type: 'array', default: [], aliases: '-a'
+  class_option(
+    :attributes,
+    type: 'array',
+    default: [],
+    aliases: '-a',
+    desc: 'attributes to show in serializer'
+  )
+
+  class_option(
+    :version_number,
+    type: 'numeric',
+    default: 1,
+    aliases: '-v',
+    desc: 'the API version number you want to add this controller'
+  )
 
   def create_controller
     create_file(
@@ -30,7 +43,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def helper
     @helper ||= PowerApi::ControllerGeneratorHelper.new(
-      version_number: version_number,
+      version_number: options[:version_number],
       resource_name: file_name,
       resource_attributes: options[:attributes]
     )
