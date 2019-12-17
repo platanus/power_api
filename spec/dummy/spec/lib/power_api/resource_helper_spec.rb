@@ -28,13 +28,13 @@ describe PowerApi::ResourceHelper do
     context "with invalid resource name" do
       let(:resource_name) { "ticket" }
 
-      it { expect { resourceable }.to raise_error("invalid resource name") }
+      it { expect { resourceable }.to raise_error(/Invalid resource name/) }
     end
 
     context "with missing resource name" do
       let(:resource_name) { "" }
 
-      it { expect { resourceable }.to raise_error("invalid resource name") }
+      it { expect { resourceable }.to raise_error(/Invalid resource name/) }
     end
 
     context "when resource is not an active record model" do

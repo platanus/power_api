@@ -8,7 +8,11 @@ module PowerApi
       def resource_name=(value)
         @resource_name = value
 
-        raise GeneratorError.new("invalid resource name") if resource_class.blank?
+        if !resource_class
+          raise GeneratorError.new(
+            "Invalid resource name. Must be the snake_case representation of a ruby class"
+          )
+        end
 
         if !resource_is_active_record_model?
           raise GeneratorError.new("resource is not an active record model")
