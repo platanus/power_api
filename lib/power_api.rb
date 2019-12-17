@@ -1,4 +1,6 @@
 require "active_model_serializers"
+require "api-pagination"
+require "kaminari"
 require "responders"
 require "rswag/api"
 require "rswag/ui"

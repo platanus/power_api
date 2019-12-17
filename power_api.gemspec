@@ -22,6 +22,8 @@ Gem::Specification.new do |s|
   s.add_dependency "rails", ">= 4.2.0"
 
   s.add_dependency "active_model_serializers", "~> 0.10.0"
+  s.add_dependency "api-pagination"
+  s.add_dependency "kaminari"
   s.add_dependency "responders"
   s.add_dependency "rswag-api"
   s.add_dependency "rswag-specs"
