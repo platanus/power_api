@@ -1,6 +1,6 @@
 class Api::V1::BlogsController < Api::V1::BaseController
   def index
-    respond_with paginate(Blog.all)
+    respond_with paginate(filtered_collection(Blog.all))
   end
 
   def show

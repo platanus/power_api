@@ -5,6 +5,7 @@ module PowerApi
     include Api::Error
     include Api::Deprecated
     include Api::Versioned
+    include Api::Filtered
 
     self.responder = ApiResponder
 

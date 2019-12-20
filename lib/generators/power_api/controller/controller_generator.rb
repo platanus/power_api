@@ -24,6 +24,13 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     desc: 'to indicate whether the controller will use pager or not'
   )
 
+  class_option(
+    :allow_filters,
+    type: 'boolean',
+    default: false,
+    desc: 'to indicate whether the controller will allow query string filters or not'
+  )
+
   def create_controller
     create_file(
       helper.get_controller_path,
@@ -66,7 +73,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       version_number: options[:version_number],
       resource_name: file_name,
       resource_attributes: options[:attributes],
-      use_paginator: options[:use_paginator]
+      use_paginator: options[:use_paginator],
+      allow_filters: options[:allow_filters]
     )
   end
 end
