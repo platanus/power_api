@@ -107,6 +107,29 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
     end
   end
 
+  describe "#swagger_definition_tpl" do
+    let(:expected_tpl) do
+      <<~DEFINITION
+        API_V1 = {
+          swagger: '2.0',
+          info: {
+            title: 'API V1',
+            version: 'v1'
+          },
+          basePath: '/api/v1',
+          definitions: {
+          }
+        }
+      DEFINITION
+    end
+
+    def perform
+      generators_helper.swagger_definition_tpl
+    end
+
+    it { expect(perform).to eq(expected_tpl) }
+  end
+
   describe "swagger_helper_tpl" do
     let(:template) do
       <<~SWAGGER

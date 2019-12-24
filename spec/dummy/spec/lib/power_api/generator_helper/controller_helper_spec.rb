@@ -9,11 +9,11 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     it { expect(perform).to eq(expected_path) }
   end
 
-  describe "#get_controller_path" do
+  describe "#resource_controller_path" do
     let(:expected_path) { "app/controllers/api/v1/blogs_controller.rb" }
 
     def perform
-      generators_helper.get_controller_path
+      generators_helper.resource_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -56,7 +56,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
   end
 
-  describe "generate_controller_tpl" do
+  describe "resource_controller_tpl" do
     let(:template) do
       <<~CONTROLLER
         class Api::V1::BlogsController < Api::V1::BaseController
@@ -96,7 +96,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
 
     def perform
-      generators_helper.generate_controller_tpl
+      generators_helper.resource_controller_tpl
     end
 
     it { expect(perform).to eq(template) }
@@ -145,7 +145,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
   end
 
-  describe "#base_controller_template" do
+  describe "#base_controller_tpl" do
     let(:expected_tpl) do
       <<~CONTROLLER
         class Api::V1::BaseController < Api::BaseController
@@ -157,7 +157,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
 
     def perform
-      generators_helper.base_controller_template
+      generators_helper.base_controller_tpl
     end
 
     it { expect(perform).to eq(expected_tpl) }

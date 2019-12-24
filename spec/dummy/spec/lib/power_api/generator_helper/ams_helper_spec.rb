@@ -9,13 +9,13 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
     it { expect(perform).to eq(expected_path) }
   end
 
-  describe "#serializers_path" do
+  describe "#ams_serializers_path" do
     let(:expected_path) do
       "app/serializers/api/v1/.gitkeep"
     end
 
     def perform
-      subject.serializers_path
+      subject.ams_serializers_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -61,7 +61,7 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
     it { expect(perform).to eq(template) }
   end
 
-  describe "generate_serializer_tpl" do
+  describe "ams_serializer_tpl" do
     let(:template) do
       <<~SERIALIZER
         class Api::V1::BlogSerializer < ActiveModel::Serializer
@@ -73,7 +73,7 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
     end
 
     def perform
-      generators_helper.generate_serializer_tpl
+      generators_helper.ams_serializer_tpl
     end
 
     it { expect(perform).to eq(template) }

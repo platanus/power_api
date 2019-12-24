@@ -9,11 +9,11 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
     it { expect(perform).to eq(expected_line) }
   end
 
-  describe "#resource_route_template" do
+  describe "#resource_route_tpl" do
     let(:expected_tpl) { "\n      resources :blogs" }
 
     def perform
-      generators_helper.resource_route_template
+      generators_helper.resource_route_tpl
     end
 
     it { expect(perform).to eq(expected_tpl) }
@@ -41,7 +41,7 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
     end
   end
 
-  describe "#version_route_template" do
+  describe "#version_route_tpl" do
     let(:expected_tpl) do
       <<-ROUTE
   scope path: '/api' do
@@ -52,7 +52,7 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
     end
 
     def perform
-      generators_helper.version_route_template
+      generators_helper.version_route_tpl
     end
 
     it { expect(perform).to eq(expected_tpl) }

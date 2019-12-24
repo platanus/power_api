@@ -5,11 +5,11 @@ module PowerApi::GeneratorHelper::PaginationHelper
     attr_accessor :use_paginator
   end
 
-  def api_pagination_tpl_path
+  def api_pagination_initializer_path
     "config/initializers/api_pagination.rb"
   end
 
-  def api_pagination_tpl
+  def api_pagination_initializer_tpl
     <<~API_PAGINATION
       ApiPagination.configure do |config|
         # If you have more than one gem included, you can choose a paginator.

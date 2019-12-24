@@ -14,7 +14,7 @@ module PowerApi::GeneratorHelper::AmsHelper
     "app/serializers/api/v#{version_number}/#{snake_case_resource}_serializer.rb"
   end
 
-  def serializers_path
+  def ams_serializers_path
     "app/serializers/api/v#{version_number}/.gitkeep"
   end
 
@@ -30,7 +30,7 @@ module PowerApi::GeneratorHelper::AmsHelper
     INITIALIZER
   end
 
-  def generate_serializer_tpl
+  def ams_serializer_tpl
     <<~SERIALIZER
       class Api::V#{version_number}::#{camel_resource}Serializer < ActiveModel::Serializer
         type :#{snake_case_resource}

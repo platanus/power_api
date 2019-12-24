@@ -33,15 +33,15 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def create_controller
     create_file(
-      helper.get_controller_path,
-      helper.generate_controller_tpl
+      helper.resource_controller_path,
+      helper.resource_controller_tpl
     )
   end
 
   def add_routes
     insert_into_file(
       "config/routes.rb",
-      helper.resource_route_template,
+      helper.resource_route_tpl,
       after: helper.routes_line_to_inject_resource
     )
   end
@@ -49,7 +49,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   def create_serializer
     create_file(
       helper.ams_serializer_path,
-      helper.generate_serializer_tpl
+      helper.ams_serializer_tpl
     )
   end
 

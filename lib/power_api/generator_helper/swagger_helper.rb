@@ -66,7 +66,13 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     SWAGGER
   end
 
-  def swagger_definition_template
+  def swagger_helper_api_definition
+    content = "    'v#{version_number}/swagger.json' => API_V#{version_number}"
+    content = "#{content}," unless first_version?
+    "#{content}\n"
+  end
+
+  def swagger_definition_tpl
     <<~DEFINITION
       API_V#{version_number} = {
         swagger: '2.0',
@@ -79,12 +85,6 @@ module PowerApi::GeneratorHelper::SwaggerHelper
         }
       }
     DEFINITION
-  end
-
-  def swagger_helper_api_definition
-    content = "    'v#{version_number}/swagger.json' => API_V#{version_number}"
-    content = "#{content}," unless first_version?
-    "#{content}\n"
   end
 
   def get_swagger_schema_tpl

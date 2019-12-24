@@ -16,19 +16,19 @@ module PowerApi::GeneratorHelper::RoutesHelper
     /Api::V#{version_number}[^\n]*/
   end
 
-  def version_route_template
-    return first_version_route_template if first_version?
+  def version_route_tpl
+    return first_version_route_tpl if first_version?
 
-    new_version_route_template
+    new_version_route_tpl
   end
 
-  def resource_route_template
+  def resource_route_tpl
     "\n      resources :#{plural_resource}"
   end
 
   private
 
-  def first_version_route_template
+  def first_version_route_tpl
     <<-ROUTE
   scope path: '/api' do
     api_version(#{api_version_params}) do
@@ -37,7 +37,7 @@ module PowerApi::GeneratorHelper::RoutesHelper
     ROUTE
   end
 
-  def new_version_route_template
+  def new_version_route_tpl
     <<-ROUTE
     api_version(#{api_version_params}) do
     end

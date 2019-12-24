@@ -1,15 +1,15 @@
 RSpec.describe PowerApi::GeneratorHelper::PaginationHelper, type: :generator do
-  describe "#api_pagination_tpl_path" do
+  describe "#api_pagination_initializer_path" do
     let(:expected_path) { "config/initializers/api_pagination.rb" }
 
     def perform
-      generators_helper.api_pagination_tpl_path
+      generators_helper.api_pagination_initializer_path
     end
 
     it { expect(perform).to eq(expected_path) }
   end
 
-  describe "api_pagination_tpl" do
+  describe "api_pagination_initializer_tpl" do
     let(:template) do
       <<~API_PAGINATION
         ApiPagination.configure do |config|
@@ -48,7 +48,7 @@ RSpec.describe PowerApi::GeneratorHelper::PaginationHelper, type: :generator do
     end
 
     def perform
-      generators_helper.api_pagination_tpl
+      generators_helper.api_pagination_initializer_tpl
     end
 
     it { expect(perform).to eq(template) }

@@ -17,7 +17,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
     "app/controllers/api/v#{version_number}/base_controller.rb"
   end
 
-  def get_controller_path
+  def resource_controller_path
     "app/controllers/api/v#{version_number}/#{plural_resource}_controller.rb"
   end
 
@@ -28,7 +28,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
     CONTROLLER
   end
 
-  def base_controller_template
+  def base_controller_tpl
     <<~CONTROLLER
       class Api::V#{version_number}::BaseController < Api::BaseController
         before_action do
@@ -38,7 +38,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
     CONTROLLER
   end
 
-  def generate_controller_tpl
+  def resource_controller_tpl
     <<~CONTROLLER
       class Api::V#{version_number}::#{camel_plural_resource}Controller < Api::V#{version_number}::BaseController
         def index

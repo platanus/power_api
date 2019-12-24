@@ -3,19 +3,19 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
 
   def modify_routes
     insert_into_file("config/routes.rb", after: helper.routes_line_to_inject_new_version) do
-      helper.version_route_template
+      helper.version_route_tpl
     end
   end
 
   def add_base_controller
     create_file(
       helper.base_controller_path,
-      helper.base_controller_template
+      helper.base_controller_tpl
     )
   end
 
   def add_serializers_directory
-    create_file(helper.serializers_path)
+    create_file(helper.ams_serializers_path)
   end
 
   def add_swagger_related
@@ -23,7 +23,7 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
 
     create_file(
       helper.swagger_version_definition_path,
-      helper.swagger_definition_template
+      helper.swagger_definition_tpl
     )
 
     insert_into_file("spec/swagger_helper.rb", after: helper.swagger_helper_api_definition_line) do
