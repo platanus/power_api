@@ -22,7 +22,7 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
     create_file(helper.swagger_schemas_path)
 
     create_file(
-      helper.swagger_definition_path,
+      helper.swagger_version_definition_path,
       helper.swagger_definition_template
     )
 

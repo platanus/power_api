@@ -2,6 +2,7 @@ module PowerApi
   class ControllerGeneratorHelper
     include ResourceHelper
     include VersionHelper
+    include SwaggerHelper
 
     attr_reader :use_paginator, :allow_filters
 
@@ -88,105 +89,6 @@ module PowerApi
           attributes #{resource_attributes_symbols_text_list}
         end
       SERIALIZER
-    end
-
-    def get_swagger_version_definition_path
-      "spec/swagger/v#{version_number}/definition.rb"
-    end
-
-    def get_swagger_schema_path
-      "spec/swagger/v#{version_number}/schemas/#{snake_case_resource}_schema.rb"
-    end
-
-    def get_swagger_schema_tpl
-      <<~SCHEMA
-        #{swagger_model_definition_const} = {
-          type: :object,
-          properties: {
-            id: { type: :string, example: '1' },
-            type: { type: :string, example: '#{snake_case_resource}' },
-            attributes: {
-              type: :object,
-              properties: {#{get_swagger_schema_attributes_definitions}
-              },
-              required: [#{get_swagger_schema_attributes_names}
-              ]
-            }
-          },
-          required: [
-            :id,
-            :type,
-            :attributes
-          ]
-        }
-
-        #{swagger_collection_definition_const} = {
-          type: "object",
-          properties: {
-            data: {
-              type: "array",
-              items: { "$ref" => "#/definitions/#{plural_resource}_collection" }
-            }
-          },
-          required: [
-            :data
-          ]
-        }
-
-        #{swagger_resource_definition_const} = {
-          type: "object",
-          properties: {
-            data: { "$ref" => "#/definitions/#{snake_case_resource}_resource" }
-          },
-          required: [
-            :data
-          ]
-        }
-      SCHEMA
-    end
-
-    def swagger_definition_line_to_inject_schema
-      /definitions: {/
-    end
-
-    def swagger_definition_entry
-      [
-        "\n    #{snake_case_resource}: #{swagger_model_definition_const},",
-        "\n    #{plural_resource}_collection: #{swagger_collection_definition_const},",
-        "\n    #{snake_case_resource}_resource: #{swagger_resource_definition_const},"
-      ].join
-    end
-
-    def swagger_model_definition_const
-      "#{upcase_resource}_SCHEMA"
-    end
-
-    def swagger_collection_definition_const
-      "#{upcase_plural_resource}_COLLECTION_SCHEMA"
-    end
-
-    def swagger_resource_definition_const
-      "#{upcase_resource}_RESOURCE_SCHEMA"
-    end
-
-    def get_swagger_schema_attributes_definitions
-      for_each_schema_attribute do |attr|
-        "#{attr[:name]}: { type: :#{attr[:swagger_type]}, example: #{attr[:example]} },"
-      end
-    end
-
-    def get_swagger_schema_attributes_names
-      for_each_schema_attribute do |attr|
-        ":#{attr[:name]},"
-      end
-    end
-
-    def for_each_schema_attribute
-      resource_attributes.inject("") do |memo, attr|
-        memo += "\n        "
-        memo += yield(attr)
-        memo
-      end.delete_suffix(",")
     end
   end
 end

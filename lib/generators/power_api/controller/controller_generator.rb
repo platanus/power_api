@@ -55,12 +55,12 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def configure_swagger
     create_file(
-      helper.get_swagger_schema_path,
+      helper.swagger_resource_schema_path,
       helper.get_swagger_schema_tpl
     )
 
     insert_into_file(
-      helper.get_swagger_version_definition_path,
+      helper.swagger_version_definition_path,
       helper.swagger_definition_entry,
       after: helper.swagger_definition_line_to_inject_schema
     )
