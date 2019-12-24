@@ -1,14 +1,14 @@
 require "rails_helper"
 
 describe PowerApi::VersionGeneratorHelper do
+  subject { described_class.new(init_params) }
+
   let(:version_number) { "1" }
   let(:init_params) do
     {
       version_number: version_number
     }
   end
-
-  subject { described_class.new(init_params) }
 
   describe "routes_line_to_inject_new_version" do
     let(:expected_line) do
@@ -116,28 +116,6 @@ describe PowerApi::VersionGeneratorHelper do
       end
 
       it { expect(perform).to eq(expected_tpl) }
-    end
-  end
-
-  describe "#serializers_path" do
-    let(:expected_path) do
-      "app/serializers/api/v1/.gitkeep"
-    end
-
-    def perform
-      subject.serializers_path
-    end
-
-    it { expect(perform).to eq(expected_path) }
-
-    context "with another version" do
-      let(:version_number) { "2" }
-
-      let(:expected_path) do
-        "app/serializers/api/v2/.gitkeep"
-      end
-
-      it { expect(perform).to eq(expected_path) }
     end
   end
 end

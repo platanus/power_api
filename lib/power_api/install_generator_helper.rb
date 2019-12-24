@@ -1,6 +1,7 @@
 module PowerApi
   class InstallGeneratorHelper
     include SwaggerHelper
+    include AmsHelper
 
     def api_base_controller_path
       "app/controllers/api/base_controller.rb"
@@ -11,22 +12,6 @@ module PowerApi
         class Api::BaseController < PowerApi::BaseController
         end
       CONTROLLER
-    end
-
-    def ams_initializer_path
-      "config/initializers/active_model_serializers.rb"
-    end
-
-    def ams_initializer_tpl
-      <<~INITIALIZER
-        class ActiveModelSerializers::Adapter::JsonApi
-          def self.default_key_transform
-            :unaltered
-          end
-        end
-
-        ActiveModelSerializers.config.adapter = :json_api
-      INITIALIZER
     end
 
     def api_pagination_tpl_path

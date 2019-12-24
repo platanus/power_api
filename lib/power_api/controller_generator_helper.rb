@@ -3,6 +3,7 @@ module PowerApi
     include ResourceHelper
     include VersionHelper
     include SwaggerHelper
+    include AmsHelper
 
     attr_reader :use_paginator, :allow_filters
 
@@ -75,20 +76,6 @@ module PowerApi
 
     def resource_route_template
       "\n      resources :#{plural_resource}"
-    end
-
-    def get_serializer_path
-      "app/serializers/api/v#{version_number}/#{snake_case_resource}_serializer.rb"
-    end
-
-    def generate_serializer_tpl
-      <<~SERIALIZER
-        class Api::V#{version_number}::#{camel_resource}Serializer < ActiveModel::Serializer
-          type :#{snake_case_resource}
-
-          attributes #{resource_attributes_symbols_text_list}
-        end
-      SERIALIZER
     end
   end
 end

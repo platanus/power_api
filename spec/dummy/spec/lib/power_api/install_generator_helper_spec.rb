@@ -28,36 +28,6 @@ describe PowerApi::InstallGeneratorHelper do
     it { expect(perform).to eq(expected_path) }
   end
 
-  describe "ams_initializer_tpl" do
-    let(:template) do
-      <<~INITIALIZER
-        class ActiveModelSerializers::Adapter::JsonApi
-          def self.default_key_transform
-            :unaltered
-          end
-        end
-
-        ActiveModelSerializers.config.adapter = :json_api
-      INITIALIZER
-    end
-
-    def perform
-      subject.ams_initializer_tpl
-    end
-
-    it { expect(perform).to eq(template) }
-  end
-
-  describe "#ams_initializer_path" do
-    let(:expected_path) { "config/initializers/active_model_serializers.rb" }
-
-    def perform
-      subject.ams_initializer_path
-    end
-
-    it { expect(perform).to eq(expected_path) }
-  end
-
   describe "#api_pagination_tpl_path" do
     let(:expected_path) { "config/initializers/api_pagination.rb" }
 

@@ -48,7 +48,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def create_serializer
     create_file(
-      helper.get_serializer_path,
+      helper.ams_serializer_path,
       helper.generate_serializer_tpl
     )
   end

@@ -2,6 +2,7 @@ module PowerApi
   class VersionGeneratorHelper
     include VersionHelper
     include SwaggerHelper
+    include AmsHelper
 
     def initialize(config)
       self.version_number = config[:version_number]
@@ -54,10 +55,6 @@ defaults: { format: 'json' }"
           end
         end
       CONTROLLER
-    end
-
-    def serializers_path
-      "app/serializers/api/v#{version_number}/.gitkeep"
     end
   end
 end

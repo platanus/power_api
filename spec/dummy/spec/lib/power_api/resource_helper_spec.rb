@@ -153,14 +153,6 @@ describe PowerApi::ResourceHelper do
     it { expect(perform).to eq("blogs") }
   end
 
-  describe "#resource_class" do
-    def perform
-      resourceable.resource_class
-    end
-
-    it { expect(perform).to eq(Blog) }
-  end
-
   describe "#snake_case_resource" do
     def perform
       resourceable.snake_case_resource
