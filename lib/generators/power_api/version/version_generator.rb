@@ -34,6 +34,6 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
   private
 
   def helper
-    @helper ||= PowerApi::VersionGeneratorHelper.new(version_number: file_name)
+    @helper ||= PowerApi::GeneratorHelpers.new(version_number: file_name)
   end
 end

@@ -1,34 +1,9 @@
-describe PowerApi::RoutesHelper do
-  subject(:instance) { TestClass.new(init_params) }
-
-  let(:version_number) { "1" }
-  let(:resource_name) { "blog" }
-
-  let(:init_params) do
-    {
-      version_number: version_number,
-      resource_name: resource_name
-    }
-  end
-
-  let(:class_definition) do
-    Proc.new do
-      include ::PowerApi::RoutesHelper
-
-      def initialize(config)
-        self.version_number = config[:version_number]
-        self.resource_name = config[:resource_name]
-      end
-    end
-  end
-
-  before { create_test_class(&class_definition) }
-
+RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
   describe "#routes_line_to_inject_resource" do
     let(:expected_line) { /Api::V1[^\n]*/ }
 
     def perform
-      instance.routes_line_to_inject_resource
+      generators_helper.routes_line_to_inject_resource
     end
 
     it { expect(perform).to eq(expected_line) }
@@ -38,7 +13,7 @@ describe PowerApi::RoutesHelper do
     let(:expected_tpl) { "\n      resources :blogs" }
 
     def perform
-      instance.resource_route_template
+      generators_helper.resource_route_template
     end
 
     it { expect(perform).to eq(expected_tpl) }
@@ -50,7 +25,7 @@ describe PowerApi::RoutesHelper do
     end
 
     def perform
-      instance.routes_line_to_inject_new_version
+      generators_helper.routes_line_to_inject_new_version
     end
 
     it { expect(perform).to eq(expected_line) }
@@ -77,7 +52,7 @@ describe PowerApi::RoutesHelper do
     end
 
     def perform
-      instance.version_route_template
+      generators_helper.version_route_template
     end
 
     it { expect(perform).to eq(expected_tpl) }

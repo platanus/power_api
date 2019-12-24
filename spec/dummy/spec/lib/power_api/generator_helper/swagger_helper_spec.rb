@@ -1,37 +1,9 @@
-describe PowerApi::SwaggerHelper do
-  subject(:instance) { TestClass.new(init_params) }
-
-  let(:version_number) { "1" }
-  let(:resource_name) { "blog" }
-  let(:resource_attributes) { nil }
-
-  let(:init_params) do
-    {
-      version_number: version_number,
-      resource_name: resource_name,
-      resource_attributes: resource_attributes
-    }
-  end
-
-  let(:class_definition) do
-    Proc.new do
-      include ::PowerApi::SwaggerHelper
-
-      def initialize(config)
-        self.version_number = config[:version_number]
-        self.resource_name = config[:resource_name]
-        self.resource_attributes = config[:resource_attributes]
-      end
-    end
-  end
-
-  before { create_test_class(&class_definition) }
-
+RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
   describe "#swagger_helper_path" do
     let(:expected_path) { "spec/swagger_helper.rb" }
 
     def perform
-      instance.swagger_helper_path
+      generators_helper.swagger_helper_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -41,7 +13,7 @@ describe PowerApi::SwaggerHelper do
     let(:expected_path) { "spec/swagger/.gitkeep" }
 
     def perform
-      instance.spec_swagger_path
+      generators_helper.spec_swagger_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -51,7 +23,7 @@ describe PowerApi::SwaggerHelper do
     let(:expected_path) { "spec/integration/.gitkeep" }
 
     def perform
-      instance.spec_integration_path
+      generators_helper.spec_integration_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -61,7 +33,7 @@ describe PowerApi::SwaggerHelper do
     let(:expected_path) { "spec/swagger/v1/schemas/blog_schema.rb" }
 
     def perform
-      instance.swagger_resource_schema_path
+      generators_helper.swagger_resource_schema_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -71,7 +43,7 @@ describe PowerApi::SwaggerHelper do
     let(:expected_path) { "spec/swagger/v1/definition.rb" }
 
     def perform
-      instance.swagger_version_definition_path
+      generators_helper.swagger_version_definition_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -81,7 +53,7 @@ describe PowerApi::SwaggerHelper do
     let(:expected_path) { "spec/integration/api/v1/blogs_spec.rb" }
 
     def perform
-      instance.swagger_resource_spec_path
+      generators_helper.swagger_resource_spec_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -93,7 +65,7 @@ describe PowerApi::SwaggerHelper do
     end
 
     def perform
-      instance.swagger_helper_api_definition_line
+      generators_helper.swagger_helper_api_definition_line
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -103,7 +75,7 @@ describe PowerApi::SwaggerHelper do
     let(:expected_line) { /definitions: {/ }
 
     def perform
-      instance.swagger_definition_line_to_inject_schema
+      generators_helper.swagger_definition_line_to_inject_schema
     end
 
     it { expect(perform).to eq(expected_line) }
@@ -117,7 +89,7 @@ describe PowerApi::SwaggerHelper do
     end
 
     def perform
-      instance.swagger_helper_api_definition
+      generators_helper.swagger_helper_api_definition
     end
 
     it { expect(perform).to eq(expected_tpl) }
@@ -161,7 +133,7 @@ describe PowerApi::SwaggerHelper do
     end
 
     def perform
-      instance.swagger_helper_tpl
+      generators_helper.swagger_helper_tpl
     end
 
     it { expect(perform).to eq(template) }
@@ -224,7 +196,7 @@ describe PowerApi::SwaggerHelper do
     end
 
     def perform
-      instance.get_swagger_schema_tpl
+      generators_helper.get_swagger_schema_tpl
     end
 
     it { expect(perform).to eq(template) }
@@ -238,7 +210,7 @@ describe PowerApi::SwaggerHelper do
     end
 
     def perform
-      instance.swagger_definition_entry
+      generators_helper.swagger_definition_entry
     end
 
     it { expect(perform).to eq(expected_entry) }

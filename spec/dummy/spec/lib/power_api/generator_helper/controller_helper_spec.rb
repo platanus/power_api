@@ -1,43 +1,9 @@
-describe PowerApi::ControllerHelper do
-  subject(:instance) { TestClass.new(init_params) }
-
-  let(:version_number) { "1" }
-  let(:resource_name) { "blog" }
-  let(:resource_attributes) { nil }
-  let(:use_paginator) { false }
-  let(:allow_filters) { false }
-
-  let(:init_params) do
-    {
-      version_number: version_number,
-      resource_name: resource_name,
-      resource_attributes: resource_attributes,
-      use_paginator: use_paginator,
-      allow_filters: allow_filters
-    }
-  end
-
-  let(:class_definition) do
-    Proc.new do
-      include ::PowerApi::ControllerHelper
-
-      def initialize(config)
-        self.version_number = config[:version_number]
-        self.resource_name = config[:resource_name]
-        self.resource_attributes = config[:resource_attributes]
-        self.use_paginator = config[:use_paginator]
-        self.allow_filters = config[:allow_filters]
-      end
-    end
-  end
-
-  before { create_test_class(&class_definition) }
-
+RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
   describe "#api_base_controller_path" do
     let(:expected_path) { "app/controllers/api/base_controller.rb" }
 
     def perform
-      instance.api_base_controller_path
+      generators_helper.api_base_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -47,7 +13,7 @@ describe PowerApi::ControllerHelper do
     let(:expected_path) { "app/controllers/api/v1/blogs_controller.rb" }
 
     def perform
-      instance.get_controller_path
+      generators_helper.get_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -62,7 +28,7 @@ describe PowerApi::ControllerHelper do
     end
 
     def perform
-      instance.api_base_controller_tpl
+      generators_helper.api_base_controller_tpl
     end
 
     it { expect(perform).to eq(template) }
@@ -74,7 +40,7 @@ describe PowerApi::ControllerHelper do
     end
 
     def perform
-      instance.base_controller_path
+      generators_helper.base_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -130,7 +96,7 @@ describe PowerApi::ControllerHelper do
     end
 
     def perform
-      instance.generate_controller_tpl
+      generators_helper.generate_controller_tpl
     end
 
     it { expect(perform).to eq(template) }
@@ -191,7 +157,7 @@ describe PowerApi::ControllerHelper do
     end
 
     def perform
-      instance.base_controller_template
+      generators_helper.base_controller_template
     end
 
     it { expect(perform).to eq(expected_tpl) }

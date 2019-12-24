@@ -1,4 +1,6 @@
 module PowerApi
+  module GeneratorHelper; end
+
   class Engine < ::Rails::Engine
     isolate_namespace PowerApi
 
@@ -9,16 +11,14 @@ module PowerApi
 
     initializer "initialize" do
       require_relative "./errors"
-      require_relative "./version_helper"
-      require_relative "./resource_helper"
-      require_relative "./swagger_helper"
-      require_relative "./ams_helper"
-      require_relative "./controller_helper"
-      require_relative "./routes_helper"
-      require_relative "./pagination_helper"
-      require_relative "./install_generator_helper"
-      require_relative "./version_generator_helper"
-      require_relative "./controller_generator_helper"
+      require_relative "./generator_helper/version_helper"
+      require_relative "./generator_helper/resource_helper"
+      require_relative "./generator_helper/swagger_helper"
+      require_relative "./generator_helper/ams_helper"
+      require_relative "./generator_helper/controller_helper"
+      require_relative "./generator_helper/routes_helper"
+      require_relative "./generator_helper/pagination_helper"
+      require_relative "./generator_helpers"
     end
   end
 end

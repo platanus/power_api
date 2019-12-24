@@ -1,37 +1,9 @@
-describe PowerApi::AmsHelper do
-  subject(:instance) { TestClass.new(init_params) }
-
-  let(:version_number) { "1" }
-  let(:resource_name) { "blog" }
-  let(:resource_attributes) { nil }
-
-  let(:init_params) do
-    {
-      version_number: version_number,
-      resource_name: resource_name,
-      resource_attributes: resource_attributes
-    }
-  end
-
-  let(:class_definition) do
-    Proc.new do
-      include ::PowerApi::AmsHelper
-
-      def initialize(config)
-        self.version_number = config[:version_number]
-        self.resource_name = config[:resource_name]
-        self.resource_attributes = config[:resource_attributes]
-      end
-    end
-  end
-
-  before { create_test_class(&class_definition) }
-
+RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
   describe "#ams_initializer_path" do
     let(:expected_path) { "config/initializers/active_model_serializers.rb" }
 
     def perform
-      instance.ams_initializer_path
+      generators_helper.ams_initializer_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -63,7 +35,7 @@ describe PowerApi::AmsHelper do
     let(:expected_path) { "app/serializers/api/v1/blog_serializer.rb" }
 
     def perform
-      instance.ams_serializer_path
+      generators_helper.ams_serializer_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -83,7 +55,7 @@ describe PowerApi::AmsHelper do
     end
 
     def perform
-      instance.ams_initializer_tpl
+      generators_helper.ams_initializer_tpl
     end
 
     it { expect(perform).to eq(template) }
@@ -101,7 +73,7 @@ describe PowerApi::AmsHelper do
     end
 
     def perform
-      instance.generate_serializer_tpl
+      generators_helper.generate_serializer_tpl
     end
 
     it { expect(perform).to eq(template) }

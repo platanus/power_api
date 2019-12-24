@@ -69,7 +69,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   private
 
   def helper
-    @helper ||= PowerApi::ControllerGeneratorHelper.new(
+    @helper ||= PowerApi::GeneratorHelpers.new(
       version_number: options[:version_number],
       resource_name: file_name,
       resource_attributes: options[:attributes],

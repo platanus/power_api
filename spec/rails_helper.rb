@@ -45,4 +45,5 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include ActionDispatch::TestProcess
   config.include TestHelpers
+  config.include TestGeneratorHelpers, type: :generator
 end

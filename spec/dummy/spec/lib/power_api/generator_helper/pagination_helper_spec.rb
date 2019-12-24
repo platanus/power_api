@@ -1,19 +1,9 @@
-describe PowerApi::PaginationHelper do
-  subject(:instance) { TestClass.new }
-
-  let(:class_definition) do
-    Proc.new do
-      include ::PowerApi::PaginationHelper
-    end
-  end
-
-  before { create_test_class(&class_definition) }
-
+RSpec.describe PowerApi::GeneratorHelper::PaginationHelper, type: :generator do
   describe "#api_pagination_tpl_path" do
     let(:expected_path) { "config/initializers/api_pagination.rb" }
 
     def perform
-      instance.api_pagination_tpl_path
+      generators_helper.api_pagination_tpl_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -58,7 +48,7 @@ describe PowerApi::PaginationHelper do
     end
 
     def perform
-      instance.api_pagination_tpl
+      generators_helper.api_pagination_tpl
     end
 
     it { expect(perform).to eq(template) }
