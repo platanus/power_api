@@ -2,17 +2,8 @@ module PowerApi
   class InstallGeneratorHelper
     include SwaggerHelper
     include AmsHelper
-
-    def api_base_controller_path
-      "app/controllers/api/base_controller.rb"
-    end
-
-    def api_base_controller_tpl
-      <<~CONTROLLER
-        class Api::BaseController < PowerApi::BaseController
-        end
-      CONTROLLER
-    end
+    include ControllerHelper
+    include RoutesHelper
 
     def api_pagination_tpl_path
       "config/initializers/api_pagination.rb"

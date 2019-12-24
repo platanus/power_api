@@ -3,31 +3,6 @@ require "rails_helper"
 describe PowerApi::InstallGeneratorHelper do
   subject { described_class.new }
 
-  describe "api_base_controller_tpl" do
-    let(:template) do
-      <<~CONTROLLER
-        class Api::BaseController < PowerApi::BaseController
-        end
-      CONTROLLER
-    end
-
-    def perform
-      subject.api_base_controller_tpl
-    end
-
-    it { expect(perform).to eq(template) }
-  end
-
-  describe "#api_base_controller_path" do
-    let(:expected_path) { "app/controllers/api/base_controller.rb" }
-
-    def perform
-      subject.api_base_controller_path
-    end
-
-    it { expect(perform).to eq(expected_path) }
-  end
-
   describe "#api_pagination_tpl_path" do
     let(:expected_path) { "config/initializers/api_pagination.rb" }
 
