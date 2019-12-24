@@ -205,6 +205,29 @@ describe PowerApi::ControllerGeneratorHelper do
             :attributes
           ]
         }
+
+        BLOGS_COLLECTION_SCHEMA = {
+          type: "object",
+          properties: {
+            data: {
+              type: "array",
+              items: { "$ref" => "#/definitions/blogs_collection" }
+            }
+          },
+          required: [
+            :data
+          ]
+        }
+
+        BLOG_RESOURCE_SCHEMA = {
+          type: "object",
+          properties: {
+            data: { "$ref" => "#/definitions/blog_resource" }
+          },
+          required: [
+            :data
+          ]
+        }
       SCHEMA
     end
 
@@ -226,7 +249,11 @@ describe PowerApi::ControllerGeneratorHelper do
   end
 
   describe "#swagger_definition_entry" do
-    let(:expected_entry) { "\n    blog: BLOG_SCHEMA," }
+    let(:expected_entry) do
+      "\n    blog: BLOG_SCHEMA,\
+\n    blogs_collection: BLOGS_COLLECTION_SCHEMA,\
+\n    blog_resource: BLOG_RESOURCE_SCHEMA,"
+    end
 
     def perform
       subject.swagger_definition_entry

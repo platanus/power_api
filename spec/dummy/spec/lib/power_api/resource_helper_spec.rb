@@ -32,6 +32,14 @@ describe PowerApi::ResourceHelper do
     it { expect(perform).to eq("BLOG") }
   end
 
+  describe "#upcase_plural_resource" do
+    def perform
+      resourceable.upcase_plural_resource
+    end
+
+    it { expect(perform).to eq("BLOGS") }
+  end
+
   describe "#resource_name=" do
     context "with invalid resource name" do
       let(:resource_name) { "ticket" }

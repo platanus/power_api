@@ -75,7 +75,7 @@ defaults: { format: 'json' }"
             title: 'API V#{version_number}',
             version: 'v#{version_number}'
           },
-          basePath: '/api',
+          basePath: '/api/v#{version_number}',
           definitions: {
           }
         }

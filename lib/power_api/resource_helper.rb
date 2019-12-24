@@ -40,6 +40,10 @@ module PowerApi
         snake_case_resource.upcase
       end
 
+      def upcase_plural_resource
+        plural_resource.upcase
+      end
+
       def camel_resource
         resource_name.camelize
       end
@@ -49,7 +53,7 @@ module PowerApi
       end
 
       def plural_resource
-        resource_name.pluralize
+        snake_case_resource.pluralize
       end
 
       def snake_case_resource

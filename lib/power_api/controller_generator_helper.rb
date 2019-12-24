@@ -100,7 +100,7 @@ module PowerApi
 
     def get_swagger_schema_tpl
       <<~SCHEMA
-        #{swagger_definition_const} = {
+        #{swagger_model_definition_const} = {
           type: :object,
           properties: {
             id: { type: :string, example: '1' },
@@ -119,6 +119,29 @@ module PowerApi
             :attributes
           ]
         }
+
+        #{swagger_collection_definition_const} = {
+          type: "object",
+          properties: {
+            data: {
+              type: "array",
+              items: { "$ref" => "#/definitions/#{plural_resource}_collection" }
+            }
+          },
+          required: [
+            :data
+          ]
+        }
+
+        #{swagger_resource_definition_const} = {
+          type: "object",
+          properties: {
+            data: { "$ref" => "#/definitions/#{snake_case_resource}_resource" }
+          },
+          required: [
+            :data
+          ]
+        }
       SCHEMA
     end
 
@@ -127,11 +150,23 @@ module PowerApi
     end
 
     def swagger_definition_entry
-      "\n    #{snake_case_resource}: #{swagger_definition_const},"
+      [
+        "\n    #{snake_case_resource}: #{swagger_model_definition_const},",
+        "\n    #{plural_resource}_collection: #{swagger_collection_definition_const},",
+        "\n    #{snake_case_resource}_resource: #{swagger_resource_definition_const},"
+      ].join
     end
 
-    def swagger_definition_const
+    def swagger_model_definition_const
       "#{upcase_resource}_SCHEMA"
+    end
+
+    def swagger_collection_definition_const
+      "#{upcase_plural_resource}_COLLECTION_SCHEMA"
+    end
+
+    def swagger_resource_definition_const
+      "#{upcase_resource}_RESOURCE_SCHEMA"
     end
 
     def get_swagger_schema_attributes_definitions
