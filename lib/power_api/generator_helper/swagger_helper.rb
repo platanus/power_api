@@ -87,7 +87,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     DEFINITION
   end
 
-  def get_swagger_schema_tpl
+  def swagger_schema_tpl
     <<~SCHEMA
       #{swagger_model_definition_const} = {
         type: :object,

@@ -162,7 +162,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
     it { expect(perform).to eq(template) }
   end
 
-  describe "#get_swagger_schema_tpl" do
+  describe "#swagger_schema_tpl" do
     let(:template) do
       <<~SCHEMA
         BLOG_SCHEMA = {
@@ -219,7 +219,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
     end
 
     def perform
-      generators_helper.get_swagger_schema_tpl
+      generators_helper.swagger_schema_tpl
     end
 
     it { expect(perform).to eq(template) }

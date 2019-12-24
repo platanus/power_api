@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/LineLength
 RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
   describe "#resource_name" do
     def perform
@@ -46,10 +47,10 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
   describe "#resource_attributes" do
     let(:expected_attributes) do
       [
-        { name: :title, type: :string, swagger_type: :string, example: "'Some title'" },
-        { name: :body, type: :text, swagger_type: :string, example: "'Some body'" },
-        { name: :created_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'" },
-        { name: :updated_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'" }
+        { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
+        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true },
+        { name: :created_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false },
+        { name: :updated_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false }
       ]
     end
 
@@ -63,8 +64,8 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
       let(:resource_attributes) { %w{title body} }
       let(:expected_attributes) do
         [
-          { name: :title, type: :string, swagger_type: :string, example: "'Some title'" },
-          { name: :body, type: :text, swagger_type: :string, example: "'Some body'" }
+          { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
+          { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
         ]
       end
 
@@ -75,7 +76,7 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
       let(:resource_attributes) { %w{title bloody} }
       let(:expected_attributes) do
         [
-          { name: :title, type: :string, swagger_type: :string, example: "'Some title'" }
+          { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true }
         ]
       end
 
@@ -144,3 +145,4 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
     it { expect(perform).to eq("blog") }
   end
 end
+# rubocop:enable Metrics/LineLength

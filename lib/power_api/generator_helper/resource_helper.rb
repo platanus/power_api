@@ -69,6 +69,7 @@ module PowerApi::GeneratorHelper::ResourceHelper
         name: col_name,
         type: col.type,
         swagger_type: get_swagger_type(col.type),
+        required: required_attribute?(col_name),
         example: get_attribute_example(col.type, col_name)
       }
 
@@ -105,6 +106,11 @@ module PowerApi::GeneratorHelper::ResourceHelper
     else
       "'Some #{col_name}'"
     end
+  end
+
+  def required_attribute?(col_name)
+    validator_names = Blog.validators_on(col_name).map { |validator| validator.class.name }
+    validator_names.include?("ActiveRecord::Validations::PresenceValidator")
   end
 
   def resource_class
