@@ -24,6 +24,46 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
     it { expect(perform).to eq("BLOGS") }
   end
 
+  describe "#camel_resource" do
+    def perform
+      generators_helper.camel_resource
+    end
+
+    it { expect(perform).to eq("Blog") }
+  end
+
+  describe "#plural_resource" do
+    def perform
+      generators_helper.plural_resource
+    end
+
+    it { expect(perform).to eq("blogs") }
+  end
+
+  describe "#snake_case_resource" do
+    def perform
+      generators_helper.snake_case_resource
+    end
+
+    it { expect(perform).to eq("blog") }
+  end
+
+  describe "#titleized_resource" do
+    def perform
+      generators_helper.titleized_resource
+    end
+
+    it { expect(perform).to eq("Blog") }
+  end
+
+  describe "#plural_titleized_resource" do
+    def perform
+      generators_helper.plural_titleized_resource
+    end
+
+    it { expect(perform).to eq("Blogs") }
+  end
+
   describe "#resource_name=" do
     context "with invalid resource name" do
       let(:resource_name) { "ticket" }
@@ -84,6 +124,48 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
     end
   end
 
+  describe "#required_resource_attributes" do
+    let(:expected_attributes) do
+      [
+        { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
+        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+      ]
+    end
+
+    def perform
+      generators_helper.required_resource_attributes
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+  end
+
+  describe "#required_resource_attributes_names" do
+    let(:expected_attributes) do
+      [
+        :title,
+        :body
+      ]
+    end
+
+    def perform
+      generators_helper.required_resource_attributes_names
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+  end
+
+  describe "#optional_resource_attributes" do
+    let(:expected_attributes) do
+      []
+    end
+
+    def perform
+      generators_helper.optional_resource_attributes
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+  end
+
   describe "#resource_attributes_names" do
     let(:expected_attributes) do
       [
@@ -96,6 +178,36 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
 
     def perform
       generators_helper.resource_attributes_names
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+  end
+
+  describe "#permitted_attributes" do
+    let(:expected_attributes) do
+      [
+        { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
+        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+      ]
+    end
+
+    def perform
+      generators_helper.permitted_attributes
+    end
+
+    it { expect(perform).to eq(expected_attributes) }
+  end
+
+  describe "#permitted_attributes_names" do
+    let(:expected_attributes) do
+      [
+        :title,
+        :body
+      ]
+    end
+
+    def perform
+      generators_helper.permitted_attributes_names
     end
 
     it { expect(perform).to eq(expected_attributes) }
@@ -119,30 +231,6 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
 
       it { expect { generators_helper }.to raise_error("at least one attribute must be added") }
     end
-  end
-
-  describe "#camel_resource" do
-    def perform
-      generators_helper.camel_resource
-    end
-
-    it { expect(perform).to eq("Blog") }
-  end
-
-  describe "#plural_resource" do
-    def perform
-      generators_helper.plural_resource
-    end
-
-    it { expect(perform).to eq("blogs") }
-  end
-
-  describe "#snake_case_resource" do
-    def perform
-      generators_helper.snake_case_resource
-    end
-
-    it { expect(perform).to eq("blog") }
   end
 end
 # rubocop:enable Metrics/LineLength

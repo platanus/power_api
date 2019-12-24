@@ -8,12 +8,16 @@ module PowerApi
     include GeneratorHelper::RoutesHelper
     include GeneratorHelper::PaginationHelper
 
-    def initialize(config)
-      self.version_number = config[:version_number]
-      self.resource_name = config[:resource_name]
-      self.resource_attributes = config[:resource_attributes]
-      self.use_paginator = config[:use_paginator]
-      self.allow_filters = config[:allow_filters]
+    def initialize(config = {})
+      config.each do |attribute, value|
+        load_attribute(attribute, value)
+      end
+    end
+
+    private
+
+    def load_attribute(attribute, value)
+      self.send("#{attribute}=", value)
     end
   end
 end

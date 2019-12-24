@@ -88,7 +88,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
 
           def blog_params
             params.require(:blog).permit(
-              :title, :body, :created_at, :updated_at
+              :title, :body
             )
           end
         end
@@ -110,7 +110,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       end
 
       let(:expected) do
-        ":title, :created_at"
+        ":title"
       end
 
       it { expect(perform).to include(expected) }

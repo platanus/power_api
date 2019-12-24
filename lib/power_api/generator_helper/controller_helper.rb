@@ -69,7 +69,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
 
         def #{snake_case_resource}_params
           params.require(:#{snake_case_resource}).permit(
-            #{resource_attributes_symbols_text_list}
+            #{permitted_attributes_symbols_text_list}
           )
         end
       end

@@ -135,7 +135,8 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
       <<~SWAGGER
         require 'rails_helper'
 
-        Dir[Rails.root.join("spec", "swagger", "**", "*.rb")].each { |f| require f }
+        Dir[::Rails.root.join("spec/swagger/**/schemas/*.rb")].each { |f| require f }
+        Dir[::Rails.root.join("spec/swagger/**/definition.rb")].each { |f| require f }
 
         RSpec.configure do |config|
           # Specify a root folder where Swagger JSON files are generated
@@ -180,9 +181,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
               },
               required: [
                 :title,
-                :body,
-                :created_at,
-                :updated_at
+                :body
               ]
             }
           },
@@ -220,6 +219,137 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
 
     def perform
       generators_helper.swagger_schema_tpl
+    end
+
+    it { expect(perform).to eq(template) }
+  end
+
+  describe "#swagger_resource_spec_tpl" do
+    let(:template) do
+      <<~SPEC
+        require 'swagger_helper'
+
+        describe 'API V#{version_number} Blogs', swagger_doc: 'v#{version_number}/swagger.json' do
+          path '/blogs' do
+            get 'Retrieves Blogs' do
+              description 'Retrieves all the blogs'
+              produces 'application/json'
+
+              let(:collection_count) { 5 }
+              let(:expected_collection_count) { collection_count }
+
+              before { create_list(:blog, collection_count) }
+
+              response '200', 'retrieves Blogs collection' do
+                schema('$ref' => '#/definitions/blogs_collection')
+
+                run_test! do |response|
+                  expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)
+                end
+              end
+            end
+
+            post 'Creates Blog' do
+              description 'Creates Blog'
+              consumes 'application/json'
+              produces 'application/json'
+              parameter(name: :blog, in: :body, schema: { '$ref' => '#/definitions/blog_params' })
+
+              response '201', 'blog created' do
+                let(:blog) do
+                  {
+                    title: 'Some title',
+                    body: 'Some body'
+                  }
+                end
+
+                run_test!
+              end
+
+              response '400', 'invalid attributes' do
+                let(:blog) do
+                  {
+                    title: nil
+                  }
+                end
+
+                run_test!
+              end
+            end
+          end
+
+          path '/blogs/{id}' do
+            parameter name: :id, in: :path, type: :integer
+
+            let(:existent_blog) { create(:blog) }
+            let(:id) { existent_blog.id }
+
+            get 'Retrieves Blog' do
+              produces 'application/json'
+              description 'Retrieves blog specific data'
+
+              response '200', 'blog retrieved' do
+                schema('$ref' => '#/definitions/blog_resource')
+
+                run_test!
+              end
+
+              response '404', 'invalid blog id' do
+                let(:id) { 'invalid' }
+
+                run_test!
+              end
+            end
+
+            put 'Updates Blog' do
+              description 'Updates Blog'
+              consumes 'application/json'
+              produces 'application/json'
+              parameter(name: :blog, in: :body, schema: { '$ref' => '#/definitions/blog_params' })
+
+              response '200', 'blog updated' do
+                let(:blog) do
+                  {
+                    title: 'Some title',
+                    body: 'Some body'
+                  }
+                end
+
+                run_test!
+              end
+
+              response '400', 'invalid attributes' do
+                let(:blog) do
+                  {
+                    title: nil
+                  }
+                end
+
+                run_test!
+              end
+            end
+
+            delete 'Deletes Blog' do
+              produces 'application/json'
+              description 'Deletes specific blog'
+
+              response '204', 'blog deleted' do
+                run_test!
+              end
+
+              response '404', 'with invalid blog id' do
+                let(:id) { 'invalid' }
+
+                run_test!
+              end
+            end
+          end
+        end
+      SPEC
+    end
+
+    def perform
+      generators_helper.swagger_resource_spec_tpl
     end
 
     it { expect(perform).to eq(template) }

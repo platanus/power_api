@@ -46,7 +46,8 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     <<~SWAGGER
       require 'rails_helper'
 
-      Dir[Rails.root.join("spec", "swagger", "**", "*.rb")].each { |f| require f }
+      Dir[::Rails.root.join("spec/swagger/**/schemas/*.rb")].each { |f| require f }
+      Dir[::Rails.root.join("spec/swagger/**/definition.rb")].each { |f| require f }
 
       RSpec.configure do |config|
         # Specify a root folder where Swagger JSON files are generated
@@ -142,7 +143,138 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     ].join
   end
 
+  def swagger_resource_spec_tpl
+    template = ERB.new <<~SPEC
+      require 'swagger_helper'
+
+      describe 'API V#{version_number} #{plural_titleized_resource}', swagger_doc: 'v#{version_number}/swagger.json' do
+        path '/#{plural_resource}' do
+          get 'Retrieves #{plural_titleized_resource}' do
+            description 'Retrieves all the #{plural_resource}'
+            produces 'application/json'
+
+            let(:collection_count) { 5 }
+            let(:expected_collection_count) { collection_count }
+
+            before { create_list(:#{resource_name}, collection_count) }
+
+            response '200', 'retrieves #{plural_titleized_resource} collection' do
+              schema('$ref' => '#/definitions/#{plural_resource}_collection')
+
+              run_test! do |response|
+                expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)
+              end
+            end
+          end
+
+          post 'Creates #{titleized_resource}' do
+            description 'Creates #{titleized_resource}'
+            consumes 'application/json'
+            produces 'application/json'
+            parameter(name: :#{resource_name}, in: :body, schema: { '$ref' => '#/definitions/#{resource_name}_params' })
+
+            response '201', '#{resource_name} created' do
+              let(:#{resource_name}) do
+                {#{resource_params}
+                }
+              end
+
+              run_test!
+            end
+
+            <% if required_resource_attributes.any? %>response '400', 'invalid attributes' do
+              let(:#{resource_name}) do
+                {#{invalid_resource_params}
+                }
+              end
+
+              run_test!
+            end<% end %>
+          end
+        end
+
+        path '/#{plural_resource}/{id}' do
+          parameter name: :id, in: :path, type: :integer
+
+          let(:existent_#{resource_name}) { create(:#{resource_name}) }
+          let(:id) { existent_#{resource_name}.id }
+
+          get 'Retrieves #{titleized_resource}' do
+            produces 'application/json'
+            description 'Retrieves #{resource_name} specific data'
+
+            response '200', '#{resource_name} retrieved' do
+              schema('$ref' => '#/definitions/#{resource_name}_resource')
+
+              run_test!
+            end
+
+            response '404', 'invalid #{resource_name} id' do
+              let(:id) { 'invalid' }
+
+              run_test!
+            end
+          end
+
+          put 'Updates #{titleized_resource}' do
+            description 'Updates #{titleized_resource}'
+            consumes 'application/json'
+            produces 'application/json'
+            parameter(name: :#{resource_name}, in: :body, schema: { '$ref' => '#/definitions/#{resource_name}_params' })
+
+            response '200', '#{resource_name} updated' do
+              let(:#{resource_name}) do
+                {#{resource_params}
+                }
+              end
+
+              run_test!
+            end
+
+            <% if required_resource_attributes.any? %>response '400', 'invalid attributes' do
+              let(:#{resource_name}) do
+                {#{invalid_resource_params}
+                }
+              end
+
+              run_test!
+            end<% end %>
+          end
+
+          delete 'Deletes #{titleized_resource}' do
+            produces 'application/json'
+            description 'Deletes specific #{resource_name}'
+
+            response '204', '#{resource_name} deleted' do
+              run_test!
+            end
+
+            response '404', 'with invalid #{resource_name} id' do
+              let(:id) { 'invalid' }
+
+              run_test!
+            end
+          end
+        end
+      end
+    SPEC
+
+    template.result(binding)
+  end
+
   private
+
+  def resource_params
+    for_each_schema_attribute(required_resource_attributes, margin_spaces: 12) do |attr|
+      "#{attr[:name]}: #{attr[:example]},"
+    end
+  end
+
+  def invalid_resource_params
+    for_each_schema_attribute([required_resource_attributes.first], margin_spaces: 12) do |attr|
+      "#{attr[:name]}: nil,"
+    end
+  end
 
   def swagger_model_definition_const
     "#{upcase_resource}_SCHEMA"
@@ -157,20 +289,20 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   end
 
   def get_swagger_schema_attributes_definitions
-    for_each_schema_attribute do |attr|
+    for_each_schema_attribute(resource_attributes, margin_spaces: 8) do |attr|
       "#{attr[:name]}: { type: :#{attr[:swagger_type]}, example: #{attr[:example]} },"
     end
   end
 
   def get_swagger_schema_attributes_names
-    for_each_schema_attribute do |attr|
+    for_each_schema_attribute(required_resource_attributes, margin_spaces: 8) do |attr|
       ":#{attr[:name]},"
     end
   end
 
-  def for_each_schema_attribute
-    resource_attributes.inject("") do |memo, attr|
-      memo += "\n        "
+  def for_each_schema_attribute(attributes, margin_spaces: 0)
+    attributes.inject("") do |memo, attr|
+      memo += "\n" + " " * margin_spaces
       memo += yield(attr)
       memo
     end.delete_suffix(",")

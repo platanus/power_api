@@ -50,15 +50,57 @@ module PowerApi::GeneratorHelper::ResourceHelper
     resource_name.underscore
   end
 
+  def titleized_resource
+    resource_name.titleize
+  end
+
+  def plural_titleized_resource
+    plural_resource.titleize
+  end
+
   def resource_attributes_names
-    resource_attributes.map { |attr| attr[:name] }
+    extract_attrs_names(resource_attributes)
+  end
+
+  def required_resource_attributes_names
+    extract_attrs_names(required_resource_attributes)
+  end
+
+  def permitted_attributes_names
+    extract_attrs_names(permitted_attributes)
+  end
+
+  def permitted_attributes
+    resource_attributes.reject do |attr|
+      [:created_at, :updated_at].include?(attr[:name])
+    end
+  end
+
+  def required_resource_attributes
+    permitted_attributes.select { |attr| attr[:required] }
+  end
+
+  def optional_resource_attributes
+    permitted_attributes.reject { |attr| attr[:required] }
   end
 
   def resource_attributes_symbols_text_list
-    resource_attributes_names.map { |a| ":#{a}" }.join(', ')
+    attrs_to_symobls_text_list(resource_attributes_names)
+  end
+
+  def permitted_attributes_symbols_text_list
+    attrs_to_symobls_text_list(permitted_attributes_names)
   end
 
   private
+
+  def extract_attrs_names(attrs)
+    attrs.map { |attr| attr[:name] }
+  end
+
+  def attrs_to_symobls_text_list(attrs)
+    attrs.map { |a| ":#{a}" }.join(', ')
+  end
 
   def format_attributes(attrs)
     columns = resource_class.columns.inject([]) do |memo, col|
@@ -109,7 +151,10 @@ module PowerApi::GeneratorHelper::ResourceHelper
   end
 
   def required_attribute?(col_name)
-    validator_names = Blog.validators_on(col_name).map { |validator| validator.class.name }
+    validator_names = resource_class.validators_on(col_name).map do |validator|
+      validator.class.name
+    end
+
     validator_names.include?("ActiveRecord::Validations::PresenceValidator")
   end
 

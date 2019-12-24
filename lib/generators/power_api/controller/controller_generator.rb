@@ -64,6 +64,11 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       helper.swagger_definition_entry,
       after: helper.swagger_definition_line_to_inject_schema
     )
+
+    create_file(
+      helper.swagger_resource_spec_path,
+      helper.swagger_resource_spec_tpl
+    )
   end
 
   private
