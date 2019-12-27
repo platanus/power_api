@@ -9,7 +9,6 @@ PATH
       ransack
       responders
       rswag-api
-      rswag-specs
       rswag-ui
       simple_token_authentication (~> 1.0)
       versionist (~> 1.0)
@@ -281,6 +280,7 @@ DEPENDENCIES
   pry
   pry-rails
   rspec-rails
+  rswag-specs
   sqlite3 (~> 1.3.0)
 
 BUNDLED WITH
