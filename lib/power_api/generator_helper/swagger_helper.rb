@@ -310,7 +310,11 @@ module PowerApi::GeneratorHelper::SwaggerHelper
 
   def get_swagger_schema_attributes_definitions
     for_each_schema_attribute(resource_attributes, margin_spaces: 8) do |attr|
-      "#{attr[:name]}: { type: :#{attr[:swagger_type]}, example: #{attr[:example]} },"
+      opts = ["example: #{attr[:example]}"]
+      opts << "'x-nullable': true" unless attr[:required]
+      opts
+
+      "#{attr[:name]}: { type: :#{attr[:swagger_type]}, #{opts.join(', ')} },"
     end
   end
 

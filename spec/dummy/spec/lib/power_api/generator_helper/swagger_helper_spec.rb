@@ -213,8 +213,8 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
               properties: {
                 title: { type: :string, example: 'Some title' },
                 body: { type: :string, example: 'Some body' },
-                created_at: { type: :string, example: '1984-06-04 09:00' },
-                updated_at: { type: :string, example: '1984-06-04 09:00' }
+                created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
+                updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true }
               },
               required: [
                 :title,

@@ -130,6 +130,8 @@ module PowerApi::GeneratorHelper::ResourceHelper
       :integer
     when :float, :decimal
       :float
+    when :boolean
+      :boolean
     else
       :string
     end
