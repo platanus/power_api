@@ -145,6 +145,8 @@ module PowerApi::GeneratorHelper::ResourceHelper
       rand(1000)
     when :float, :decimal
       (rand(100) / 200.0).round(2)
+    when :boolean
+      true
     else
       "'Some #{col_name}'"
     end

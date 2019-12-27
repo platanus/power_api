@@ -1,4 +1,14 @@
 RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
+  describe "#routes_path" do
+    let(:expected_path) { "config/routes.rb" }
+
+    def perform
+      generators_helper.routes_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
   describe "#routes_line_to_inject_resource" do
     let(:expected_line) { /Api::V1[^\n]*/ }
 

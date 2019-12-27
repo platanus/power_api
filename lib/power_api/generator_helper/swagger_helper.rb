@@ -18,6 +18,10 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     "spec/integration/.gitkeep"
   end
 
+  def rswag_ui_initializer_path
+    "config/initializers/rswag-ui.rb"
+  end
+
   def swagger_schemas_path
     "spec/swagger/v#{version_number}/schemas/.gitkeep"
   end
@@ -34,12 +38,23 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     "spec/swagger/v#{version_number}/schemas/#{snake_case_resource}_schema.rb"
   end
 
+  def rswag_ui_configure_line
+    "Rswag::Ui.configure do |c|\n"
+  end
+
   def swagger_helper_api_definition_line
     "config.swagger_docs = {\n"
   end
 
   def swagger_definition_line_to_inject_schema
     /definitions: {/
+  end
+
+  def rswag_ui_initializer_tpl
+    <<~INITIALIZER
+      Rswag::Ui.configure do |c|
+      end
+    INITIALIZER
   end
 
   def swagger_helper_tpl
@@ -65,6 +80,11 @@ module PowerApi::GeneratorHelper::SwaggerHelper
         }
       end
     SWAGGER
+  end
+
+  def rswag_ui_swagger_endpoint
+    "  c.swagger_endpoint '/api-docs/v#{version_number}/swagger.json', \
+'API V#{version_number} Docs'\n"
   end
 
   def swagger_helper_api_definition
@@ -115,7 +135,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
         properties: {
           data: {
             type: "array",
-            items: { "$ref" => "#/definitions/#{plural_resource}_collection" }
+            items: { "$ref" => "#/definitions/#{snake_case_resource}" }
           }
         },
         required: [
@@ -126,7 +146,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
       #{swagger_resource_definition_const} = {
         type: "object",
         properties: {
-          data: { "$ref" => "#/definitions/#{snake_case_resource}_resource" }
+          data: { "$ref" => "#/definitions/#{snake_case_resource}" }
         },
         required: [
           :data

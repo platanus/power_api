@@ -14,6 +14,7 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
     generate "rswag:api:install"
     generate "rswag:specs:install"
 
+    create_file(helper.rswag_ui_initializer_path, helper.rswag_ui_initializer_tpl, force: true)
     create_file(helper.swagger_helper_path, helper.swagger_helper_tpl, force: true)
     create_file(helper.spec_swagger_path)
     create_file(helper.spec_integration_path)
@@ -24,7 +25,11 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
   end
 
   def install_api_pagination
-    create_file(helper.api_pagination_initializer_path, helper.api_pagination_initializer_tpl, force: true)
+    create_file(
+      helper.api_pagination_initializer_path,
+      helper.api_pagination_initializer_tpl,
+      force: true
+    )
   end
 
   private

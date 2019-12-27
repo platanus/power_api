@@ -40,7 +40,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def add_routes
     insert_into_file(
-      "config/routes.rb",
+      helper.routes_path,
       helper.resource_route_tpl,
       after: helper.routes_line_to_inject_resource
     )

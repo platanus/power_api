@@ -29,6 +29,16 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
     it { expect(perform).to eq(expected_path) }
   end
 
+  describe "#rswag_ui_initializer_path" do
+    let(:expected_path) { "config/initializers/rswag-ui.rb" }
+
+    def perform
+      generators_helper.rswag_ui_initializer_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
   describe "#swagger_resource_schema_path" do
     let(:expected_path) { "spec/swagger/v1/schemas/blog_schema.rb" }
 
@@ -59,8 +69,20 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
     it { expect(perform).to eq(expected_path) }
   end
 
-  describe "#swagger_helper_api_definition_line" do
+  describe "#rswag_ui_configure_line" do
     let(:expected_path) do
+      "Rswag::Ui.configure do |c|\n"
+    end
+
+    def perform
+      generators_helper.rswag_ui_configure_line
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#swagger_helper_api_definition_line" do
+    let(:expected_line) do
       "config.swagger_docs = {\n"
     end
 
@@ -68,7 +90,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
       generators_helper.swagger_helper_api_definition_line
     end
 
-    it { expect(perform).to eq(expected_path) }
+    it { expect(perform).to eq(expected_line) }
   end
 
   describe "#swagger_definition_line_to_inject_schema" do
@@ -105,6 +127,21 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
 
       it { expect(perform).to eq(expected_tpl) }
     end
+  end
+
+  describe "#rswag_ui_initializer_tpl" do
+    let(:expected_tpl) do
+      <<~INITIALIZER
+        Rswag::Ui.configure do |c|
+        end
+      INITIALIZER
+    end
+
+    def perform
+      generators_helper.rswag_ui_initializer_tpl
+    end
+
+    it { expect(perform).to eq(expected_tpl) }
   end
 
   describe "#swagger_definition_tpl" do
@@ -197,7 +234,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
           properties: {
             data: {
               type: "array",
-              items: { "$ref" => "#/definitions/blogs_collection" }
+              items: { "$ref" => "#/definitions/blog" }
             }
           },
           required: [
@@ -208,7 +245,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
         BLOG_RESOURCE_SCHEMA = {
           type: "object",
           properties: {
-            data: { "$ref" => "#/definitions/blog_resource" }
+            data: { "$ref" => "#/definitions/blog" }
           },
           required: [
             :data
@@ -353,6 +390,18 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
     end
 
     it { expect(perform).to eq(template) }
+  end
+
+  describe "#rswag_ui_swagger_endpoint" do
+    let(:expected_entry) do
+      "  c.swagger_endpoint '/api-docs/v1/swagger.json', 'API V1 Docs'\n"
+    end
+
+    def perform
+      generators_helper.rswag_ui_swagger_endpoint
+    end
+
+    it { expect(perform).to eq(expected_entry) }
   end
 
   describe "#swagger_definition_entry" do

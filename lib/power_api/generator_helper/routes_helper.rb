@@ -6,6 +6,10 @@ module PowerApi::GeneratorHelper::RoutesHelper
     include PowerApi::GeneratorHelper::ResourceHelper
   end
 
+  def routes_path
+    "config/routes.rb"
+  end
+
   def routes_line_to_inject_new_version
     return "routes.draw do\n" if first_version?
 

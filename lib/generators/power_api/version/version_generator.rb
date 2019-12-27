@@ -2,7 +2,10 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
   def modify_routes
-    insert_into_file("config/routes.rb", after: helper.routes_line_to_inject_new_version) do
+    insert_into_file(
+      helper.routes_path,
+      after: helper.routes_line_to_inject_new_version
+    ) do
       helper.version_route_tpl
     end
   end
@@ -26,7 +29,17 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
       helper.swagger_definition_tpl
     )
 
-    insert_into_file("spec/swagger_helper.rb", after: helper.swagger_helper_api_definition_line) do
+    insert_into_file(
+      helper.rswag_ui_initializer_path,
+      after: helper.rswag_ui_configure_line
+    ) do
+      helper.rswag_ui_swagger_endpoint
+    end
+
+    insert_into_file(
+      helper.swagger_helper_path,
+      after: helper.swagger_helper_api_definition_line
+    ) do
       helper.swagger_helper_api_definition
     end
   end
