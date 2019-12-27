@@ -290,7 +290,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
               description 'Creates Blog'
               consumes 'application/json'
               produces 'application/json'
-              parameter(name: :blog, in: :body, schema: { '$ref' => '#/definitions/blog_params' })
+              parameter(name: :blog, in: :body)
 
               response '201', 'blog created' do
                 let(:blog) do
@@ -342,7 +342,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
               description 'Updates Blog'
               consumes 'application/json'
               produces 'application/json'
-              parameter(name: :blog, in: :body, schema: { '$ref' => '#/definitions/blog_params' })
+              parameter(name: :blog, in: :body)
 
               response '200', 'blog updated' do
                 let(:blog) do

@@ -191,7 +191,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
             description 'Creates #{titleized_resource}'
             consumes 'application/json'
             produces 'application/json'
-            parameter(name: :#{resource_name}, in: :body, schema: { '$ref' => '#/definitions/#{resource_name}_params' })
+            parameter(name: :#{resource_name}, in: :body)
 
             response '201', '#{resource_name} created' do
               let(:#{resource_name}) do
@@ -240,7 +240,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
             description 'Updates #{titleized_resource}'
             consumes 'application/json'
             produces 'application/json'
-            parameter(name: :#{resource_name}, in: :body, schema: { '$ref' => '#/definitions/#{resource_name}_params' })
+            parameter(name: :#{resource_name}, in: :body)
 
             response '200', '#{resource_name} updated' do
               let(:#{resource_name}) do
