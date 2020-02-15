@@ -1,6 +1,13 @@
 class PowerApi::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
+  class_option(
+    :authenticated_resources,
+    type: 'array',
+    default: [],
+    desc: 'define which model or models will be token authenticatable'
+  )
+
   def create_api_base_controller
     create_file(helper.api_base_controller_path, helper.api_base_controller_tpl)
   end
@@ -32,9 +39,29 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
     )
   end
 
+  def install_simple_token_auth
+    create_file(
+      helper.simple_token_auth_initializer_path,
+      helper.simple_token_auth_initializer_tpl,
+      force: true
+    )
+
+    helper.authenticated_resources.each do |resource|
+      generate resource.authenticated_resource_migration
+
+      insert_into_file(
+        resource.resource_path,
+        helper.simple_token_auth_method,
+        after: resource.resource_class_definition_line
+      )
+    end
+  end
+
   private
 
   def helper
-    @helper ||= PowerApi::GeneratorHelpers.new
+    @helper ||= PowerApi::GeneratorHelpers.new(
+      authenticated_resources: options[:authenticated_resources]
+    )
   end
 end

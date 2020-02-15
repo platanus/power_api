@@ -7,6 +7,7 @@ module PowerApi
     include GeneratorHelper::ControllerHelper
     include GeneratorHelper::RoutesHelper
     include GeneratorHelper::PaginationHelper
+    include GeneratorHelper::SimpleTokenAuthHelper
 
     def initialize(config = {})
       config.each do |attribute, value|
@@ -17,7 +18,7 @@ module PowerApi
     private
 
     def load_attribute(attribute, value)
-      self.send("#{attribute}=", value)
+      send("#{attribute}=", value)
     end
   end
 end

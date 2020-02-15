@@ -58,6 +58,14 @@ module PowerApi::GeneratorHelper::ResourceHelper
     plural_resource.titleize
   end
 
+  def resource_path
+    "app/models/#{snake_case_resource}.rb"
+  end
+
+  def resource_class_definition_line
+    "class #{camel_resource} < ApplicationRecord\n"
+  end
+
   def resource_attributes_names
     extract_attrs_names(resource_attributes)
   end

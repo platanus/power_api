@@ -18,6 +18,7 @@ module PowerApi
       require_relative "./generator_helper/controller_helper"
       require_relative "./generator_helper/routes_helper"
       require_relative "./generator_helper/pagination_helper"
+      require_relative "./generator_helper/simple_token_auth_helper"
       require_relative "./generator_helpers"
     end
   end

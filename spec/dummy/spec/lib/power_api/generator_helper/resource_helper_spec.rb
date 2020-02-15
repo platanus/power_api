@@ -84,6 +84,22 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
     end
   end
 
+  describe "#resource_class_definition_line" do
+    def perform
+      generators_helper.resource_class_definition_line
+    end
+
+    it { expect(perform).to eq("class Blog < ApplicationRecord\n") }
+  end
+
+  describe "#resource_path" do
+    def perform
+      generators_helper.resource_path
+    end
+
+    it { expect(perform).to eq("app/models/blog.rb") }
+  end
+
   describe "#resource_attributes" do
     let(:expected_attributes) do
       [
