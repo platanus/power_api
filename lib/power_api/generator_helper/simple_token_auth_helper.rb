@@ -2,7 +2,8 @@ module PowerApi::GeneratorHelper::SimpleTokenAuthHelper
   extend ActiveSupport::Concern
 
   included do
-    attr_reader :authenticated_resources
+    attr_reader :authenticated_resources, :authenticated_resource
+    attr_accessor :owned_by_authenticated_resource
   end
 
   class SimpleTokenAuthResource
@@ -20,6 +21,24 @@ authentication_token:string{30}:uniq"
 
   def authenticated_resources=(values)
     @authenticated_resources = values.map { |value| SimpleTokenAuthResource.new(value) }
+  end
+
+  def authenticated_resource=(value)
+    return if value.blank?
+
+    @authenticated_resource = SimpleTokenAuthResource.new(value)
+  end
+
+  def authenticated_resource?
+    !!authenticated_resource
+  end
+
+  def owned_by_authenticated_resource?
+    !!owned_by_authenticated_resource
+  end
+
+  def current_resource
+    "current_#{authenticated_resource.resource_name}"
   end
 
   def simple_token_auth_method

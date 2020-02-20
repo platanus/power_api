@@ -35,7 +35,8 @@ module PowerApi::GeneratorHelper::AmsHelper
       class Api::V#{version_number}::#{camel_resource}Serializer < ActiveModel::Serializer
         type :#{snake_case_resource}
 
-        attributes #{resource_attributes_symbols_text_list}
+        attributes(
+          #{resource_attributes_symbols_text_list})
       end
     SERIALIZER
   end

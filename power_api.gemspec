@@ -38,5 +38,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry-rails"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "rswag-specs"
+  s.add_development_dependency "rubocop", "0.65.0"
+  s.add_development_dependency "rubocop-rspec"
   s.add_development_dependency "sqlite3", "~> 1.3.0"
 end

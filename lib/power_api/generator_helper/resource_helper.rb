@@ -107,7 +107,7 @@ module PowerApi::GeneratorHelper::ResourceHelper
   end
 
   def attrs_to_symobls_text_list(attrs)
-    attrs.map { |a| ":#{a}" }.join(', ')
+    attrs.map { |a| ":#{a}" }.join(",\n") + "\n"
   end
 
   def format_attributes(attrs)

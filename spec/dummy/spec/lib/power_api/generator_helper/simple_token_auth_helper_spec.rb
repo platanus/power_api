@@ -1,18 +1,21 @@
 RSpec.describe PowerApi::GeneratorHelper::SimpleTokenAuthHelper, type: :generator do
-  let(:resources_names) { ["blog"] }
+  let(:resource_name) { "blog" }
 
-  def resources
-    generators_helper.authenticated_resources = resources_names
-    generators_helper.authenticated_resources
-  end
-
-  def first_resource
-    resources.first
+  def auth_resource
+    generators_helper.authenticated_resource = resource_name
+    generators_helper.authenticated_resource
   end
 
   describe "#authenticated_resources=" do
+    let(:resources_names) { [resource_name] }
+
+    def resources
+      generators_helper.authenticated_resources = resources_names
+      generators_helper.authenticated_resources
+    end
+
     it { expect(resources.count).to eq(1) }
-    it { expect(first_resource.upcase_resource).to eq("BLOG") }
+    it { expect(resources.first.upcase_resource).to eq("BLOG") }
 
     context "with invalid resource name" do
       let(:resources_names) { ["ticket"] }
@@ -38,7 +41,13 @@ RSpec.describe PowerApi::GeneratorHelper::SimpleTokenAuthHelper, type: :generato
       "migration add_authentication_token_to_blogs authentication_token:string{30}:uniq"
     end
 
-    it { expect(first_resource.authenticated_resource_migration).to eq(expected) }
+    it { expect(auth_resource.authenticated_resource_migration).to eq(expected) }
+  end
+
+  describe "current_resource" do
+    before { auth_resource }
+
+    it { expect(generators_helper.current_resource).to eq("current_blog") }
   end
 
   describe "#simple_token_auth_method" do

@@ -13,6 +13,8 @@ group :development, :test do
   gem 'factory_bot_rails'
   gem 'rspec-rails'
   gem 'rswag-specs'
+  gem 'rubocop'
+  gem 'rubocop-rspec'
 end
 ```
 

@@ -67,7 +67,12 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
         class Api::V1::BlogSerializer < ActiveModel::Serializer
           type :blog
 
-          attributes :title, :body, :created_at, :updated_at
+          attributes(
+            :title,
+        :body,
+        :created_at,
+        :updated_at
+        )
         end
       SERIALIZER
     end

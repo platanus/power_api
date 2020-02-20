@@ -231,7 +231,12 @@ RSpec.describe PowerApi::GeneratorHelper::ResourceHelper, type: :generator do
 
   describe "#resource_attributes_symbols_text_list" do
     let(:expected_result) do
-      ":title, :body, :created_at, :updated_at"
+      <<~ATTRS
+        :title,
+        :body,
+        :created_at,
+        :updated_at
+      ATTRS
     end
 
     def perform

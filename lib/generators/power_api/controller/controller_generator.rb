@@ -31,11 +31,27 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     desc: 'to indicate whether the controller will allow query string filters or not'
   )
 
+  class_option(
+    :authenticate_with,
+    type: 'string',
+    default: nil,
+    desc: "to indicate if authorization is required to access the controller"
+  )
+
+  class_option(
+    :owned_by_authenticated_resource,
+    type: 'boolean',
+    default: false,
+    desc: "to indicate if the resource's owner must be the authorized resource"
+  )
+
   def create_controller
     create_file(
       helper.resource_controller_path,
       helper.resource_controller_tpl
     )
+
+    helper.format_ruby_file(helper.resource_controller_path)
   end
 
   def add_routes
@@ -51,6 +67,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       helper.ams_serializer_path,
       helper.ams_serializer_tpl
     )
+
+    helper.format_ruby_file(helper.ams_serializer_path)
   end
 
   def configure_swagger
@@ -58,6 +76,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       helper.swagger_resource_schema_path,
       helper.swagger_schema_tpl
     )
+
+    helper.format_ruby_file(helper.swagger_resource_schema_path)
 
     insert_into_file(
       helper.swagger_version_definition_path,
@@ -69,6 +89,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       helper.swagger_resource_spec_path,
       helper.swagger_resource_spec_tpl
     )
+
+    helper.format_ruby_file(helper.swagger_resource_spec_path)
   end
 
   private
@@ -77,6 +99,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     @helper ||= PowerApi::GeneratorHelpers.new(
       version_number: options[:version_number],
       resource_name: file_name,
+      authenticated_resource: options[:authenticate_with],
+      owned_by_authenticated_resource: options[:owned_by_authenticated_resource],
       resource_attributes: options[:attributes],
       use_paginator: options[:use_paginator],
       allow_filters: options[:allow_filters]

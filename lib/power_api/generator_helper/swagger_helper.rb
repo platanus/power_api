@@ -1,9 +1,13 @@
+# rubocop:disable Metrics/ModuleLength
+# rubocop:disable Metrics/MethodLength
+# rubocop:disable Layout/AlignArguments
 module PowerApi::GeneratorHelper::SwaggerHelper
   extend ActiveSupport::Concern
 
   included do
     include PowerApi::GeneratorHelper::VersionHelper
     include PowerApi::GeneratorHelper::ResourceHelper
+    include PowerApi::GeneratorHelper::TemplateBuilderHelper
   end
 
   def swagger_helper_path
@@ -164,134 +168,227 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   end
 
   def swagger_resource_spec_tpl
-    template = ERB.new <<~SPEC
-      require 'swagger_helper'
-
-      describe 'API V#{version_number} #{plural_titleized_resource}', swagger_doc: 'v#{version_number}/swagger.json' do
-        path '/#{plural_resource}' do
-          get 'Retrieves #{plural_titleized_resource}' do
-            description 'Retrieves all the #{plural_resource}'
-            produces 'application/json'
-
-            let(:collection_count) { 5 }
-            let(:expected_collection_count) { collection_count }
-
-            before { create_list(:#{resource_name}, collection_count) }
-
-            response '200', 'retrieves #{plural_titleized_resource} collection' do
-              schema('$ref' => '#/definitions/#{plural_resource}_collection')
-
-              run_test! do |response|
-                expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)
-              end
-            end
-          end
-
-          post 'Creates #{titleized_resource}' do
-            description 'Creates #{titleized_resource}'
-            consumes 'application/json'
-            produces 'application/json'
-            parameter(name: :#{resource_name}, in: :body)
-
-            response '201', '#{resource_name} created' do
-              let(:#{resource_name}) do
-                {#{resource_params}
-                }
-              end
-
-              run_test!
-            end
-
-            <% if required_resource_attributes.any? %>response '400', 'invalid attributes' do
-              let(:#{resource_name}) do
-                {#{invalid_resource_params}
-                }
-              end
-
-              run_test!
-            end<% end %>
-          end
-        end
-
-        path '/#{plural_resource}/{id}' do
-          parameter name: :id, in: :path, type: :integer
-
-          let(:existent_#{resource_name}) { create(:#{resource_name}) }
-          let(:id) { existent_#{resource_name}.id }
-
-          get 'Retrieves #{titleized_resource}' do
-            produces 'application/json'
-            description 'Retrieves #{resource_name} specific data'
-
-            response '200', '#{resource_name} retrieved' do
-              schema('$ref' => '#/definitions/#{resource_name}_resource')
-
-              run_test!
-            end
-
-            response '404', 'invalid #{resource_name} id' do
-              let(:id) { 'invalid' }
-
-              run_test!
-            end
-          end
-
-          put 'Updates #{titleized_resource}' do
-            description 'Updates #{titleized_resource}'
-            consumes 'application/json'
-            produces 'application/json'
-            parameter(name: :#{resource_name}, in: :body)
-
-            response '200', '#{resource_name} updated' do
-              let(:#{resource_name}) do
-                {#{resource_params}
-                }
-              end
-
-              run_test!
-            end
-
-            <% if required_resource_attributes.any? %>response '400', 'invalid attributes' do
-              let(:#{resource_name}) do
-                {#{invalid_resource_params}
-                }
-              end
-
-              run_test!
-            end<% end %>
-          end
-
-          delete 'Deletes #{titleized_resource}' do
-            produces 'application/json'
-            description 'Deletes specific #{resource_name}'
-
-            response '204', '#{resource_name} deleted' do
-              run_test!
-            end
-
-            response '404', 'with invalid #{resource_name} id' do
-              let(:id) { 'invalid' }
-
-              run_test!
-            end
-          end
-        end
-      end
-    SPEC
-
-    template.result(binding)
+    concat_tpl_statements(
+      "require 'swagger_helper'\n",
+      concat_tpl_statements(
+        spec_tpl_initial_describe_line,
+        spec_tpl_authenticated_resource,
+        spec_tpl_collection_path,
+        spec_tpl_resource_path,
+        "end\n"
+      )
+    )
   end
 
   private
 
+  def spec_tpl_initial_describe_line
+    "describe 'API V#{version_number} #{plural_titleized_resource}', \
+swagger_doc: 'v#{version_number}/swagger.json' do"
+  end
+
+  def spec_tpl_authenticated_resource
+    return unless authenticated_resource?
+
+    res_name = authenticated_resource.resource_name
+    concat_tpl_statements(
+      "let(:#{res_name}) { create(:#{res_name}) }",
+      "let(:#{res_name}_email) { #{res_name}.email }",
+      "let(:#{res_name}_token) { #{res_name}.authentication_token }\n"
+    )
+  end
+
+  def spec_tpl_collection_path
+    concat_tpl_statements(
+      "path '/#{plural_resource}' do",
+        spec_tpl_authenticated_resource_params,
+        spec_tpl_index,
+        spec_tpl_create,
+      "end\n"
+    )
+  end
+
+  def spec_tpl_resource_path
+    concat_tpl_statements(
+      "path '/#{plural_resource}/{id}' do",
+        spec_tpl_authenticated_resource_params,
+        "parameter name: :id, in: :path, type: :integer",
+        "let(:existent_#{resource_name}) { create(:#{resource_name}) }",
+        "let(:id) { existent_#{resource_name}.id }\n",
+        spec_tpl_resource_asigned_to_authenticated,
+        spec_tpl_show,
+        spec_tpl_update,
+        spec_tpl_destroy,
+      "end\n"
+    )
+  end
+
+  def spec_tpl_authenticated_resource_params
+    return unless authenticated_resource?
+
+    res_name = authenticated_resource.resource_name
+    concat_tpl_statements(
+      "parameter name: :#{res_name}_email, in: :query, type: :string",
+      "parameter name: :#{res_name}_token, in: :query, type: :string\n"
+    )
+  end
+
+  def spec_tpl_index
+    concat_tpl_statements(
+      "get 'Retrieves #{plural_titleized_resource}' do",
+        "description 'Retrieves all the #{plural_resource}'",
+        "produces 'application/json'\n",
+        "let(:collection_count) { 5 }",
+        "let(:expected_collection_count) { collection_count }\n",
+        "before { #{spec_tpl_index_creation_list} }",
+        "response '200', '#{plural_titleized_resource} retrieved' do",
+          "schema('$ref' => '#/definitions/#{plural_resource}_collection')\n",
+          "run_test! do |response|",
+            "expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)",
+          "end",
+        "end\n",
+        spec_tpl_invalid_credentials,
+      "end\n"
+    )
+  end
+
+  def spec_tpl_index_creation_list
+    list = "create_list(:#{resource_name}, collection_count)"
+
+    if owned_by_authenticated_resource?
+      authenticated_resource_name = authenticated_resource.resource_name
+
+      return "#{authenticated_resource_name}.#{plural_resource} = #{list}"
+    end
+
+    list
+  end
+
+  def spec_tpl_resource_asigned_to_authenticated
+    return unless owned_by_authenticated_resource?
+
+    authenticated_resource_name = authenticated_resource.resource_name
+    "before { #{authenticated_resource_name}.#{plural_resource} << existent_#{resource_name} }"
+  end
+
+  def spec_tpl_create
+    concat_tpl_statements(
+      "post 'Creates #{titleized_resource}' do",
+        "description 'Creates #{titleized_resource}'",
+        "consumes 'application/json'",
+        "produces 'application/json'",
+        "parameter(name: :#{resource_name}, in: :body)\n",
+        "response '201', '#{resource_name} created' do",
+          "let(:#{resource_name}) do",
+            "{#{resource_params}}",
+          "end\n",
+          "run_test!",
+        "end\n",
+        spec_tpl_create_invalid_attrs_test,
+        spec_tpl_invalid_credentials(with_body: true),
+      "end\n"
+    )
+  end
+
+  def spec_tpl_show
+    concat_tpl_statements(
+      "get 'Retrieves #{titleized_resource}' do",
+        "produces 'application/json'\n",
+        "response '200', '#{resource_name} retrieved' do",
+          "schema('$ref' => '#/definitions/#{resource_name}_resource')\n",
+          "run_test!",
+        "end\n",
+        "response '404', 'invalid #{resource_name} id' do",
+          "let(:id) { 'invalid' }",
+          "run_test!",
+        "end\n",
+        spec_tpl_invalid_credentials,
+      "end\n"
+    )
+  end
+
+  def spec_tpl_update
+    concat_tpl_statements(
+      "put 'Updates #{titleized_resource}' do",
+        "description 'Updates #{titleized_resource}'",
+        "consumes 'application/json'",
+        "produces 'application/json'",
+        "parameter(name: :#{resource_name}, in: :body)\n",
+          "response '200', '#{resource_name} updated' do",
+          "let(:#{resource_name}) do",
+            "{#{resource_params}}",
+          "end\n",
+          "run_test!",
+        "end\n",
+        spec_tpl_update_invalid_attrs_test,
+        spec_tpl_invalid_credentials(with_body: true),
+      "end\n"
+    )
+  end
+
+  def spec_tpl_destroy
+    concat_tpl_statements(
+      "delete 'Deletes #{titleized_resource}' do",
+        "produces 'application/json'",
+        "description 'Deletes specific #{resource_name}'\n",
+        "response '204', '#{resource_name} deleted' do",
+          "run_test!",
+        "end\n",
+        "response '404', '#{resource_name} not found' do",
+          "let(:id) { 'invalid' }\n",
+          "run_test!",
+        "end\n",
+        spec_tpl_invalid_credentials,
+      "end\n"
+    )
+  end
+
+  def spec_tpl_invalid_credentials(with_body: false)
+    return unless authenticated_resource?
+
+    authenticated_resource_name = authenticated_resource.resource_name
+    concat_tpl_statements(
+      "response '401', '#{authenticated_resource_name} unauthorized' do",
+        with_body ? "let(:#{resource_name}) { {} }" : nil,
+        "let(:user_token) { 'invalid' }\n",
+        "run_test!",
+      "end\n"
+    )
+  end
+
+  def spec_tpl_update_invalid_attrs_test
+    spec_tpl_create_invalid_attrs_test
+  end
+
+  def spec_tpl_create_invalid_attrs_test
+    return if required_resource_attributes.blank?
+
+    concat_tpl_statements(
+      "response '400', 'invalid attributes' do",
+        "let(:#{resource_name}) do",
+          "{#{invalid_resource_params}}",
+        "end\n",
+        "run_test!",
+      "end\n"
+    )
+  end
+
   def resource_params
-    for_each_schema_attribute(required_resource_attributes, margin_spaces: 12) do |attr|
+    attrs = if required_resource_attributes.any?
+              required_resource_attributes
+            else
+              optional_resource_attributes
+            end
+
+    for_each_schema_attribute(attrs) do |attr|
       "#{attr[:name]}: #{attr[:example]},"
     end
   end
 
   def invalid_resource_params
-    for_each_schema_attribute([required_resource_attributes.first], margin_spaces: 12) do |attr|
+    return unless required_resource_attributes.any?
+
+    for_each_schema_attribute([required_resource_attributes.first]) do |attr|
       "#{attr[:name]}: nil,"
     end
   end
@@ -309,7 +406,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   end
 
   def get_swagger_schema_attributes_definitions
-    for_each_schema_attribute(resource_attributes, margin_spaces: 8) do |attr|
+    for_each_schema_attribute(resource_attributes) do |attr|
       opts = ["example: #{attr[:example]}"]
       opts << "'x-nullable': true" unless attr[:required]
       opts
@@ -319,16 +416,19 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   end
 
   def get_swagger_schema_attributes_names
-    for_each_schema_attribute(required_resource_attributes, margin_spaces: 8) do |attr|
+    for_each_schema_attribute(required_resource_attributes) do |attr|
       ":#{attr[:name]},"
     end
   end
 
-  def for_each_schema_attribute(attributes, margin_spaces: 0)
+  def for_each_schema_attribute(attributes)
     attributes.inject("") do |memo, attr|
-      memo += "\n" + " " * margin_spaces
+      memo += "\n"
       memo += yield(attr)
       memo
     end.delete_suffix(",")
   end
 end
+# rubocop:enable Metrics/ModuleLength
+# rubocop:enable Metrics/MethodLength
+# rubocop:enable Layout/AlignArguments
