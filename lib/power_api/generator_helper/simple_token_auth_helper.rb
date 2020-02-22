@@ -1,22 +1,22 @@
 module PowerApi::GeneratorHelper::SimpleTokenAuthHelper
   extend ActiveSupport::Concern
 
-  included do
-    attr_reader :authenticated_resources, :authenticated_resource
-    attr_accessor :owned_by_authenticated_resource
-  end
-
   class SimpleTokenAuthResource
-    include PowerApi::GeneratorHelper::ResourceHelper
+    include PowerApi::GeneratorHelper::ActiveRecordResource
 
     def initialize(resource)
       self.resource_name = resource
     end
 
     def authenticated_resource_migration
-      "migration add_authentication_token_to_#{plural_resource} \
+      "migration add_authentication_token_to_#{plural} \
 authentication_token:string{30}:uniq"
     end
+  end
+
+  included do
+    attr_reader :authenticated_resources, :authenticated_resource
+    attr_accessor :owned_by_authenticated_resource
   end
 
   def authenticated_resources=(values)
@@ -34,11 +34,11 @@ authentication_token:string{30}:uniq"
   end
 
   def owned_by_authenticated_resource?
-    !!owned_by_authenticated_resource
+    authenticated_resource? && !!owned_by_authenticated_resource
   end
 
-  def current_resource
-    "current_#{authenticated_resource.resource_name}"
+  def current_authenticated_resource
+    "current_#{authenticated_resource.snake_case}"
   end
 
   def simple_token_auth_method

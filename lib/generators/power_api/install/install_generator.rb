@@ -50,9 +50,9 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
       generate resource.authenticated_resource_migration
 
       insert_into_file(
-        resource.resource_path,
+        resource.path,
         helper.simple_token_auth_method,
-        after: resource.resource_class_definition_line
+        after: resource.class_definition_line
       )
     end
   end

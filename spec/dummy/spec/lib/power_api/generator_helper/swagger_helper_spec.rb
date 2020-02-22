@@ -317,6 +317,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
 
         path '/blogs/{id}' do
         parameter name: :id, in: :path, type: :integer
+
         let(:existent_blog) { create(:blog) }
         let(:id) { existent_blog.id }
 

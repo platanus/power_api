@@ -11,6 +11,7 @@ module PowerApi
 
     initializer "initialize" do
       require_relative "./errors"
+      require_relative "./generator_helper/active_record_resource"
       require_relative "./generator_helper/version_helper"
       require_relative "./generator_helper/resource_helper"
       require_relative "./generator_helper/swagger_helper"

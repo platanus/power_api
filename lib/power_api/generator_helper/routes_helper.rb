@@ -27,7 +27,7 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def resource_route_tpl
-    "\n      resources :#{plural_resource}"
+    "\n      resources :#{resource.plural}"
   end
 
   private

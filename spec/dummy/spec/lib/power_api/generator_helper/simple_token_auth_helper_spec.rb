@@ -1,13 +1,26 @@
 RSpec.describe PowerApi::GeneratorHelper::SimpleTokenAuthHelper, type: :generator do
-  let(:resource_name) { "blog" }
+  describe "#authenticated_resource" do
+    let(:authenticated_resource) { "blog" }
+    let(:resource) { generators_helper.authenticated_resource }
 
-  def auth_resource
-    generators_helper.authenticated_resource = resource_name
-    generators_helper.authenticated_resource
+    it_behaves_like('ActiveRecord resource') do
+      describe "#authenticated_resources_migrations" do
+        let(:expected) do
+          "migration add_authentication_token_to_blogs authentication_token:string{30}:uniq"
+        end
+
+        it { expect(resource.authenticated_resource_migration).to eq(expected) }
+      end
+
+      describe "current_authenticated_resource" do
+        it { expect(generators_helper.current_authenticated_resource).to eq("current_blog") }
+      end
+    end
   end
 
   describe "#authenticated_resources=" do
-    let(:resources_names) { [resource_name] }
+    let(:resources_names) { ["blog"] }
+    let(:resource) { resources.first }
 
     def resources
       generators_helper.authenticated_resources = resources_names
@@ -15,39 +28,17 @@ RSpec.describe PowerApi::GeneratorHelper::SimpleTokenAuthHelper, type: :generato
     end
 
     it { expect(resources.count).to eq(1) }
-    it { expect(resources.first.upcase_resource).to eq("BLOG") }
+    it { expect(resources.first).to be_a(described_class::SimpleTokenAuthResource) }
 
-    context "with invalid resource name" do
-      let(:resources_names) { ["ticket"] }
+    it_behaves_like('ActiveRecord resource') do
+      describe "#authenticated_resources_migrations" do
+        let(:expected) do
+          "migration add_authentication_token_to_blogs authentication_token:string{30}:uniq"
+        end
 
-      it { expect { resources }.to raise_error(/Invalid resource name/) }
+        it { expect(resource.authenticated_resource_migration).to eq(expected) }
+      end
     end
-
-    context "with missing resource name" do
-      let(:resources_names) { [""] }
-
-      it { expect { resources }.to raise_error(/Invalid resource name/) }
-    end
-
-    context "when resource is not an active record model" do
-      let(:resources_names) { ["power_api"] }
-
-      it { expect { resources }.to raise_error("resource is not an active record model") }
-    end
-  end
-
-  describe "#authenticated_resources_migrations" do
-    let(:expected) do
-      "migration add_authentication_token_to_blogs authentication_token:string{30}:uniq"
-    end
-
-    it { expect(auth_resource.authenticated_resource_migration).to eq(expected) }
-  end
-
-  describe "current_resource" do
-    before { auth_resource }
-
-    it { expect(generators_helper.current_resource).to eq("current_blog") }
   end
 
   describe "#simple_token_auth_method" do

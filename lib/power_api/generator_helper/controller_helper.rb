@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/ModuleLength
 module PowerApi::GeneratorHelper::ControllerHelper
   extend ActiveSupport::Concern
 
@@ -20,7 +21,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
   end
 
   def resource_controller_path
-    "app/controllers/api/v#{version_number}/#{plural_resource}_controller.rb"
+    "app/controllers/api/v#{version_number}/#{resource.plural}_controller.rb"
   end
 
   def api_base_controller_tpl
@@ -59,14 +60,14 @@ module PowerApi::GeneratorHelper::ControllerHelper
   private
 
   def ctrl_tpl_class_definition_line
-    "Api::V#{version_number}::#{camel_plural_resource}Controller < \
+    "Api::V#{version_number}::#{resource.camel_plural}Controller < \
 Api::V#{version_number}::BaseController"
   end
 
   def ctrl_tpl_acts_as_token_authentication_handler
     return unless authenticated_resource?
 
-    "acts_as_token_authentication_handler_for #{authenticated_resource.camel_resource}, \
+    "acts_as_token_authentication_handler_for #{authenticated_resource.camel}, \
 fallback: :exception\n"
   end
 
@@ -75,7 +76,7 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_show
-    concat_tpl_method("show", "respond_with #{snake_case_resource}")
+    concat_tpl_method("show", "respond_with #{resource.snake_case}")
   end
 
   def ctrl_tpl_create
@@ -85,23 +86,23 @@ fallback: :exception\n"
   def ctrl_tpl_update
     concat_tpl_method(
       "update",
-      "respond_with #{snake_case_resource}.update!(#{snake_case_resource}_params)"
+      "respond_with #{resource.snake_case}.update!(#{resource.snake_case}_params)"
     )
   end
 
   def ctrl_tpl_destroy
-    concat_tpl_method("destroy", "respond_with #{snake_case_resource}.destroy!")
+    concat_tpl_method("destroy", "respond_with #{resource.snake_case}.destroy!")
   end
 
   def ctrl_tpl_resource
-    concat_tpl_method(snake_case_resource, "@#{snake_case_resource} ||= #{resource_from_params}")
+    concat_tpl_method(resource.snake_case, "@#{resource.snake_case} ||= #{resource_from_params}")
   end
 
   def ctrl_tpl_permitted_params
     concat_tpl_method(
-      "#{snake_case_resource}_params",
-      "params.require(:#{snake_case_resource}).permit(",
-      "#{permitted_attributes_symbols_text_list})"
+      "#{resource.snake_case}_params",
+      "params.require(:#{resource.snake_case}).permit(",
+      "#{resource.permitted_attributes_symbols_text_list})"
     )
   end
 
@@ -109,9 +110,9 @@ fallback: :exception\n"
     find_statement = "find_by!(id: params[:id])"
 
     if owned_by_authenticated_resource?
-      "#{plural_resource}.#{find_statement}"
+      "#{resource.plural}.#{find_statement}"
     else
-      "#{camel_resource}.#{find_statement}"
+      "#{resource.camel}.#{find_statement}"
     end
   end
 
@@ -122,19 +123,19 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_index_collection
-    collection = owned_by_authenticated_resource? ? plural_resource : "#{camel_resource}.all"
+    collection = owned_by_authenticated_resource? ? resource.plural : "#{resource.camel}.all"
     return collection unless allow_filters
 
     "filtered_collection(#{collection})"
   end
 
   def ctrl_tpl_create_resource
-    create_statement = "create!(#{snake_case_resource}_params)"
+    create_statement = "create!(#{resource.snake_case}_params)"
 
     if owned_by_authenticated_resource?
-      "#{plural_resource}.#{create_statement}"
+      "#{resource.plural}.#{create_statement}"
     else
-      "#{camel_resource}.#{create_statement}"
+      "#{resource.camel}.#{create_statement}"
     end
   end
 
@@ -142,8 +143,9 @@ fallback: :exception\n"
     return unless owned_by_authenticated_resource?
 
     concat_tpl_method(
-      plural_resource,
-      "@#{plural_resource} ||= #{current_resource}.#{plural_resource}"
+      resource.plural,
+      "@#{resource.plural} ||= #{current_authenticated_resource}.#{resource.plural}"
     )
   end
 end
+# rubocop:enable Metrics/ModuleLength

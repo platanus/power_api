@@ -7,6 +7,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   included do
     include PowerApi::GeneratorHelper::VersionHelper
     include PowerApi::GeneratorHelper::ResourceHelper
+    include PowerApi::GeneratorHelper::SimpleTokenAuthHelper
     include PowerApi::GeneratorHelper::TemplateBuilderHelper
   end
 
@@ -31,7 +32,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   end
 
   def swagger_resource_spec_path
-    "spec/integration/api/v#{version_number}/#{plural_resource}_spec.rb"
+    "spec/integration/api/v#{version_number}/#{resource.plural}_spec.rb"
   end
 
   def swagger_version_definition_path
@@ -39,7 +40,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   end
 
   def swagger_resource_schema_path
-    "spec/swagger/v#{version_number}/schemas/#{snake_case_resource}_schema.rb"
+    "spec/swagger/v#{version_number}/schemas/#{resource.snake_case}_schema.rb"
   end
 
   def rswag_ui_configure_line
@@ -118,7 +119,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
         type: :object,
         properties: {
           id: { type: :string, example: '1' },
-          type: { type: :string, example: '#{snake_case_resource}' },
+          type: { type: :string, example: '#{resource.snake_case}' },
           attributes: {
             type: :object,
             properties: {#{get_swagger_schema_attributes_definitions}
@@ -139,7 +140,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
         properties: {
           data: {
             type: "array",
-            items: { "$ref" => "#/definitions/#{snake_case_resource}" }
+            items: { "$ref" => "#/definitions/#{resource.snake_case}" }
           }
         },
         required: [
@@ -150,7 +151,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
       #{swagger_resource_definition_const} = {
         type: "object",
         properties: {
-          data: { "$ref" => "#/definitions/#{snake_case_resource}" }
+          data: { "$ref" => "#/definitions/#{resource.snake_case}" }
         },
         required: [
           :data
@@ -161,9 +162,9 @@ module PowerApi::GeneratorHelper::SwaggerHelper
 
   def swagger_definition_entry
     [
-      "\n    #{snake_case_resource}: #{swagger_model_definition_const},",
-      "\n    #{plural_resource}_collection: #{swagger_collection_definition_const},",
-      "\n    #{snake_case_resource}_resource: #{swagger_resource_definition_const},"
+      "\n    #{resource.snake_case}: #{swagger_model_definition_const},",
+      "\n    #{resource.plural}_collection: #{swagger_collection_definition_const},",
+      "\n    #{resource.snake_case}_resource: #{swagger_resource_definition_const},"
     ].join
   end
 
@@ -183,14 +184,14 @@ module PowerApi::GeneratorHelper::SwaggerHelper
   private
 
   def spec_tpl_initial_describe_line
-    "describe 'API V#{version_number} #{plural_titleized_resource}', \
+    "describe 'API V#{version_number} #{resource.plural_titleized}', \
 swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_authenticated_resource
     return unless authenticated_resource?
 
-    res_name = authenticated_resource.resource_name
+    res_name = authenticated_resource.snake_case
     concat_tpl_statements(
       "let(:#{res_name}) { create(:#{res_name}) }",
       "let(:#{res_name}_email) { #{res_name}.email }",
@@ -200,7 +201,7 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_collection_path
     concat_tpl_statements(
-      "path '/#{plural_resource}' do",
+      "path '/#{resource.plural}' do",
         spec_tpl_authenticated_resource_params,
         spec_tpl_index,
         spec_tpl_create,
@@ -210,11 +211,11 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_resource_path
     concat_tpl_statements(
-      "path '/#{plural_resource}/{id}' do",
+      "path '/#{resource.plural}/{id}' do",
         spec_tpl_authenticated_resource_params,
-        "parameter name: :id, in: :path, type: :integer",
-        "let(:existent_#{resource_name}) { create(:#{resource_name}) }",
-        "let(:id) { existent_#{resource_name}.id }\n",
+        "parameter name: :id, in: :path, type: :integer\n",
+        "let(:existent_#{resource.snake_case}) { create(:#{resource.snake_case}) }",
+        "let(:id) { existent_#{resource.snake_case}.id }\n",
         spec_tpl_resource_asigned_to_authenticated,
         spec_tpl_show,
         spec_tpl_update,
@@ -226,7 +227,7 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   def spec_tpl_authenticated_resource_params
     return unless authenticated_resource?
 
-    res_name = authenticated_resource.resource_name
+    res_name = authenticated_resource.snake_case
     concat_tpl_statements(
       "parameter name: :#{res_name}_email, in: :query, type: :string",
       "parameter name: :#{res_name}_token, in: :query, type: :string\n"
@@ -235,14 +236,14 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_index
     concat_tpl_statements(
-      "get 'Retrieves #{plural_titleized_resource}' do",
-        "description 'Retrieves all the #{plural_resource}'",
+      "get 'Retrieves #{resource.plural_titleized}' do",
+        "description 'Retrieves all the #{resource.plural}'",
         "produces 'application/json'\n",
         "let(:collection_count) { 5 }",
         "let(:expected_collection_count) { collection_count }\n",
         "before { #{spec_tpl_index_creation_list} }",
-        "response '200', '#{plural_titleized_resource} retrieved' do",
-          "schema('$ref' => '#/definitions/#{plural_resource}_collection')\n",
+        "response '200', '#{resource.plural_titleized} retrieved' do",
+          "schema('$ref' => '#/definitions/#{resource.plural}_collection')\n",
           "run_test! do |response|",
             "expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)",
           "end",
@@ -253,12 +254,10 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_index_creation_list
-    list = "create_list(:#{resource_name}, collection_count)"
+    list = "create_list(:#{resource.snake_case}, collection_count)"
 
     if owned_by_authenticated_resource?
-      authenticated_resource_name = authenticated_resource.resource_name
-
-      return "#{authenticated_resource_name}.#{plural_resource} = #{list}"
+      return "#{authenticated_resource.snake_case}.#{resource.plural} = #{list}"
     end
 
     list
@@ -267,19 +266,19 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   def spec_tpl_resource_asigned_to_authenticated
     return unless owned_by_authenticated_resource?
 
-    authenticated_resource_name = authenticated_resource.resource_name
-    "before { #{authenticated_resource_name}.#{plural_resource} << existent_#{resource_name} }"
+    "before { #{authenticated_resource.snake_case}.#{resource.plural} << \
+existent_#{resource.snake_case} }"
   end
 
   def spec_tpl_create
     concat_tpl_statements(
-      "post 'Creates #{titleized_resource}' do",
-        "description 'Creates #{titleized_resource}'",
+      "post 'Creates #{resource.titleized}' do",
+        "description 'Creates #{resource.titleized}'",
         "consumes 'application/json'",
         "produces 'application/json'",
-        "parameter(name: :#{resource_name}, in: :body)\n",
-        "response '201', '#{resource_name} created' do",
-          "let(:#{resource_name}) do",
+        "parameter(name: :#{resource.snake_case}, in: :body)\n",
+        "response '201', '#{resource.snake_case} created' do",
+          "let(:#{resource.snake_case}) do",
             "{#{resource_params}}",
           "end\n",
           "run_test!",
@@ -292,13 +291,13 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_show
     concat_tpl_statements(
-      "get 'Retrieves #{titleized_resource}' do",
+      "get 'Retrieves #{resource.titleized}' do",
         "produces 'application/json'\n",
-        "response '200', '#{resource_name} retrieved' do",
-          "schema('$ref' => '#/definitions/#{resource_name}_resource')\n",
+        "response '200', '#{resource.snake_case} retrieved' do",
+          "schema('$ref' => '#/definitions/#{resource.snake_case}_resource')\n",
           "run_test!",
         "end\n",
-        "response '404', 'invalid #{resource_name} id' do",
+        "response '404', 'invalid #{resource.snake_case} id' do",
           "let(:id) { 'invalid' }",
           "run_test!",
         "end\n",
@@ -309,13 +308,13 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_update
     concat_tpl_statements(
-      "put 'Updates #{titleized_resource}' do",
-        "description 'Updates #{titleized_resource}'",
+      "put 'Updates #{resource.titleized}' do",
+        "description 'Updates #{resource.titleized}'",
         "consumes 'application/json'",
         "produces 'application/json'",
-        "parameter(name: :#{resource_name}, in: :body)\n",
-          "response '200', '#{resource_name} updated' do",
-          "let(:#{resource_name}) do",
+        "parameter(name: :#{resource.snake_case}, in: :body)\n",
+          "response '200', '#{resource.snake_case} updated' do",
+          "let(:#{resource.snake_case}) do",
             "{#{resource_params}}",
           "end\n",
           "run_test!",
@@ -328,13 +327,13 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_destroy
     concat_tpl_statements(
-      "delete 'Deletes #{titleized_resource}' do",
+      "delete 'Deletes #{resource.titleized}' do",
         "produces 'application/json'",
-        "description 'Deletes specific #{resource_name}'\n",
-        "response '204', '#{resource_name} deleted' do",
+        "description 'Deletes specific #{resource.snake_case}'\n",
+        "response '204', '#{resource.snake_case} deleted' do",
           "run_test!",
         "end\n",
-        "response '404', '#{resource_name} not found' do",
+        "response '404', '#{resource.snake_case} not found' do",
           "let(:id) { 'invalid' }\n",
           "run_test!",
         "end\n",
@@ -346,10 +345,10 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   def spec_tpl_invalid_credentials(with_body: false)
     return unless authenticated_resource?
 
-    authenticated_resource_name = authenticated_resource.resource_name
+    authenticated_resource_name = authenticated_resource.snake_case
     concat_tpl_statements(
       "response '401', '#{authenticated_resource_name} unauthorized' do",
-        with_body ? "let(:#{resource_name}) { {} }" : nil,
+        with_body ? "let(:#{resource.snake_case}) { {} }" : nil,
         "let(:user_token) { 'invalid' }\n",
         "run_test!",
       "end\n"
@@ -361,11 +360,11 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_create_invalid_attrs_test
-    return if required_resource_attributes.blank?
+    return if resource.required_resource_attributes.blank?
 
     concat_tpl_statements(
       "response '400', 'invalid attributes' do",
-        "let(:#{resource_name}) do",
+        "let(:#{resource.snake_case}) do",
           "{#{invalid_resource_params}}",
         "end\n",
         "run_test!",
@@ -374,10 +373,10 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def resource_params
-    attrs = if required_resource_attributes.any?
-              required_resource_attributes
+    attrs = if resource.required_resource_attributes.any?
+              resource.required_resource_attributes
             else
-              optional_resource_attributes
+              resource.optional_resource_attributes
             end
 
     for_each_schema_attribute(attrs) do |attr|
@@ -386,27 +385,27 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def invalid_resource_params
-    return unless required_resource_attributes.any?
+    return unless resource.required_resource_attributes.any?
 
-    for_each_schema_attribute([required_resource_attributes.first]) do |attr|
+    for_each_schema_attribute([resource.required_resource_attributes.first]) do |attr|
       "#{attr[:name]}: nil,"
     end
   end
 
   def swagger_model_definition_const
-    "#{upcase_resource}_SCHEMA"
+    "#{resource.upcase}_SCHEMA"
   end
 
   def swagger_collection_definition_const
-    "#{upcase_plural_resource}_COLLECTION_SCHEMA"
+    "#{resource.upcase_plural}_COLLECTION_SCHEMA"
   end
 
   def swagger_resource_definition_const
-    "#{upcase_resource}_RESOURCE_SCHEMA"
+    "#{resource.upcase}_RESOURCE_SCHEMA"
   end
 
   def get_swagger_schema_attributes_definitions
-    for_each_schema_attribute(resource_attributes) do |attr|
+    for_each_schema_attribute(resource.resource_attributes) do |attr|
       opts = ["example: #{attr[:example]}"]
       opts << "'x-nullable': true" unless attr[:required]
       opts
@@ -416,7 +415,7 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def get_swagger_schema_attributes_names
-    for_each_schema_attribute(required_resource_attributes) do |attr|
+    for_each_schema_attribute(resource.required_resource_attributes) do |attr|
       ":#{attr[:name]},"
     end
   end

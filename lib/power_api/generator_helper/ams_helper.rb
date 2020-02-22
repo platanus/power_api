@@ -11,7 +11,7 @@ module PowerApi::GeneratorHelper::AmsHelper
   end
 
   def ams_serializer_path
-    "app/serializers/api/v#{version_number}/#{snake_case_resource}_serializer.rb"
+    "app/serializers/api/v#{version_number}/#{resource.snake_case}_serializer.rb"
   end
 
   def ams_serializers_path
@@ -32,11 +32,11 @@ module PowerApi::GeneratorHelper::AmsHelper
 
   def ams_serializer_tpl
     <<~SERIALIZER
-      class Api::V#{version_number}::#{camel_resource}Serializer < ActiveModel::Serializer
-        type :#{snake_case_resource}
+      class Api::V#{version_number}::#{resource.camel}Serializer < ActiveModel::Serializer
+        type :#{resource.snake_case}
 
         attributes(
-          #{resource_attributes_symbols_text_list})
+          #{resource.attributes_symbols_text_list})
       end
     SERIALIZER
   end

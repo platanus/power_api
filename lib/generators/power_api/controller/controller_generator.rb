@@ -98,7 +98,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   def helper
     @helper ||= PowerApi::GeneratorHelpers.new(
       version_number: options[:version_number],
-      resource_name: file_name,
+      resource: file_name,
       authenticated_resource: options[:authenticate_with],
       owned_by_authenticated_resource: options[:owned_by_authenticated_resource],
       resource_attributes: options[:attributes],

@@ -7,6 +7,7 @@ module TestGeneratorHelpers
     let(:version_number) { "1" }
     let(:resource_name) { "blog" }
     let(:authenticated_resource) { nil }
+    let(:parent_resource_name) { nil }
     let(:owned_by_authenticated_resource) { false }
     let(:resource_attributes) { nil }
     let(:use_paginator) { false }
@@ -15,8 +16,9 @@ module TestGeneratorHelpers
     let(:init_params) do
       {
         version_number: version_number,
-        resource_name: resource_name,
+        resource: resource_name,
         resource_attributes: resource_attributes,
+        parent_resource: parent_resource_name,
         use_paginator: use_paginator,
         authenticated_resource: authenticated_resource,
         owned_by_authenticated_resource: owned_by_authenticated_resource,
