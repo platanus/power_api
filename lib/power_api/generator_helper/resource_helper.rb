@@ -26,4 +26,8 @@ module PowerApi::GeneratorHelper::ResourceHelper
   def resource_attributes=(collection)
     resource.resource_attributes = collection
   end
+
+  def parent_resource?
+    !!parent_resource
+  end
 end
