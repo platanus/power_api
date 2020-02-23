@@ -8,6 +8,8 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
     ) do
       helper.version_route_tpl
     end
+
+    helper.format_ruby_file(helper.routes_path)
   end
 
   def add_base_controller

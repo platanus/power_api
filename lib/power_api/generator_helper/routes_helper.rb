@@ -1,9 +1,11 @@
+# rubocop:disable Layout/AlignArguments
 module PowerApi::GeneratorHelper::RoutesHelper
   extend ActiveSupport::Concern
 
   included do
     include PowerApi::GeneratorHelper::VersionHelper
     include PowerApi::GeneratorHelper::ResourceHelper
+    include PowerApi::GeneratorHelper::TemplateBuilderHelper
   end
 
   def routes_path
@@ -27,26 +29,25 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def resource_route_tpl
-    "\n      resources :#{resource.plural}"
+    "\nresources :#{resource.plural}"
   end
 
   private
 
   def first_version_route_tpl
-    <<-ROUTE
-  scope path: '/api' do
-    api_version(#{api_version_params}) do
-    end
-  end
-    ROUTE
+    concat_tpl_statements(
+      "scope path: '/api' do",
+        "api_version(#{api_version_params}) do",
+        "end",
+      "end\n"
+    )
   end
 
   def new_version_route_tpl
-    <<-ROUTE
-    api_version(#{api_version_params}) do
-    end
-
-    ROUTE
+    concat_tpl_statements(
+      "api_version(#{api_version_params}) do",
+      "end"
+    )
   end
 
   def api_version_params
@@ -55,3 +56,4 @@ path: { value: 'v#{version_number}' }, \
 defaults: { format: 'json' }"
   end
 end
+# rubocop:enable Layout/AlignArguments

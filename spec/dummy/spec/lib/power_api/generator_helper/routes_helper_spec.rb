@@ -20,7 +20,7 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
   end
 
   describe "#resource_route_tpl" do
-    let(:expected_tpl) { "\n      resources :blogs" }
+    let(:expected_tpl) { "\nresources :blogs" }
 
     def perform
       generators_helper.resource_route_tpl
@@ -53,11 +53,11 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
 
   describe "#version_route_tpl" do
     let(:expected_tpl) do
-      <<-ROUTE
-  scope path: '/api' do
-    api_version(module: 'Api::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
-    end
-  end
+      <<~ROUTE
+        scope path: '/api' do
+        api_version(module: 'Api::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
+        end
+        end
       ROUTE
     end
 
@@ -71,14 +71,13 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
       let(:version_number) { "2" }
 
       let(:expected_tpl) do
-        <<-ROUTE
-    api_version(module: 'Api::V2', path: { value: 'v2' }, defaults: { format: 'json' }) do
-    end
-
+        <<~ROUTE
+          api_version(module: 'Api::V2', path: { value: 'v2' }, defaults: { format: 'json' }) do
+          end
         ROUTE
       end
 
-      it { expect(perform).to eq(expected_tpl) }
+      it { expect(perform).to eq(expected_tpl.delete_suffix("\n")) }
     end
   end
 end

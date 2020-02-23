@@ -60,6 +60,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       helper.resource_route_tpl,
       after: helper.routes_line_to_inject_resource
     )
+
+    helper.format_ruby_file(helper.routes_path)
   end
 
   def create_serializer
