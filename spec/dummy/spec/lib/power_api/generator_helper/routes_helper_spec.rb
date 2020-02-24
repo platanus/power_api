@@ -20,13 +20,22 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
   end
 
   describe "#resource_route_tpl" do
+    let(:actions) { [] }
     let(:expected_tpl) { "\nresources :blogs" }
 
     def perform
-      generators_helper.resource_route_tpl
+      generators_helper.resource_route_tpl(actions: actions)
     end
 
     it { expect(perform).to eq(expected_tpl) }
+
+    context "with specific actions" do
+      let(:actions) { ["index", "create"] }
+
+      let(:expected_tpl) { "\nresources :blogs, only: [:index, :create]" }
+
+      it { expect(perform).to eq(expected_tpl) }
+    end
   end
 
   describe "routes_line_to_inject_new_version" do

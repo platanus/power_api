@@ -28,8 +28,10 @@ module PowerApi::GeneratorHelper::RoutesHelper
     new_version_route_tpl
   end
 
-  def resource_route_tpl
-    "\nresources :#{resource.plural}"
+  def resource_route_tpl(actions: [])
+    line = "\nresources :#{resource.plural}"
+    line += ", only: [#{actions.map { |a| ":#{a}" }.join(', ')}]" if actions.any?
+    line
   end
 
   private
