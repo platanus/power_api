@@ -39,6 +39,13 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   )
 
   class_option(
+    :parent_resource,
+    type: 'string',
+    default: nil,
+    desc: "to indicate if the current resource is nested in another"
+  )
+
+  class_option(
     :owned_by_authenticated_resource,
     type: 'boolean',
     default: false,
@@ -55,11 +62,12 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   end
 
   def add_routes
-    insert_into_file(
-      helper.routes_path,
-      helper.resource_route_tpl,
-      after: helper.routes_line_to_inject_resource
-    )
+    if helper.parent_resource?
+      add_normal_route(actions: ["show", "update", "destroy"])
+      add_nested_route
+    else
+      add_normal_route
+    end
 
     helper.format_ruby_file(helper.routes_path)
   end
@@ -97,11 +105,44 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   private
 
+  def add_nested_route
+    line_to_replace = helper.parent_resource_routes_line_regex
+    nested_resource_line = helper.resource_route_tpl(actions: ['index', 'create'])
+    add_nested_parent_route unless helper.parent_route_exist?
+
+    if helper.parent_route_already_have_children?
+      add_route(line_to_replace) { |match| "#{match}\n#{nested_resource_line}" }
+    else
+      add_route(line_to_replace) do |match|
+        "#{match.delete_suffix('\n')} do\n#{nested_resource_line}\nend\n"
+      end
+    end
+  end
+
+  def add_normal_route(actions: [])
+    add_route(helper.api_version_routes_line_regex) do |match|
+      "#{match}\n#{helper.resource_route_tpl(actions: actions)}"
+    end
+  end
+
+  def add_nested_parent_route
+    add_route(helper.api_version_routes_line_regex) do |match|
+      "#{match}\n#{helper.resource_route_tpl(is_parent: true)}"
+    end
+  end
+
+  def add_route(line_to_replace, &block)
+    gsub_file helper.routes_path, line_to_replace do |match|
+      block.call(match)
+    end
+  end
+
   def helper
     @helper ||= PowerApi::GeneratorHelpers.new(
       version_number: options[:version_number],
       resource: file_name,
       authenticated_resource: options[:authenticate_with],
+      parent_resource: options[:parent_resource],
       owned_by_authenticated_resource: options[:owned_by_authenticated_resource],
       resource_attributes: options[:attributes],
       use_paginator: options[:use_paginator],

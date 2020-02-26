@@ -18,8 +18,12 @@ module PowerApi::GeneratorHelper::RoutesHelper
     "'/api' do\n"
   end
 
-  def routes_line_to_inject_resource
+  def api_version_routes_line_regex
     /Api::V#{version_number}[^\n]*/
+  end
+
+  def parent_resource_routes_line_regex
+    /#{parent_resource_route_tpl}[^\n]*/
   end
 
   def version_route_tpl
@@ -28,13 +32,39 @@ module PowerApi::GeneratorHelper::RoutesHelper
     new_version_route_tpl
   end
 
-  def resource_route_tpl(actions: [])
-    line = "\nresources :#{resource.plural}"
+  def resource_route_tpl(actions: [], is_parent: false)
+    res = (is_parent ? parent_resource : resource).plural
+    line = "resources :#{res}"
     line += ", only: [#{actions.map { |a| ":#{a}" }.join(', ')}]" if actions.any?
     line
   end
 
+  def parent_route_exist?
+    routes_match_regex?(/#{parent_resource_route_tpl}/)
+  end
+
+  def parent_route_already_have_children?
+    routes_match_regex?(/#{parent_resource_route_tpl}[\W\w]*do/)
+  end
+
   private
+
+  def resource_route_statements(actions: [])
+    line = "resources :#{resource.plural}"
+    line += ", only: [#{actions.map { |a| ":#{a}" }.join(', ')}]" if actions.any?
+    line
+  end
+
+  def routes_match_regex?(regex)
+    path = File.join(Rails.root, routes_path)
+    File.readlines(path).grep(regex).any?
+  end
+
+  def parent_resource_route_tpl
+    raise PowerApi::GeneratorError.new("missing parent_resource") unless parent_resource?
+
+    "resources :#{parent_resource.plural}"
+  end
 
   def first_version_route_tpl
     concat_tpl_statements(
