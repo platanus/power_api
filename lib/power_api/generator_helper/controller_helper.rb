@@ -109,12 +109,18 @@ fallback: :exception\n"
 
   def ctrl_tpl_find_resource
     find_statement = "find_by!(id: params[:id])"
+    resource_source = if owned_by_authenticated_resource?
+                        if parent_resource?
+                          "#{resource.camel}.where(#{parent_resource.snake_case}: \
+#{current_authenticated_resource}.#{parent_resource.plural})"
+                        else
+                          resource.plural
+                        end
+                      else
+                        resource.camel
+                      end
 
-    if owned_resource?
-      "#{resource.plural}.#{find_statement}"
-    else
-      "#{resource.camel}.#{find_statement}"
-    end
+    "#{resource_source}.#{find_statement}"
   end
 
   def ctrl_tpl_index_resources
@@ -158,9 +164,15 @@ fallback: :exception\n"
   def ctrl_tpl_find_parent_resource
     return unless parent_resource?
 
+    resource_source = if owned_by_authenticated_resource?
+                        "#{current_authenticated_resource}.#{parent_resource.plural}"
+                      else
+                        parent_resource.camel
+                      end
+
     concat_tpl_method(
       parent_resource.snake_case,
-      "@#{parent_resource.snake_case} ||= #{parent_resource.camel}.\
+      "@#{parent_resource.snake_case} ||= #{resource_source}.\
 find_by!(id: params[:#{parent_resource.id}])"
     )
   end

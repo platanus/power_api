@@ -174,8 +174,9 @@ module PowerApi::GeneratorHelper::SwaggerHelper
       concat_tpl_statements(
         spec_tpl_initial_describe_line,
         spec_tpl_authenticated_resource,
-        spec_tpl_collection_path,
-        spec_tpl_resource_path,
+        spec_tpl_let_parent_resource,
+        spec_tpl_collection_path_statements,
+        spec_tpl_resource_path_statements,
         "end\n"
       )
     )
@@ -199,9 +200,10 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
     )
   end
 
-  def spec_tpl_collection_path
+  def spec_tpl_collection_path_statements
     concat_tpl_statements(
-      "path '/#{resource.plural}' do",
+      "path '/#{spec_tpl_collection_path}' do",
+        spec_tpl_parent_resource_parameter,
         spec_tpl_authenticated_resource_params,
         spec_tpl_index,
         spec_tpl_create,
@@ -209,19 +211,37 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
     )
   end
 
-  def spec_tpl_resource_path
+  def spec_tpl_collection_path
+    return resource.plural unless parent_resource?
+
+    "#{parent_resource.plural}/{#{parent_resource.id}}/#{resource.plural}"
+  end
+
+  def spec_tpl_resource_path_statements
     concat_tpl_statements(
       "path '/#{resource.plural}/{id}' do",
         spec_tpl_authenticated_resource_params,
-        "parameter name: :id, in: :path, type: :integer\n",
-        "let(:existent_#{resource.snake_case}) { create(:#{resource.snake_case}) }",
-        "let(:id) { existent_#{resource.snake_case}.id }\n",
+        spec_tpl_let_existent_resource,
         spec_tpl_resource_asigned_to_authenticated,
         spec_tpl_show,
         spec_tpl_update,
         spec_tpl_destroy,
       "end\n"
     )
+  end
+
+  def spec_tpl_let_existent_resource
+    statement = ["let(:existent_#{resource.snake_case}) { create(:#{resource.snake_case}"]
+
+    if parent_resource?
+      statement << "#{parent_resource.snake_case}: #{parent_resource.snake_case}"
+    end
+
+    [
+      "parameter name: :id, in: :path, type: :integer\n",
+      "#{statement.join(', ')}) }",
+      "let(:id) { existent_#{resource.snake_case}.id }\n"
+    ].join("\n")
   end
 
   def spec_tpl_authenticated_resource_params
@@ -254,7 +274,13 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_index_creation_list
-    list = "create_list(:#{resource.snake_case}, collection_count)"
+    statement = ["create_list(:#{resource.snake_case}, collection_count"]
+
+    if parent_resource?
+      statement << "#{parent_resource.snake_case}: #{parent_resource.snake_case}"
+    end
+
+    list = statement.join(', ') + ')'
 
     if owned_by_authenticated_resource?
       return "#{authenticated_resource.snake_case}.#{resource.plural} = #{list}"
@@ -287,6 +313,27 @@ existent_#{resource.snake_case} }"
         spec_tpl_invalid_credentials(with_body: true),
       "end\n"
     )
+  end
+
+  def spec_tpl_parent_resource_parameter
+    return unless parent_resource?
+
+    "parameter name: :#{parent_resource.id}, in: :path, type: :integer"
+  end
+
+  def spec_tpl_let_parent_resource
+    return unless parent_resource?
+
+    statement = ["\nlet(:#{parent_resource.snake_case}) { create(:#{parent_resource.snake_case}"]
+
+    if owned_by_authenticated_resource?
+      statement << ["#{authenticated_resource.snake_case}: #{authenticated_resource.snake_case}"]
+    end
+
+    [
+      "\n#{statement.join(', ')}) }",
+      "let(:#{parent_resource.id}) { #{parent_resource.snake_case}.id }\n"
+    ].join("\n")
   end
 
   def spec_tpl_show

@@ -71,7 +71,8 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
             :title,
         :body,
         :created_at,
-        :updated_at
+        :updated_at,
+        :portfolio_id
         )
         end
       SERIALIZER

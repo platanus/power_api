@@ -82,7 +82,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
         def blog_params
         params.require(:blog).permit(
         :title,
-        :body
+        :body,
+        :portfolio_id
         )
         end
         end
@@ -99,7 +100,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       let(:resource_attributes) do
         [
           "title",
-          "created_at"
+          "created_at",
+          "portfolio_id"
         ]
       end
 
@@ -167,7 +169,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           def blog_params
           params.require(:blog).permit(
           :title,
-          :body
+          :body,
+          :portfolio_id
           )
           end
           end
@@ -211,7 +214,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           def blog_params
           params.require(:blog).permit(
           :title,
-          :body
+          :body,
+          :portfolio_id
           )
           end
           end
@@ -250,7 +254,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           end
           private
           def blog
-          @blog ||= blogs.find_by!(id: params[:id])
+          @blog ||= Blog.find_by!(id: params[:id])
           end
           def blogs
           @blogs ||= user.blogs
@@ -261,7 +265,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           def blog_params
           params.require(:blog).permit(
           :title,
-          :body
+          :body,
+          :portfolio_id
           )
           end
           end
@@ -297,18 +302,19 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           end
           private
           def blog
-          @blog ||= blogs.find_by!(id: params[:id])
+          @blog ||= Blog.where(user: current_user.users).find_by!(id: params[:id])
           end
           def blogs
           @blogs ||= user.blogs
           end
           def user
-          @user ||= User.find_by!(id: params[:user_id])
+          @user ||= current_user.users.find_by!(id: params[:user_id])
           end
           def blog_params
           params.require(:blog).permit(
           :title,
-          :body
+          :body,
+          :portfolio_id
           )
           end
           end

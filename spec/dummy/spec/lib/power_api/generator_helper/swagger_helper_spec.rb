@@ -214,7 +214,8 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
         title: { type: :string, example: 'Some title' },
         body: { type: :string, example: 'Some body' },
         created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
-        updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true }
+        updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
+        portfolio_id: { type: :integer, example: 666, 'x-nullable': true }
               },
               required: [
         :title,
@@ -411,6 +412,25 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
 
       it { expect(perform).to include("user.blogs = create_list(:blog, collection_count)") }
       it { expect(perform).to include("user.blogs << existent_blog") }
+    end
+
+    context "with parent_resource option" do
+      let(:parent_resource_name) { "user" }
+
+      it { expect(perform).to include("/users/{user_id}/blogs") }
+      it { expect(perform).to include("parameter name: :user_id, in: :path, type: :integer") }
+      it { expect(perform).to include("create_list(:blog, collection_count, user: user)") }
+      it { expect(perform).to include("let(:user) { create(:user) }") }
+    end
+
+    context "with parent_resource and authenticated_resource options" do
+      let(:parent_resource_name) { "portfolio" }
+      let(:authenticated_resource) { "user" }
+      let(:owned_by_authenticated_resource) { true }
+
+      it { expect(perform).to include("reate_list(:blog, collection_count, portfolio: portfolio)") }
+      it { expect(perform).to include("let(:portfolio) { create(:portfolio, user: user) }") }
+      it { expect(perform).to include("(:existent_blog) { create(:blog, portfolio: portfolio) }") }
     end
   end
 

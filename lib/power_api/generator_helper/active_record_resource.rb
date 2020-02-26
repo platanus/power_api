@@ -161,9 +161,9 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
     when :datetime
       "'1984-06-04 09:00'"
     when :integer
-      rand(1000)
+      666
     when :float, :decimal
-      (rand(100) / 200.0).round(2)
+      6.66
     when :boolean
       true
     else

@@ -6,7 +6,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
         { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
         { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true },
         { name: :created_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false },
-        { name: :updated_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false }
+        { name: :updated_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false },
+        { name: :portfolio_id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false }
       ]
     end
 
@@ -14,7 +15,7 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
       resource.resource_attributes
     end
 
-    it { expect(perform).to eq(expected_attributes) }
+    it { expect(perform).to match(expected_attributes) }
 
     context "with selected attributes" do
       let(attributes_key) { %w{title body} }
@@ -72,14 +73,16 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
 
   describe "#optional_resource_attributes" do
     let(:expected_attributes) do
-      []
+      [
+        { name: :portfolio_id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false }
+      ]
     end
 
     def perform
       resource.optional_resource_attributes
     end
 
-    it { expect(perform).to eq(expected_attributes) }
+    it { expect(perform).to match(expected_attributes) }
   end
 
   describe "#attributes_names" do
@@ -88,7 +91,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
         :title,
         :body,
         :created_at,
-        :updated_at
+        :updated_at,
+        :portfolio_id
       ]
     end
 
@@ -103,7 +107,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
     let(:expected_attributes) do
       [
         { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
-        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true },
+        { name: :portfolio_id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false }
       ]
     end
 
@@ -111,14 +116,15 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
       resource.permitted_attributes
     end
 
-    it { expect(perform).to eq(expected_attributes) }
+    it { expect(perform).to match(expected_attributes) }
   end
 
   describe "#permitted_attributes_names" do
     let(:expected_attributes) do
       [
         :title,
-        :body
+        :body,
+        :portfolio_id
       ]
     end
 
@@ -135,7 +141,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
         :title,
         :body,
         :created_at,
-        :updated_at
+        :updated_at,
+        :portfolio_id
       ATTRS
     end
 
