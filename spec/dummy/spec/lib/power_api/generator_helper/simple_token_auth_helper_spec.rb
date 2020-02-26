@@ -41,6 +41,36 @@ RSpec.describe PowerApi::GeneratorHelper::SimpleTokenAuthHelper, type: :generato
     end
   end
 
+  describe "#owned_by_authenticated_resource?" do
+    let(:authenticated_resource) { "user" }
+    let(:owned_by_authenticated_resource) { true }
+    let(:parent_resource_name) { nil }
+
+    def perform
+      generators_helper.owned_by_authenticated_resource?
+    end
+
+    it { expect(perform).to eq(true) }
+
+    context "with no authenticated_resource" do
+      let(:authenticated_resource) { nil }
+
+      it { expect(perform).to eq(false) }
+    end
+
+    context "with no owned_by_authenticated_resource" do
+      let(:owned_by_authenticated_resource) { false }
+
+      it { expect(perform).to eq(false) }
+    end
+
+    context "with parent_resource" do
+      let(:parent_resource_name) { "user" }
+
+      it { expect(perform).to eq(false) }
+    end
+  end
+
   describe "#simple_token_auth_method" do
     let(:expected) do
       "  acts_as_token_authenticatable\n\n"

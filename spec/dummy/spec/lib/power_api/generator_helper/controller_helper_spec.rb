@@ -140,22 +140,182 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
 
     context "with authenticated_resource option" do
       let(:authenticated_resource) { "user" }
+      let(:template) do
+        <<~CONTROLLER
+          class Api::V1::BlogsController < Api::V1::BaseController
+          acts_as_token_authentication_handler_for User, fallback: :exception
 
-      it { expect(perform).to include("acts_as_token_authentication_handler_for User, fallback: ") }
-      it { expect(perform).not_to include("respond_with blogs") }
-      it { expect(perform).not_to include("blogs.find_by!(id: params[:id])") }
-      it { expect(perform).not_to include("blogs.create!(blog_params)") }
-      it { expect(perform).not_to include("@blogs ||= current_user.blogs") }
+          def index
+          respond_with Blog.all
+          end
+          def show
+          respond_with blog
+          end
+          def create
+          respond_with Blog.create!(blog_params)
+          end
+          def update
+          respond_with blog.update!(blog_params)
+          end
+          def destroy
+          respond_with blog.destroy!
+          end
+          private
+          def blog
+          @blog ||= Blog.find_by!(id: params[:id])
+          end
+          def blog_params
+          params.require(:blog).permit(
+          :title,
+          :body
+          )
+          end
+          end
+        CONTROLLER
+      end
+
+      it { expect(perform).to eq(template) }
     end
 
-    context "with owned_by_authenticated_resource option" do
+    context "with owned_by_authenticated_resource and authenticated_resource" do
       let(:authenticated_resource) { "user" }
       let(:owned_by_authenticated_resource) { true }
 
-      it { expect(perform).to include("respond_with blogs") }
-      it { expect(perform).to include("blogs.find_by!(id: params[:id])") }
-      it { expect(perform).to include("blogs.create!(blog_params)") }
-      it { expect(perform).to include("@blogs ||= current_user.blogs") }
+      let(:template) do
+        <<~CONTROLLER
+          class Api::V1::BlogsController < Api::V1::BaseController
+          acts_as_token_authentication_handler_for User, fallback: :exception
+
+          def index
+          respond_with blogs
+          end
+          def show
+          respond_with blog
+          end
+          def create
+          respond_with blogs.create!(blog_params)
+          end
+          def update
+          respond_with blog.update!(blog_params)
+          end
+          def destroy
+          respond_with blog.destroy!
+          end
+          private
+          def blog
+          @blog ||= blogs.find_by!(id: params[:id])
+          end
+          def blogs
+          @blogs ||= current_user.blogs
+          end
+          def blog_params
+          params.require(:blog).permit(
+          :title,
+          :body
+          )
+          end
+          end
+        CONTROLLER
+      end
+
+      it { expect(perform).to eq(template) }
+    end
+
+    context "with owned_by_authenticated_resource but authenticated_resource" do
+      let(:authenticated_resource) { nil }
+      let(:owned_by_authenticated_resource) { true }
+
+      it { expect(perform).to eq(template) }
+    end
+
+    context "with parent_resource option" do
+      let(:parent_resource_name) { "user" }
+      let(:template) do
+        <<~CONTROLLER
+          class Api::V1::BlogsController < Api::V1::BaseController
+          def index
+          respond_with blogs
+          end
+          def show
+          respond_with blog
+          end
+          def create
+          respond_with blogs.create!(blog_params)
+          end
+          def update
+          respond_with blog.update!(blog_params)
+          end
+          def destroy
+          respond_with blog.destroy!
+          end
+          private
+          def blog
+          @blog ||= blogs.find_by!(id: params[:id])
+          end
+          def blogs
+          @blogs ||= user.blogs
+          end
+          def user
+          @user ||= User.find_by!(id: params[:user_id])
+          end
+          def blog_params
+          params.require(:blog).permit(
+          :title,
+          :body
+          )
+          end
+          end
+        CONTROLLER
+      end
+
+      it { expect(perform).to eq(template) }
+    end
+
+    context "with parent_resource owned by authenticated_resource" do
+      let(:parent_resource_name) { "user" }
+      let(:authenticated_resource) { "user" }
+      let(:owned_by_authenticated_resource) { true }
+      let(:template) do
+        <<~CONTROLLER
+          class Api::V1::BlogsController < Api::V1::BaseController
+          acts_as_token_authentication_handler_for User, fallback: :exception
+
+          def index
+          respond_with blogs
+          end
+          def show
+          respond_with blog
+          end
+          def create
+          respond_with blogs.create!(blog_params)
+          end
+          def update
+          respond_with blog.update!(blog_params)
+          end
+          def destroy
+          respond_with blog.destroy!
+          end
+          private
+          def blog
+          @blog ||= blogs.find_by!(id: params[:id])
+          end
+          def blogs
+          @blogs ||= user.blogs
+          end
+          def user
+          @user ||= User.find_by!(id: params[:user_id])
+          end
+          def blog_params
+          params.require(:blog).permit(
+          :title,
+          :body
+          )
+          end
+          end
+        CONTROLLER
+      end
+
+      it { expect(perform).to eq(template) }
     end
   end
 

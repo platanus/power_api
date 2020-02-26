@@ -3,6 +3,7 @@ module PowerApi::GeneratorHelper::SimpleTokenAuthHelper
 
   class SimpleTokenAuthResource
     include PowerApi::GeneratorHelper::ActiveRecordResource
+    include PowerApi::GeneratorHelper::ResourceHelper
 
     def initialize(resource)
       self.resource_name = resource
@@ -34,7 +35,9 @@ authentication_token:string{30}:uniq"
   end
 
   def owned_by_authenticated_resource?
-    authenticated_resource? && !!owned_by_authenticated_resource
+    return false unless owned_by_authenticated_resource
+
+    authenticated_resource? && !parent_resource?
   end
 
   def current_authenticated_resource

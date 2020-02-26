@@ -1,4 +1,12 @@
 shared_examples 'ActiveRecord resource' do
+  describe "#id" do
+    def perform
+      resource.id
+    end
+
+    it { expect(perform).to eq("blog_id") }
+  end
+
   describe "#upcase" do
     def perform
       resource.upcase

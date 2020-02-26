@@ -27,6 +27,10 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
     @resource_attributes = attributes
   end
 
+  def id
+    "#{snake_case}_id"
+  end
+
   def upcase
     snake_case.upcase
   end

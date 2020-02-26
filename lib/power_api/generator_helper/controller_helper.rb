@@ -53,6 +53,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
       "private",
       ctrl_tpl_resource,
       ctrl_tpl_resources_from_authenticated_resource,
+      ctrl_tpl_find_parent_resource,
       ctrl_tpl_permitted_params
     )
   end
@@ -95,7 +96,7 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_resource
-    concat_tpl_method(resource.snake_case, "@#{resource.snake_case} ||= #{resource_from_params}")
+    concat_tpl_method(resource.snake_case, "@#{resource.snake_case} ||= #{ctrl_tpl_find_resource}")
   end
 
   def ctrl_tpl_permitted_params
@@ -106,10 +107,10 @@ fallback: :exception\n"
     )
   end
 
-  def resource_from_params
+  def ctrl_tpl_find_resource
     find_statement = "find_by!(id: params[:id])"
 
-    if owned_by_authenticated_resource?
+    if owned_resource?
       "#{resource.plural}.#{find_statement}"
     else
       "#{resource.camel}.#{find_statement}"
@@ -123,7 +124,7 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_index_collection
-    collection = owned_by_authenticated_resource? ? resource.plural : "#{resource.camel}.all"
+    collection = owned_resource? ? resource.plural : "#{resource.camel}.all"
     return collection unless allow_filters
 
     "filtered_collection(#{collection})"
@@ -132,7 +133,7 @@ fallback: :exception\n"
   def ctrl_tpl_create_resource
     create_statement = "create!(#{resource.snake_case}_params)"
 
-    if owned_by_authenticated_resource?
+    if owned_resource?
       "#{resource.plural}.#{create_statement}"
     else
       "#{resource.camel}.#{create_statement}"
@@ -140,12 +141,32 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_resources_from_authenticated_resource
-    return unless owned_by_authenticated_resource?
+    return unless owned_resource?
+
+    resource_source = if owned_by_authenticated_resource? && !parent_resource?
+                        current_authenticated_resource
+                      else
+                        parent_resource.snake_case
+                      end
 
     concat_tpl_method(
       resource.plural,
-      "@#{resource.plural} ||= #{current_authenticated_resource}.#{resource.plural}"
+      "@#{resource.plural} ||= #{resource_source}.#{resource.plural}"
     )
+  end
+
+  def ctrl_tpl_find_parent_resource
+    return unless parent_resource?
+
+    concat_tpl_method(
+      parent_resource.snake_case,
+      "@#{parent_resource.snake_case} ||= #{parent_resource.camel}.\
+find_by!(id: params[:#{parent_resource.id}])"
+    )
+  end
+
+  def owned_resource?
+    owned_by_authenticated_resource? || parent_resource?
   end
 end
 # rubocop:enable Metrics/ModuleLength
