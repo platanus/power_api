@@ -222,7 +222,6 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
       "path '/#{resource.plural}/{id}' do",
         spec_tpl_authenticated_resource_params,
         spec_tpl_let_existent_resource,
-        spec_tpl_resource_asigned_to_authenticated,
         spec_tpl_show,
         spec_tpl_update,
         spec_tpl_destroy,
@@ -232,16 +231,13 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_let_existent_resource
     statement = ["let(:existent_#{resource.snake_case}) { create(:#{resource.snake_case}"]
+    load_owner_resource_option(statement)
 
-    if parent_resource?
-      statement << "#{parent_resource.snake_case}: #{parent_resource.snake_case}"
-    end
-
-    [
+    concat_tpl_statements(
       "parameter name: :id, in: :path, type: :integer\n",
       "#{statement.join(', ')}) }",
       "let(:id) { existent_#{resource.snake_case}.id }\n"
-    ].join("\n")
+    )
   end
 
   def spec_tpl_authenticated_resource_params
@@ -275,25 +271,18 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 
   def spec_tpl_index_creation_list
     statement = ["create_list(:#{resource.snake_case}, collection_count"]
+    load_owner_resource_option(statement)
+    statement.join(', ') + ')'
+  end
 
+  def load_owner_resource_option(statement)
     if parent_resource?
       statement << "#{parent_resource.snake_case}: #{parent_resource.snake_case}"
     end
 
-    list = statement.join(', ') + ')'
-
     if owned_by_authenticated_resource?
-      return "#{authenticated_resource.snake_case}.#{resource.plural} = #{list}"
+      statement << "#{authenticated_resource.snake_case}: #{authenticated_resource.snake_case}"
     end
-
-    list
-  end
-
-  def spec_tpl_resource_asigned_to_authenticated
-    return unless owned_by_authenticated_resource?
-
-    "before { #{authenticated_resource.snake_case}.#{resource.plural} << \
-existent_#{resource.snake_case} }"
   end
 
   def spec_tpl_create
@@ -324,16 +313,10 @@ existent_#{resource.snake_case} }"
   def spec_tpl_let_parent_resource
     return unless parent_resource?
 
-    statement = ["\nlet(:#{parent_resource.snake_case}) { create(:#{parent_resource.snake_case}"]
-
-    if owned_by_authenticated_resource?
-      statement << ["#{authenticated_resource.snake_case}: #{authenticated_resource.snake_case}"]
-    end
-
-    [
-      "\n#{statement.join(', ')}) }",
+    concat_tpl_statements(
+      "let(:#{parent_resource.snake_case}) { create(:#{parent_resource.snake_case}) }",
       "let(:#{parent_resource.id}) { #{parent_resource.snake_case}.id }\n"
-    ].join("\n")
+    )
   end
 
   def spec_tpl_show

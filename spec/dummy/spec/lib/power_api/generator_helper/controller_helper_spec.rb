@@ -233,7 +233,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
 
     context "with parent_resource option" do
-      let(:parent_resource_name) { "user" }
+      let(:parent_resource_name) { "portfolio" }
       let(:template) do
         <<~CONTROLLER
           class Api::V1::BlogsController < Api::V1::BaseController
@@ -257,10 +257,10 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           @blog ||= Blog.find_by!(id: params[:id])
           end
           def blogs
-          @blogs ||= user.blogs
+          @blogs ||= portfolio.blogs
           end
-          def user
-          @user ||= User.find_by!(id: params[:user_id])
+          def portfolio
+          @portfolio ||= Portfolio.find_by!(id: params[:portfolio_id])
           end
           def blog_params
           params.require(:blog).permit(
@@ -277,7 +277,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
 
     context "with parent_resource owned by authenticated_resource" do
-      let(:parent_resource_name) { "user" }
+      let(:parent_resource_name) { "portfolio" }
       let(:authenticated_resource) { "user" }
       let(:owned_by_authenticated_resource) { true }
       let(:template) do
@@ -302,13 +302,13 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           end
           private
           def blog
-          @blog ||= Blog.where(user: current_user.users).find_by!(id: params[:id])
+          @blog ||= Blog.find_by!(id: params[:id])
           end
           def blogs
-          @blogs ||= user.blogs
+          @blogs ||= portfolio.blogs
           end
-          def user
-          @user ||= current_user.users.find_by!(id: params[:user_id])
+          def portfolio
+          @portfolio ||= Portfolio.find_by!(id: params[:portfolio_id])
           end
           def blog_params
           params.require(:blog).permit(

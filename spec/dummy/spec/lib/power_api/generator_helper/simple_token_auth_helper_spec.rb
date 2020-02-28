@@ -63,6 +63,12 @@ RSpec.describe PowerApi::GeneratorHelper::SimpleTokenAuthHelper, type: :generato
 
       it { expect(perform).to eq(false) }
     end
+
+    context "with no parent_resource_name" do
+      let(:parent_resource_name) { "portfolio" }
+
+      it { expect(perform).to eq(false) }
+    end
   end
 
   describe "#simple_token_auth_method" do
