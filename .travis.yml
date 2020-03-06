@@ -5,6 +5,7 @@ rvm:
 script:
 - RAILS_ENV=test bundle exec rake db:create db:migrate
 - bundle exec rspec spec
+before_install: gem install bundler -v 1.17.3
 deploy:
   provider: rubygems
   api_key:
