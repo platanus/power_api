@@ -1,5 +1,9 @@
 # Power API
 
+[![Gem Version](https://badge.fury.io/rb/power_api.svg)](https://badge.fury.io/rb/power_api)
+[![Build Status](https://travis-ci.org/platanus/power_api.svg?branch=master)](https://travis-ci.org/platanus/power_api)
+[![Coverage Status](https://coveralls.io/repos/github/platanus/power_api/badge.svg?branch=master)](https://coveralls.io/github/platanus/power_api?branch=master)
+
 It's a Rails engine that gathers a set of gems and configurations designed to build incredible REST APIs.
 
 These gems are:
