@@ -1,14 +1,14 @@
 sudo: false
 language: ruby
 rvm:
-  - 2.3.1
+- 2.3.1
 script:
-  - RAILS_ENV=test bundle exec rake db:create db:migrate
-  - bundle exec rspec spec
+- RAILS_ENV=test bundle exec rake db:create db:migrate
+- bundle exec rspec spec
 deploy:
   provider: rubygems
   api_key:
-    secure: your_secure_secret
+    secure: GaNPiRBIHwFsuZGh+3HGiW+tdpjRIh9j4hAeXy8qqIDyXuOknjbdjYFE40RJHuxfyc76Ajx0Wi6ybHYyD6BEQcG7iLZKHVbzr/EAQCQejCCO1TkuNS8loVXNh65EPcl1XbJPURBliG1fSCOSPHRnXMK7SxUX0flnewvgLo0ZDRNY5hkc/Pyt+MBElUnzgmikrolhOzUHCMyzo9BPlem0ToCCtJuruM5EQQhPRrbPuYkJlGty4cqcyyLtPQwe0sgARbiAbYIa+vxi0mvYxf0s2HZwpBqIa3BkgL6ozdOVBk2a0hgjEQbkeGSRCo+R4fgtb4QHB5OamTKO6HF5ceECNe76eR4P8GYp6LBNj3R/sUJb8Fmp/7xs9q5JYkJ6+RKJzpLWFOd7U0xAsC9D3r/PDJHAuzjbiAi/f9C0nD0UQgPtLXeytp85W71bRd7Dommk785kphporaM7xteUWYMK0Jmo02zRa8qdo+fqFJQQ7lFovSHQO+boIBI3MnOHhlz54XFnkPJkfM9NIrCq2zOlxtJgW4B1Zuw93z7zFUfPOEekMoqAXR/tCKpdV1e5XhikSCNSWv1EHPZaB+IsaOzWEPY8rcA/l47gWXoa9Mgv8rTzj489EzoXrqXv/8yb6TSBOezTypt6MNYqiABnRv43mo2CvtlG5ERQM3izWC6vo00=
   gem: power_api
   on:
     tags: true
