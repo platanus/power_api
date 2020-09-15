@@ -74,10 +74,12 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def add_routes
     if helper.parent_resource?
-      add_normal_route(actions: ["show", "update", "destroy"])
-      add_nested_route
+      if helper.resource_actions?
+        add_normal_route(actions: helper.controller_actions & ["show", "update", "destroy"])
+      end
+      add_nested_route if helper.collection_actions?
     else
-      add_normal_route
+      add_normal_route(actions: helper.controller_actions)
     end
 
     helper.format_ruby_file(helper.routes_path)
@@ -118,7 +120,9 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def add_nested_route
     line_to_replace = helper.parent_resource_routes_line_regex
-    nested_resource_line = helper.resource_route_tpl(actions: ['index', 'create'])
+    nested_resource_line = helper.resource_route_tpl(
+      actions: helper.controller_actions & ['index', 'create']
+    )
     add_nested_parent_route unless helper.parent_route_exist?
 
     if helper.parent_route_already_have_children?
@@ -130,9 +134,10 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     end
   end
 
-  def add_normal_route(actions: [])
+  def add_normal_route(actions:)
+    actions_for_only_option = actions.sort == self.class.valid_actions.sort ? [] : actions
     add_route(helper.api_version_routes_line_regex) do |match|
-      "#{match}\n#{helper.resource_route_tpl(actions: actions)}"
+      "#{match}\n#{helper.resource_route_tpl(actions: actions_for_only_option)}"
     end
   end
 
