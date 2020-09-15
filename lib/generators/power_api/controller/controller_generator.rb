@@ -1,12 +1,23 @@
 class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('templates', __dir__)
 
+  def self.valid_actions
+    PowerApi::GeneratorHelpers::PERMITTED_ACTIONS
+  end
+
   class_option(
     :attributes,
     type: 'array',
     default: [],
     aliases: '-a',
     desc: 'attributes to show in serializer'
+  )
+
+  class_option(
+    :controller_actions,
+    type: 'array',
+    default: [],
+    desc: "actions to include in controller. Valid values: #{valid_actions.join(', ')}"
   )
 
   class_option(
@@ -145,6 +156,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
       parent_resource: options[:parent_resource],
       owned_by_authenticated_resource: options[:owned_by_authenticated_resource],
       resource_attributes: options[:attributes],
+      controller_actions: options[:controller_actions],
       use_paginator: options[:use_paginator],
       allow_filters: options[:allow_filters]
     )
