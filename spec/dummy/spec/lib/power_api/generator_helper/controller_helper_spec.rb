@@ -112,6 +112,69 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       it { expect(perform).to include(expected) }
     end
 
+    context 'with specific actions' do
+      let(:controller_actions) do
+        [
+          "show",
+          "update",
+          "index"
+        ]
+      end
+
+      it { expect(perform).to include("def show\n") }
+      it { expect(perform).to include("def update\n") }
+      it { expect(perform).to include("def index\n") }
+      it { expect(perform).not_to include("def destroy\n") }
+      it { expect(perform).not_to include("def create\n") }
+    end
+
+    context 'with only collection actions' do
+      let(:controller_actions) do
+        [
+          "index",
+          "create"
+        ]
+      end
+
+      it { expect(perform).not_to include("def blog\n") }
+    end
+
+    context 'with some reource actions' do
+      let(:controller_actions) do
+        [
+          "index",
+          "create",
+          "show"
+        ]
+      end
+
+      it { expect(perform).to include("def blog\n") }
+    end
+
+    context 'with update action' do
+      let(:controller_actions) { ["update"] }
+
+      it { expect(perform).to include("def blog_params\n") }
+    end
+
+    context 'with create action' do
+      let(:controller_actions) { ["create"] }
+
+      it { expect(perform).to include("def blog_params\n") }
+    end
+
+    context 'without update or create actions' do
+      let(:controller_actions) do
+        [
+          "index",
+          "destroy",
+          "show"
+        ]
+      end
+
+      it { expect(perform).not_to include("def blog_params\n") }
+    end
+
     context "with true use_paginator option" do
       let(:use_paginator) { true }
       let(:expected) do
