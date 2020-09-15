@@ -9,6 +9,7 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     include PowerApi::GeneratorHelper::ResourceHelper
     include PowerApi::GeneratorHelper::SimpleTokenAuthHelper
     include PowerApi::GeneratorHelper::TemplateBuilderHelper
+    include PowerApi::GeneratorHelper::ControllerActionsHelper
   end
 
   def swagger_helper_path
@@ -201,6 +202,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_collection_path_statements
+    return unless collection_actions?
+
     concat_tpl_statements(
       "path '/#{spec_tpl_collection_path}' do",
         spec_tpl_parent_resource_parameter,
@@ -218,6 +221,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_resource_path_statements
+    return unless resource_actions?
+
     concat_tpl_statements(
       "path '/#{resource.plural}/{id}' do",
         spec_tpl_authenticated_resource_params,
@@ -251,6 +256,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_index
+    return unless index?
+
     concat_tpl_statements(
       "get 'Retrieves #{resource.plural_titleized}' do",
         "description 'Retrieves all the #{resource.plural}'",
@@ -286,6 +293,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_create
+    return unless create?
+
     concat_tpl_statements(
       "post 'Creates #{resource.titleized}' do",
         "description 'Creates #{resource.titleized}'",
@@ -320,6 +329,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_show
+    return unless show?
+
     concat_tpl_statements(
       "get 'Retrieves #{resource.titleized}' do",
         "produces 'application/json'\n",
@@ -337,6 +348,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_update
+    return unless update?
+
     concat_tpl_statements(
       "put 'Updates #{resource.titleized}' do",
         "description 'Updates #{resource.titleized}'",
@@ -356,6 +369,8 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def spec_tpl_destroy
+    return unless destroy?
+
     concat_tpl_statements(
       "delete 'Deletes #{resource.titleized}' do",
         "produces 'application/json'",
