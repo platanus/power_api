@@ -9,24 +9,8 @@ module PowerApi::GeneratorHelper::ControllerActionsHelper
     @controller_actions = actions.blank? ? PERMITTED_ACTIONS : actions & PERMITTED_ACTIONS
   end
 
-  def index?
-    controller_actions.include?('index')
-  end
-
-  def create?
-    controller_actions.include?('create')
-  end
-
-  def show?
-    controller_actions.include?('show')
-  end
-
-  def update?
-    controller_actions.include?('update')
-  end
-
-  def destroy?
-    controller_actions.include?('destroy')
+  PERMITTED_ACTIONS.each do |action|
+    define_method("#{action}?") { controller_actions.include?(action) }
   end
 
   def resource_actions?
