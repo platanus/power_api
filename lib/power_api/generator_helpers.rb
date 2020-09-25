@@ -1,5 +1,6 @@
 module PowerApi
   class GeneratorHelpers
+    include GeneratorHelper::ControllerActionsHelper
     include GeneratorHelper::ResourceHelper
     include GeneratorHelper::VersionHelper
     include GeneratorHelper::SwaggerHelper

@@ -8,6 +8,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
     include PowerApi::GeneratorHelper::PaginationHelper
     include PowerApi::GeneratorHelper::SimpleTokenAuthHelper
     include PowerApi::GeneratorHelper::TemplateBuilderHelper
+    include PowerApi::GeneratorHelper::ControllerActionsHelper
 
     attr_accessor :allow_filters
   end
@@ -73,18 +74,26 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_index
+    return unless index?
+
     concat_tpl_method("index", "respond_with #{ctrl_tpl_index_resources}")
   end
 
   def ctrl_tpl_show
+    return unless show?
+
     concat_tpl_method("show", "respond_with #{resource.snake_case}")
   end
 
   def ctrl_tpl_create
+    return unless create?
+
     concat_tpl_method("create", "respond_with #{ctrl_tpl_create_resource}")
   end
 
   def ctrl_tpl_update
+    return unless update?
+
     concat_tpl_method(
       "update",
       "respond_with #{resource.snake_case}.update!(#{resource.snake_case}_params)"
@@ -92,14 +101,20 @@ fallback: :exception\n"
   end
 
   def ctrl_tpl_destroy
+    return unless destroy?
+
     concat_tpl_method("destroy", "respond_with #{resource.snake_case}.destroy!")
   end
 
   def ctrl_tpl_resource
+    return unless resource_actions?
+
     concat_tpl_method(resource.snake_case, "@#{resource.snake_case} ||= #{ctrl_tpl_find_resource}")
   end
 
   def ctrl_tpl_permitted_params
+    return unless update_or_create?
+
     concat_tpl_method(
       "#{resource.snake_case}_params",
       "params.require(:#{resource.snake_case}).permit(",

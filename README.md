@@ -30,6 +30,7 @@ These gems are:
   - [Controller Generation](#controller-generation)
     - [Command Options](#command-options-1)
       - [--attributes](#--attributes)
+      - [--controller-actions](#--controller-actions)
       - [--version-number](#--version-number)
       - [--use-paginator](#--use-paginator)
       - [--allow-filters](#--allow-filters)
@@ -509,6 +510,36 @@ class Api::V1::BlogSerializer < ActiveModel::Serializer
   attributes(
     :title,
   )
+end
+```
+
+##### `--controller-actions`
+
+Use this option if you want to choose which actions will be included in the controller.
+
+```bash
+rails g power_api:controller blog --controller-actions=show destroy
+```
+
+When you do this, you will see that only relevant code is generated in controller, tests and routes.
+
+For example, the controller would only include the `show` and `destroy` actions and wouldn't include the `blog_params` method:
+
+```ruby
+class Api::V1::BlogSerializer < Api::V1::BaseController
+  def show
+    respond_with blog
+  end
+
+  def destroy
+    respond_with blog.destroy!
+  end
+
+  private
+
+  def blog
+    @blog ||= Blog.find_by!(id: params[:id])
+  end
 end
 ```
 

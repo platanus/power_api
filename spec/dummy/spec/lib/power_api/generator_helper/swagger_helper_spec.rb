@@ -421,6 +421,35 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
       it { expect(perform).to include("let(:portfolio) { create(:portfolio) }") }
       it { expect(perform).to include("(:existent_blog) { create(:blog, portfolio: portfolio) }") }
     end
+
+    context 'with only some resource actions (show and update)' do
+      let(:controller_actions) do
+        [
+          "show",
+          "update"
+        ]
+      end
+
+      it { expect(perform).to include("path '/blogs/{id}' do\n") }
+      it { expect(perform).to include("get 'Retrieves Blog' do\n") }
+      it { expect(perform).to include("put 'Updates Blog' do\n") }
+      it { expect(perform).not_to include("delete 'Deletes Blog' do\n") }
+      it { expect(perform).not_to include("path '/blogs' do\n") }
+      it { expect(perform).not_to include("get 'Retrieves Blogs' do\n") }
+      it { expect(perform).not_to include("post 'Creates Blog' do\n") }
+    end
+
+    context 'with only some collection actions (index)' do
+      let(:controller_actions) { ["index"] }
+
+      it { expect(perform).not_to include("path '/blogs/{id}' do\n") }
+      it { expect(perform).not_to include("get 'Retrieves Blog' do\n") }
+      it { expect(perform).not_to include("put 'Updates Blog' do\n") }
+      it { expect(perform).not_to include("delete 'Deletes Blog' do\n") }
+      it { expect(perform).to include("path '/blogs' do\n") }
+      it { expect(perform).to include("get 'Retrieves Blogs' do\n") }
+      it { expect(perform).not_to include("post 'Creates Blog' do\n") }
+    end
   end
 
   describe "#rswag_ui_swagger_endpoint" do

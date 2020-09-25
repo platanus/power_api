@@ -10,6 +10,7 @@ module TestGeneratorHelpers
     let(:parent_resource_name) { nil }
     let(:owned_by_authenticated_resource) { false }
     let(:resource_attributes) { nil }
+    let(:controller_actions) { [] }
     let(:use_paginator) { false }
     let(:allow_filters) { false }
 
@@ -18,6 +19,7 @@ module TestGeneratorHelpers
         version_number: version_number,
         resource: resource_name,
         resource_attributes: resource_attributes,
+        controller_actions: controller_actions,
         parent_resource: parent_resource_name,
         use_paginator: use_paginator,
         authenticated_resource: authenticated_resource,
