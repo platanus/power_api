@@ -1,0 +1,104 @@
+version: 2.1
+
+env-vars: &env-vars
+  RAILS_ENV: test
+  NODE_ENV: test
+  BUNDLE_PATH: vendor/bundle
+
+orbs:
+  ruby: circleci/ruby@0.1.2
+  browser-tools: circleci/browser-tools@1.1.3
+
+executors:
+  main-executor:
+    parameters:
+      ruby-version:
+        description: "Ruby version"
+        default: "2.7"
+        type: string
+    docker:
+      - image: circleci/ruby:<<parameters.ruby-version>>-node
+        environment: *env-vars
+
+commands:
+  setup:
+    description: checkout code and install dependencies
+    steps:
+      - checkout
+      - run:
+          name: Install bundle dependencies
+          command: |
+            BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")
+            gem install bundler:$BUNDLER_VERSION
+            bundle _$(echo $BUNDLER_VERSION)_ install
+
+jobs:
+  lint:
+    executor: main-executor
+    steps:
+      - setup
+      - run:
+          name: Install reviewdog
+          command: |
+            curl -sfL https://raw.githubusercontent.com/reviewdog/reviewdog/master/install.sh | sh -s -- -b ./bin
+      - run:
+          name: Get files to lint
+          command: |
+            mkdir tmp
+            git diff origin/master --name-only --diff-filter=d > tmp/files_to_lint
+      - run:
+          name: Run rubocop
+          shell: /bin/bash
+          command: |
+            cat tmp/files_to_lint | grep -E '.+\.(rb)$' | xargs bundle exec rubocop --force-exclusion \
+            | ./bin/reviewdog -reporter=github-pr-review -f=rubocop
+  test:
+    parameters:
+      ruby-version:
+        description: "Ruby version"
+        default: "2.7"
+        type: string
+    executor:
+      name: main-executor
+      ruby-version: <<parameters.ruby-version>>
+    steps:
+      - setup
+      - run:
+          name: Run Tests
+          command: |
+            RSPEC_JUNIT_ARGS="-r rspec_junit_formatter -f RspecJunitFormatter -o test_results/rspec.xml"
+            RSPEC_FORMAT_ARGS="-f progress --no-color -p 10"
+            bundle exec rspec ./spec $RSPEC_FORMAT_ARGS $RSPEC_JUNIT_ARGS
+      - store_test_results:
+          path: test_results
+  deploy:
+    executor: main-executor
+    steps:
+      - setup
+      - run:
+          name: Setup rubygems
+          command: bash .circleci/setup-rubygems.sh
+      - run:
+          name: Publish to rubygems
+          command: |
+            gem build power_api.gemspec
+            version_tag=$(git describe --tags)
+            gem push power_api-${version_tag#v}.gem
+
+workflows:
+  version: 2
+  main:
+    jobs:
+      - lint:
+          context: org-global
+      - test:
+          matrix:
+            parameters:
+              ruby-version: ["2.6", "2.7"]
+      - deploy:
+          context: org-global
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/

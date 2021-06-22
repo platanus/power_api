@@ -1,7 +1,7 @@
 # Power API
 
 [![Gem Version](https://badge.fury.io/rb/power_api.svg)](https://badge.fury.io/rb/power_api)
-[![Build Status](https://travis-ci.org/platanus/power_api.svg?branch=master)](https://travis-ci.org/platanus/power_api)
+[![CircleCI](https://circleci.com/gh/platanus/power_api.svg?style=shield)](https://app.circleci.com/pipelines/github/platanus/power_api)
 [![Coverage Status](https://coveralls.io/repos/github/platanus/power_api/badge.svg?branch=master)](https://coveralls.io/github/platanus/power_api?branch=master)
 
 It's a Rails engine that gathers a set of gems and configurations designed to build incredible REST APIs.
@@ -21,31 +21,33 @@ These gems are:
 
 ## Content
 
-- [Installation](#installation)
-- [Usage](#usage)
-  - [Initial Setup](#initial-setup)
-    - [Command Options](#command-options)
-      - [--authenticated-resources](#--authenticated-resources)
-  - [Version Creation](#version-creation)
-  - [Controller Generation](#controller-generation)
-    - [Command Options](#command-options-1)
-      - [--attributes](#--attributes)
-      - [--controller-actions](#--controller-actions)
-      - [--version-number](#--version-number)
-      - [--use-paginator](#--use-paginator)
-      - [--allow-filters](#--allow-filters)
-      - [--authenticate-with](#--authenticate-with)
-      - [--owned-by-authenticated-resource](#--owned-by-authenticated-resource)
-      - [--parent-resource](#--parent-resource)
-- [Inside the gem](#inside-the-gem)
-  - [The Api::Error Concern](#the-apierror-concern)
-  - [The Api::Deprecated Concern](#the-apideprecated-concern)
-  - [The Api::Versioned Concern](#the-apiversioned-concern)
-  - [The ApiResponder](#the-apiresponder)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [Credits](#credits)
-- [License](#license)
+- [Power API](#power-api)
+  - [Content](#content)
+  - [Installation](#installation)
+  - [Usage](#usage)
+    - [Initial Setup](#initial-setup)
+      - [Command options:](#command-options)
+        - [`--authenticated-resources`](#--authenticated-resources)
+    - [Version Creation](#version-creation)
+    - [Controller Generation](#controller-generation)
+      - [Command options:](#command-options-1)
+        - [`--attributes`](#--attributes)
+        - [`--controller-actions`](#--controller-actions)
+        - [`--version-number`](#--version-number)
+        - [`--use-paginator`](#--use-paginator)
+        - [`--allow-filters`](#--allow-filters)
+        - [`--authenticate-with`](#--authenticate-with)
+        - [`--owned-by-authenticated-resource`](#--owned-by-authenticated-resource)
+        - [`--parent-resource`](#--parent-resource)
+  - [Inside the gem](#inside-the-gem)
+    - [The `Api::Error` concern](#the-apierror-concern)
+    - [The `Api::Deprecated` concern](#the-apideprecated-concern)
+    - [The `ApiResponder`](#the-apiresponder)
+  - [Testing](#testing)
+  - [Publishing](#publishing)
+  - [Contributing](#contributing)
+  - [Credits](#credits)
+  - [License](#license)
 
 ## Installation
 
@@ -829,7 +831,6 @@ module PowerApi
   class BaseController < ApplicationController
     include Api::Error
     include Api::Deprecated
-    include Api::Versioned
 
     self.responder = ApiResponder
 
@@ -882,10 +883,6 @@ And then in your browser you execute: `GET /api/v1/comments`, you will get a `De
 
 This is useful to notify your customers that an endpoint will not be available in the next version of the API.
 
-### The `Api::Versioned` concern
-
-This module includes to your API responses the version of the API in a header. For example: `Content-Type: application/json; charset=utf-8; version=1`
-
 ### The `ApiResponder`
 
 It look like this:
@@ -917,6 +914,17 @@ bundle exec guard
 ```
 
 You need to put **all your tests** in the `/power_api/spec/dummy/spec/` directory.
+
+## Publishing
+
+On master/main branch...
+
+1. Change `VERSION` in `lib/power_api/version.rb`.
+2. Change `Unreleased` title to current version in `CHANGELOG.md`.
+3. Run `bundle install`.
+4. Commit new release. For example: `Releasing v0.1.0`.
+5. Create tag. For example: `git tag v0.1.0`.
+6. Push tag. For example: `git push origin v0.1.0`.
 
 ## Contributing
 

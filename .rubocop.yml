@@ -197,7 +197,6 @@ Style/WordArray:
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#percent-w
   Enabled: false
   MinSize: 0
-  WordRegex: !ruby/regexp /\A[\p{Word}]+\z/
 Metrics/AbcSize:
   Description: A calculated magnitude based on number of assignments, branches, and
     conditions.
