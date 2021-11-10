@@ -88,7 +88,7 @@ After doing this you will get:
   class Api::BaseController < PowerApi::BaseController
   end
   ```
-  Here you should include everything common to all your API versions. It is usually empty because most of the configuration comes in the `PowerApi::BaseController` that es inside the gem.
+  Here you should include everything common to all your API versions. It is usually empty because most of the configuration comes in the `PowerApi::BaseController` that is inside the gem.
 
 - A base controller for the first version of your API under `/your_api/app/controllers/api/v1/base_controller.rb`
   ```ruby
