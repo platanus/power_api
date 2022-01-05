@@ -1,0 +1,5 @@
+Description:
+    Configure "public" API in host app.
+
+Example:
+    rails generate power_api:public_api_config

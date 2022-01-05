@@ -26,10 +26,12 @@ These gems are:
   - [Installation](#installation)
   - [Usage](#usage)
     - [Initial Setup](#initial-setup)
+    - [Public API mode](#public-api-mode)
       - [Command options:](#command-options)
         - [`--authenticated-resources`](#--authenticated-resources)
-    - [Version Creation](#version-creation)
-    - [Controller Generation](#controller-generation)
+    - [Internal API mode](#internal-api-mode)
+    - [Version Creation (public mode only)](#version-creation-public-mode-only)
+    - [Controller Generation (public model only)](#controller-generation-public-model-only)
       - [Command options:](#command-options-1)
         - [`--attributes`](#--attributes)
         - [`--controller-actions`](#--controller-actions)
@@ -90,16 +92,6 @@ After doing this you will get:
   ```
   Here you should include everything common to all your API versions. It is usually empty because most of the configuration comes in the `PowerApi::BaseController` that is inside the gem.
 
-- A base controller for the first version of your API under `/your_api/app/controllers/api/v1/base_controller.rb`
-  ```ruby
-  class Api::V1::BaseController < Api::BaseController
-    before_action do
-      self.namespace_for_serializer = ::Api::V1
-    end
-  end
-  ```
-  Everything related to version 1 of your API must be included here.
-
 - Some initializers:
   - `/your_api/config/initializers/active_model_serializers.rb`:
     ```ruby
@@ -123,6 +115,30 @@ After doing this you will get:
     ```
     We use what comes by default and kaminari as pager.
 
+After running the installer you must choose an API mode.
+### Public API mode
+
+Use this version if your API will be accessed by multiple clients or if your API is served somewhere other than your client application.
+
+You must run the following command to have the public API mode configuration:
+
+```bash
+rails generate power_api:public_api_config
+```
+
+After doing this you will get:
+
+- A base controller for the first version of your API under `/your_api/app/controllers/api/v1/base_controller.rb`
+  ```ruby
+  class Api::V1::BaseController < Api::BaseController
+    before_action do
+      self.namespace_for_serializer = ::Api::V1
+    end
+  end
+  ```
+  Everything related to version 1 of your API must be included here.
+
+- Some initializers:
   - `/your_api/config/initializers/rswag-api.rb`:
     ```ruby
     Rswag::Api.configure do |c|
@@ -225,7 +241,11 @@ Running the above code will generate, in addition to everything described in the
   ```
 - The migration `/your_api/db/migrate/20200228173608_add_authentication_token_to_users.rb` to add the `authentication_token` to your users table.
 
-### Version Creation
+### Internal API mode
+
+TODO
+
+### Version Creation (public mode only)
 
 To add a new version you must run the following command:
 ```bash
@@ -238,7 +258,7 @@ rails g power_api:version 2
 
 Doing this will add the same thing that was added for version one in the initial setup but this time for the number version provided as parameter.
 
-### Controller Generation
+### Controller Generation (public model only)
 
 To add a controller you must run the following command:
 ```bash
