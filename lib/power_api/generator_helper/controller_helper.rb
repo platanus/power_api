@@ -3,7 +3,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
   extend ActiveSupport::Concern
 
   included do
-    include PowerApi::GeneratorHelper::VersionHelper
+    include PowerApi::GeneratorHelper::ApiHelper
     include PowerApi::GeneratorHelper::ResourceHelper
     include PowerApi::GeneratorHelper::PaginationHelper
     include PowerApi::GeneratorHelper::SimpleTokenAuthHelper

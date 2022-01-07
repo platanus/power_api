@@ -1,4 +1,4 @@
-RSpec.describe PowerApi::GeneratorHelper::VersionHelper, type: :generator do
+RSpec.describe PowerApi::GeneratorHelper::ApiHelper, type: :generator do
   describe "#version_number" do
     def perform
       generators_helper.version_number

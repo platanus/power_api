@@ -13,7 +13,7 @@ module PowerApi
       require_relative "./errors"
       require_relative "./generator_helper/controller_actions_helper"
       require_relative "./generator_helper/active_record_resource"
-      require_relative "./generator_helper/version_helper"
+      require_relative "./generator_helper/api_helper"
       require_relative "./generator_helper/resource_helper"
       require_relative "./generator_helper/swagger_helper"
       require_relative "./generator_helper/ams_helper"

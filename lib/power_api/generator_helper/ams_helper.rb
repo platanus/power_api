@@ -2,7 +2,7 @@ module PowerApi::GeneratorHelper::AmsHelper
   extend ActiveSupport::Concern
 
   included do
-    include PowerApi::GeneratorHelper::VersionHelper
+    include PowerApi::GeneratorHelper::ApiHelper
     include PowerApi::GeneratorHelper::ResourceHelper
   end
 

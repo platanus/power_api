@@ -1,4 +1,4 @@
-module PowerApi::GeneratorHelper::VersionHelper
+module PowerApi::GeneratorHelper::ApiHelper
   extend ActiveSupport::Concern
 
   included do

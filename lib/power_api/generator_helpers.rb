@@ -2,7 +2,7 @@ module PowerApi
   class GeneratorHelpers
     include GeneratorHelper::ControllerActionsHelper
     include GeneratorHelper::ResourceHelper
-    include GeneratorHelper::VersionHelper
+    include GeneratorHelper::ApiHelper
     include GeneratorHelper::SwaggerHelper
     include GeneratorHelper::AmsHelper
     include GeneratorHelper::ControllerHelper

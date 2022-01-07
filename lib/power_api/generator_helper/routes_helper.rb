@@ -1,9 +1,9 @@
-# rubocop:disable Layout/AlignArguments
+# rubocop:disable Layout/AlignParameters
 module PowerApi::GeneratorHelper::RoutesHelper
   extend ActiveSupport::Concern
 
   included do
-    include PowerApi::GeneratorHelper::VersionHelper
+    include PowerApi::GeneratorHelper::ApiHelper
     include PowerApi::GeneratorHelper::ResourceHelper
     include PowerApi::GeneratorHelper::TemplateBuilderHelper
   end
@@ -88,4 +88,4 @@ path: { value: 'v#{version_number}' }, \
 defaults: { format: 'json' }"
   end
 end
-# rubocop:enable Layout/AlignArguments
+# rubocop:enable Layout/AlignParameters

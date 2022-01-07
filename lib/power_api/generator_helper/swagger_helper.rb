@@ -1,11 +1,11 @@
 # rubocop:disable Metrics/ModuleLength
 # rubocop:disable Metrics/MethodLength
-# rubocop:disable Layout/AlignArguments
+# rubocop:disable Layout/AlignParameters
 module PowerApi::GeneratorHelper::SwaggerHelper
   extend ActiveSupport::Concern
 
   included do
-    include PowerApi::GeneratorHelper::VersionHelper
+    include PowerApi::GeneratorHelper::ApiHelper
     include PowerApi::GeneratorHelper::ResourceHelper
     include PowerApi::GeneratorHelper::SimpleTokenAuthHelper
     include PowerApi::GeneratorHelper::TemplateBuilderHelper
@@ -475,4 +475,4 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
 end
 # rubocop:enable Metrics/ModuleLength
 # rubocop:enable Metrics/MethodLength
-# rubocop:enable Layout/AlignArguments
+# rubocop:enable Layout/AlignParameters
