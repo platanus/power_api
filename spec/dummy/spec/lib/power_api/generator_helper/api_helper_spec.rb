@@ -23,13 +23,13 @@ RSpec.describe PowerApi::GeneratorHelper::ApiHelper, type: :generator do
     context "with nil version number" do
       let(:version_number) { nil }
 
-      it { expect { generators_helper }.to raise_error("invalid version number") }
+      it { expect { generators_helper }.not_to raise_error }
     end
 
     context "with nil blank number" do
       let(:version_number) { "" }
 
-      it { expect { generators_helper }.to raise_error("invalid version number") }
+      it { expect { generators_helper }.not_to raise_error }
     end
 
     context "with negative version number" do
@@ -50,6 +50,66 @@ RSpec.describe PowerApi::GeneratorHelper::ApiHelper, type: :generator do
       let(:version_number) { "2" }
 
       it { expect(perform).to eq(false) }
+    end
+  end
+
+  describe "#versioned_api?" do
+    def perform
+      generators_helper.versioned_api?
+    end
+
+    it { expect(perform).to eq(true) }
+
+    context "when version in not first version" do
+      let(:version_number) { "2" }
+
+      it { expect(perform).to eq(true) }
+    end
+
+    context "when nil version" do
+      let(:version_number) { nil }
+
+      it { expect(perform).to eq(false) }
+    end
+  end
+
+  describe "#api_file_path_prefix" do
+    def perform
+      generators_helper.api_file_path_prefix
+    end
+
+    it { expect(perform).to eq("api/exposed/v1") }
+
+    context "when version in not first version" do
+      let(:version_number) { "2" }
+
+      it { expect(perform).to eq("api/exposed/v2") }
+    end
+
+    context "when nil version" do
+      let(:version_number) { nil }
+
+      it { expect(perform).to eq("api/internal") }
+    end
+  end
+
+  describe "#api_class_prefix" do
+    def perform
+      generators_helper.api_class_prefix
+    end
+
+    it { expect(perform).to eq("Api::Exposed::V1") }
+
+    context "when version in not first version" do
+      let(:version_number) { "2" }
+
+      it { expect(perform).to eq("Api::Exposed::V2") }
+    end
+
+    context "when nil version" do
+      let(:version_number) { nil }
+
+      it { expect(perform).to eq("Api::Internal") }
     end
   end
 end

@@ -11,7 +11,7 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
 
   describe "#ams_serializers_path" do
     let(:expected_path) do
-      "app/serializers/api/v1/.gitkeep"
+      "app/serializers/api/exposed/v1/.gitkeep"
     end
 
     def perform
@@ -24,7 +24,17 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
       let(:version_number) { "2" }
 
       let(:expected_path) do
-        "app/serializers/api/v2/.gitkeep"
+        "app/serializers/api/exposed/v2/.gitkeep"
+      end
+
+      it { expect(perform).to eq(expected_path) }
+    end
+
+    context "with no version" do
+      let(:version_number) { "" }
+
+      let(:expected_path) do
+        "app/serializers/api/internal/.gitkeep"
       end
 
       it { expect(perform).to eq(expected_path) }
@@ -32,13 +42,23 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
   end
 
   describe "#ams_serializer_path" do
-    let(:expected_path) { "app/serializers/api/v1/blog_serializer.rb" }
+    let(:expected_path) { "app/serializers/api/exposed/v1/blog_serializer.rb" }
 
     def perform
       generators_helper.ams_serializer_path
     end
 
     it { expect(perform).to eq(expected_path) }
+
+    context "with no version" do
+      let(:version_number) { nil }
+
+      let(:expected_path) do
+        "app/serializers/api/internal/blog_serializer.rb"
+      end
+
+      it { expect(perform).to eq(expected_path) }
+    end
   end
 
   describe "ams_initializer_tpl" do
@@ -64,7 +84,7 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
   describe "ams_serializer_tpl" do
     let(:template) do
       <<~SERIALIZER
-        class Api::V1::BlogSerializer < ActiveModel::Serializer
+        class Api::Exposed::V1::BlogSerializer < ActiveModel::Serializer
           type :blog
 
           attributes(
@@ -83,5 +103,27 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
     end
 
     it { expect(perform).to eq(template) }
+
+    context "with no version" do
+      let(:version_number) { nil }
+
+      let(:template) do
+        <<~SERIALIZER
+          class Api::Internal::BlogSerializer < ActiveModel::Serializer
+            type :blog
+
+            attributes(
+              :title,
+          :body,
+          :created_at,
+          :updated_at,
+          :portfolio_id
+          )
+          end
+        SERIALIZER
+      end
+
+      it { expect(perform).to eq(template) }
+    end
   end
 end
