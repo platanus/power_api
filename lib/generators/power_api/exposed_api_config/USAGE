@@ -1,0 +1,5 @@
+Description:
+    Configure exposed API in host app.
+
+Example:
+    rails generate power_api:exposed_api_config

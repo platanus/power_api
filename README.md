@@ -26,12 +26,12 @@ These gems are:
   - [Installation](#installation)
   - [Usage](#usage)
     - [Initial Setup](#initial-setup)
-    - [Public API mode](#public-api-mode)
+    - [Exposed API mode](#exposed-api-mode)
       - [Command options:](#command-options)
         - [`--authenticated-resources`](#--authenticated-resources)
     - [Internal API mode](#internal-api-mode)
-    - [Version Creation (public mode only)](#version-creation-public-mode-only)
-    - [Controller Generation (public model only)](#controller-generation-public-model-only)
+    - [Version Creation (exposed mode only)](#version-creation-exposed-mode-only)
+    - [Controller Generation (exposed model only)](#controller-generation-exposed-model-only)
       - [Command options:](#command-options-1)
         - [`--attributes`](#--attributes)
         - [`--controller-actions`](#--controller-actions)
@@ -116,14 +116,14 @@ After doing this you will get:
     We use what comes by default and kaminari as pager.
 
 After running the installer you must choose an API mode.
-### Public API mode
+### Exposed API mode
 
 Use this version if your API will be accessed by multiple clients or if your API is served somewhere other than your client application.
 
-You must run the following command to have the public API mode configuration:
+You must run the following command to have the exposed API mode configuration:
 
 ```bash
-rails generate power_api:public_api_config
+rails generate power_api:exposed_api_config
 ```
 
 After doing this you will get:
@@ -245,7 +245,7 @@ Running the above code will generate, in addition to everything described in the
 
 TODO
 
-### Version Creation (public mode only)
+### Version Creation (exposed mode only)
 
 To add a new version you must run the following command:
 ```bash
@@ -258,7 +258,7 @@ rails g power_api:version 2
 
 Doing this will add the same thing that was added for version one in the initial setup but this time for the number version provided as parameter.
 
-### Controller Generation (public model only)
+### Controller Generation (exposed model only)
 
 To add a controller you must run the following command:
 ```bash

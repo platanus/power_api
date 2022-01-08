@@ -1,4 +1,4 @@
-class PowerApi::PublicApiConfigGenerator < Rails::Generators::Base
+class PowerApi::ExposedApiConfigGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
   class_option(
