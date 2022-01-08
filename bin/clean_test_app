@@ -1,0 +1,2 @@
+git checkout spec/dummy/*.rb
+git status --porcelain | cut -c 3-10000000 | grep 'dummy' | xargs rm -rf
