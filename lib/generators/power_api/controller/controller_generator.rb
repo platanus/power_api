@@ -140,13 +140,13 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
 
   def add_normal_route(actions:)
     actions_for_only_option = actions.sort == self.class.valid_actions.sort ? [] : actions
-    add_route(helper.api_version_routes_line_regex) do |match|
+    add_route(helper.api_current_route_namespace_line_regex) do |match|
       "#{match}\n#{helper.resource_route_tpl(actions: actions_for_only_option)}"
     end
   end
 
   def add_nested_parent_route
-    add_route(helper.api_version_routes_line_regex) do |match|
+    add_route(helper.api_current_route_namespace_line_regex) do |match|
       "#{match}\n#{helper.resource_route_tpl(is_parent: true)}"
     end
   end

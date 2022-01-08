@@ -9,14 +9,21 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
     it { expect(perform).to eq(expected_path) }
   end
 
-  describe "#api_version_routes_line_regex" do
+  describe "#api_current_route_namespace_line_regex" do
     let(:expected_regex) { /Api::Exposed::V1[^\n]*/ }
 
     def perform
-      generators_helper.api_version_routes_line_regex
+      generators_helper.api_current_route_namespace_line_regex
     end
 
     it { expect(perform).to eq(expected_regex) }
+
+    context "without version" do
+      let(:version_number) { "" }
+      let(:expected_regex) { /namespace :internal[^\n]*/ }
+
+      it { expect(perform).to eq(expected_regex) }
+    end
   end
 
   describe "#parent_resource_routes_line_regex" do
@@ -116,7 +123,7 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
   describe "#internal_route_tpl" do
     let(:expected_tpl) do
       <<~ROUTE
-        namespace :api do
+        namespace :api, defaults: { format: :json } do
         namespace :internal do
         end
         end

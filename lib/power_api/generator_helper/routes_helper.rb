@@ -22,8 +22,10 @@ module PowerApi::GeneratorHelper::RoutesHelper
     "routes.draw do\n"
   end
 
-  def api_version_routes_line_regex
-    /#{version_class}[^\n]*/
+  def api_current_route_namespace_line_regex
+    return /#{version_class}[^\n]*/ if versioned_api?
+
+    /namespace :internal[^\n]*/
   end
 
   def parent_resource_routes_line_regex
@@ -38,7 +40,7 @@ module PowerApi::GeneratorHelper::RoutesHelper
 
   def internal_route_tpl
     concat_tpl_statements(
-      "namespace :api do",
+      "namespace :api, defaults: { format: :json } do",
         "namespace :internal do",
         "end",
       "end\n"
