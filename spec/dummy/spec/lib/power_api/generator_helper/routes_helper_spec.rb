@@ -10,7 +10,7 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
   end
 
   describe "#api_version_routes_line_regex" do
-    let(:expected_regex) { /Api::V1[^\n]*/ }
+    let(:expected_regex) { /Api::Exposed::V1[^\n]*/ }
 
     def perform
       generators_helper.api_version_routes_line_regex
@@ -87,7 +87,7 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
     let(:expected_tpl) do
       <<~ROUTE
         scope path: '/api' do
-        api_version(module: 'Api::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
+        api_version(module: 'Api::Exposed::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
         end
         end
       ROUTE
@@ -104,13 +104,30 @@ RSpec.describe PowerApi::GeneratorHelper::RoutesHelper, type: :generator do
 
       let(:expected_tpl) do
         <<~ROUTE
-          api_version(module: 'Api::V2', path: { value: 'v2' }, defaults: { format: 'json' }) do
+          api_version(module: 'Api::Exposed::V2', path: { value: 'v2' }, defaults: { format: 'json' }) do
           end
         ROUTE
       end
 
       it { expect(perform).to eq(expected_tpl.delete_suffix("\n")) }
     end
+  end
+
+  describe "#internal_route_tpl" do
+    let(:expected_tpl) do
+      <<~ROUTE
+        namespace :api do
+        namespace :internal do
+        end
+        end
+      ROUTE
+    end
+
+    def perform
+      generators_helper.internal_route_tpl
+    end
+
+    it { expect(perform).to eq(expected_tpl) }
   end
 
   describe "#parent_route_exist?" do

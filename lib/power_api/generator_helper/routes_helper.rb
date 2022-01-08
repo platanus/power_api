@@ -13,9 +13,13 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def routes_line_to_inject_new_version
-    return "routes.draw do\n" if first_version?
+    return routes_first_line if first_version?
 
     "'/api' do\n"
+  end
+
+  def routes_first_line
+    "routes.draw do\n"
   end
 
   def api_version_routes_line_regex
@@ -30,6 +34,15 @@ module PowerApi::GeneratorHelper::RoutesHelper
     return first_version_route_tpl if first_version?
 
     new_version_route_tpl
+  end
+
+  def internal_route_tpl
+    concat_tpl_statements(
+      "namespace :api do",
+        "namespace :internal do",
+        "end",
+      "end\n"
+    )
   end
 
   def resource_route_tpl(actions: [], is_parent: false)
