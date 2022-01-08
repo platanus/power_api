@@ -8,6 +8,10 @@ class PowerApi::InternalApiConfigGenerator < Rails::Generators::Base
     )
   end
 
+  def add_serializers_directory
+    create_file(helper.ams_serializers_path)
+  end
+
   private
 
   def helper
