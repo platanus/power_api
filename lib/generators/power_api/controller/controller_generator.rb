@@ -23,7 +23,7 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   class_option(
     :version_number,
     type: 'numeric',
-    default: 1,
+    default: nil,
     aliases: '-v',
     desc: 'the API version number you want to add this controller'
   )
@@ -95,28 +95,32 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
   end
 
   def configure_swagger
-    create_file(
-      helper.swagger_resource_schema_path,
-      helper.swagger_schema_tpl
-    )
+    return unless helper.versioned_api?
 
+    create_swagger_schema
+    add_swagger_schema_to_definition
+    create_swagger_resource_spec
+  end
+
+  private
+
+  def create_swagger_schema
+    create_file(helper.swagger_resource_schema_path, helper.swagger_schema_tpl)
     helper.format_ruby_file(helper.swagger_resource_schema_path)
+  end
 
+  def add_swagger_schema_to_definition
     insert_into_file(
       helper.swagger_version_definition_path,
       helper.swagger_definition_entry,
       after: helper.swagger_definition_line_to_inject_schema
     )
-
-    create_file(
-      helper.swagger_resource_spec_path,
-      helper.swagger_resource_spec_tpl
-    )
-
-    helper.format_ruby_file(helper.swagger_resource_spec_path)
   end
 
-  private
+  def create_swagger_resource_spec
+    create_file(helper.swagger_resource_spec_path, helper.swagger_resource_spec_tpl)
+    helper.format_ruby_file(helper.swagger_resource_spec_path)
+  end
 
   def add_nested_route
     line_to_replace = helper.parent_resource_routes_line_regex

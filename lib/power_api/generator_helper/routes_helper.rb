@@ -19,7 +19,7 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def api_version_routes_line_regex
-    /Api::V#{version_number}[^\n]*/
+    /#{version_class}[^\n]*/
   end
 
   def parent_resource_routes_line_regex
@@ -83,7 +83,7 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def api_version_params
-    "module: 'Api::V#{version_number}', \
+    "module: '#{version_class}', \
 path: { value: 'v#{version_number}' }, \
 defaults: { format: 'json' }"
   end
