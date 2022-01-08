@@ -2,7 +2,7 @@ class PowerApi::InstallGenerator < Rails::Generators::Base
   source_root File.expand_path('templates', __dir__)
 
   def create_api_base_controller
-    create_file(helper.api_base_controller_path, helper.api_base_controller_tpl)
+    create_file(helper.api_main_base_controller_path, helper.api_main_base_controller_tpl)
   end
 
   def create_ams_initializer

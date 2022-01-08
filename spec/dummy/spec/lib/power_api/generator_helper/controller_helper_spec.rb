@@ -1,46 +1,68 @@
 RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
-  describe "#api_base_controller_path" do
+  describe "#api_main_base_controller_path" do
     let(:expected_path) { "app/controllers/api/base_controller.rb" }
 
     def perform
-      generators_helper.api_base_controller_path
+      generators_helper.api_main_base_controller_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#exposed_base_controller_path" do
+    let(:expected_path) { "app/controllers/api/exposed/base_controller.rb" }
+
+    def perform
+      generators_helper.exposed_base_controller_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#internal_base_controller_path" do
+    let(:expected_path) { "app/controllers/api/internal/base_controller.rb" }
+
+    def perform
+      generators_helper.internal_base_controller_path
+    end
+
+    it { expect(perform).to eq(expected_path) }
+  end
+
+  describe "#version_base_controller_path" do
+    let(:expected_path) { "app/controllers/api/exposed/v1/base_controller.rb" }
+
+    def perform
+      generators_helper.version_base_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
   end
 
   describe "#resource_controller_path" do
-    let(:expected_path) { "app/controllers/api/v1/blogs_controller.rb" }
+    let(:expected_path) { "app/controllers/api/exposed/v1/blogs_controller.rb" }
 
     def perform
       generators_helper.resource_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
+
+    context "without version" do
+      let(:version_number) { "" }
+      let(:expected_path) { "app/controllers/api/internal/blogs_controller.rb" }
+
+      it { expect(perform).to eq(expected_path) }
+    end
   end
 
-  describe "api_base_controller_tpl" do
-    let(:template) do
-      <<~CONTROLLER
-        class Api::BaseController < PowerApi::BaseController
-        end
-      CONTROLLER
-    end
-
-    def perform
-      generators_helper.api_base_controller_tpl
-    end
-
-    it { expect(perform).to eq(template) }
-  end
-
-  describe "#base_controller_path" do
+  describe "#version_base_controller_path" do
     let(:expected_path) do
-      "app/controllers/api/v1/base_controller.rb"
+      "app/controllers/api/exposed/v1/base_controller.rb"
     end
 
     def perform
-      generators_helper.base_controller_path
+      generators_helper.version_base_controller_path
     end
 
     it { expect(perform).to eq(expected_path) }
@@ -49,17 +71,65 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       let(:version_number) { "2" }
 
       let(:expected_path) do
-        "app/controllers/api/v2/base_controller.rb"
+        "app/controllers/api/exposed/v2/base_controller.rb"
       end
 
       it { expect(perform).to eq(expected_path) }
     end
   end
 
+  describe "api_main_base_controller_tpl" do
+    let(:template) do
+      <<~CONTROLLER
+        class Api::BaseController < PowerApi::BaseController
+        end
+      CONTROLLER
+    end
+
+    def perform
+      generators_helper.api_main_base_controller_tpl
+    end
+
+    it { expect(perform).to eq(template) }
+  end
+
+  describe "exposed_base_controller_tpl" do
+    let(:template) do
+      <<~CONTROLLER
+        class Api::Exposed::BaseController < Api::BaseController
+        end
+      CONTROLLER
+    end
+
+    def perform
+      generators_helper.exposed_base_controller_tpl
+    end
+
+    it { expect(perform).to eq(template) }
+  end
+
+  describe "internal_base_controller_tpl" do
+    let(:template) do
+      <<~CONTROLLER
+        class Api::Internal::BaseController < Api::BaseController
+          before_action do
+            self.namespace_for_serializer = ::Api::Internal
+          end
+        end
+      CONTROLLER
+    end
+
+    def perform
+      generators_helper.internal_base_controller_tpl
+    end
+
+    it { expect(perform).to eq(template) }
+  end
+
   describe "resource_controller_tpl" do
     let(:template) do
       <<~CONTROLLER
-        class Api::V1::BlogsController < Api::V1::BaseController
+        class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
         def index
         respond_with Blog.all
         end
@@ -95,6 +165,13 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
 
     it { expect(perform).to eq(template) }
+
+    context "without version" do
+      let(:version_number) { nil }
+      let(:expected) { "class Api::Internal::BlogsController < Api::Internal::BaseController" }
+
+      it { expect(perform).to include(expected) }
+    end
 
     context "with specific attributes" do
       let(:resource_attributes) do
@@ -207,7 +284,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       let(:authenticated_resource) { "user" }
       let(:template) do
         <<~CONTROLLER
-          class Api::V1::BlogsController < Api::V1::BaseController
+          class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
           acts_as_token_authentication_handler_for User, fallback: :exception
 
           def index
@@ -249,7 +326,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
 
       let(:template) do
         <<~CONTROLLER
-          class Api::V1::BlogsController < Api::V1::BaseController
+          class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
           acts_as_token_authentication_handler_for User, fallback: :exception
 
           def index
@@ -299,7 +376,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       let(:parent_resource_name) { "portfolio" }
       let(:template) do
         <<~CONTROLLER
-          class Api::V1::BlogsController < Api::V1::BaseController
+          class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
           def index
           respond_with blogs
           end
@@ -345,7 +422,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       let(:owned_by_authenticated_resource) { true }
       let(:template) do
         <<~CONTROLLER
-          class Api::V1::BlogsController < Api::V1::BaseController
+          class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
           acts_as_token_authentication_handler_for User, fallback: :exception
 
           def index
@@ -388,19 +465,19 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     end
   end
 
-  describe "#base_controller_tpl" do
+  describe "#version_base_controller_tpl" do
     let(:expected_tpl) do
       <<~CONTROLLER
-        class Api::V1::BaseController < Api::BaseController
+        class Api::Exposed::V1::BaseController < Api::Exposed::BaseController
           before_action do
-            self.namespace_for_serializer = ::Api::V1
+            self.namespace_for_serializer = ::Api::Exposed::V1
           end
         end
       CONTROLLER
     end
 
     def perform
-      generators_helper.base_controller_tpl
+      generators_helper.version_base_controller_tpl
     end
 
     it { expect(perform).to eq(expected_tpl) }
@@ -410,9 +487,9 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
 
       let(:expected_tpl) do
         <<~CONTROLLER
-          class Api::V2::BaseController < Api::BaseController
+          class Api::Exposed::V2::BaseController < Api::Exposed::BaseController
             before_action do
-              self.namespace_for_serializer = ::Api::V2
+              self.namespace_for_serializer = ::Api::Exposed::V2
             end
           end
         CONTROLLER

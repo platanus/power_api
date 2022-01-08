@@ -8,6 +8,13 @@ class PowerApi::PublicApiConfigGenerator < Rails::Generators::Base
     desc: 'define which model or models will be token authenticatable'
   )
 
+  def add_base_controller
+    create_file(
+      helper.exposed_base_controller_path,
+      helper.exposed_base_controller_tpl
+    )
+  end
+
   def install_rswag
     generate "rswag:ui:install"
     generate "rswag:api:install"

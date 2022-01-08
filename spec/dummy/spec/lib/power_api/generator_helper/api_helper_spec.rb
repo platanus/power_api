@@ -73,9 +73,9 @@ RSpec.describe PowerApi::GeneratorHelper::ApiHelper, type: :generator do
     end
   end
 
-  describe "#api_file_path_prefix" do
+  describe "#api_file_path" do
     def perform
-      generators_helper.api_file_path_prefix
+      generators_helper.api_file_path
     end
 
     it { expect(perform).to eq("api/exposed/v1") }
@@ -93,9 +93,9 @@ RSpec.describe PowerApi::GeneratorHelper::ApiHelper, type: :generator do
     end
   end
 
-  describe "#api_class_prefix" do
+  describe "#api_class" do
     def perform
-      generators_helper.api_class_prefix
+      generators_helper.api_class
     end
 
     it { expect(perform).to eq("Api::Exposed::V1") }

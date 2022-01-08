@@ -23,15 +23,39 @@ module PowerApi::GeneratorHelper::ApiHelper
     !!version_number
   end
 
-  def api_file_path_prefix
-    return "api/exposed/v#{version_number}" if versioned_api?
+  def api_file_path
+    return version_file_path if versioned_api?
 
+    internal_file_path
+  end
+
+  def version_file_path
+    "#{exposed_file_path}/v#{version_number}"
+  end
+
+  def internal_file_path
     "api/internal"
   end
 
-  def api_class_prefix
-    return "Api::Exposed::V#{version_number}" if versioned_api?
+  def exposed_file_path
+    "api/exposed"
+  end
 
+  def api_class
+    return version_class if versioned_api?
+
+    internal_class
+  end
+
+  def version_class
+    "#{exposed_class}::V#{version_number}"
+  end
+
+  def internal_class
     "Api::Internal"
+  end
+
+  def exposed_class
+    "Api::Exposed"
   end
 end
