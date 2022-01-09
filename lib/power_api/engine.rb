@@ -17,6 +17,7 @@ module PowerApi
       require_relative "./generator_helper/resource_helper"
       require_relative "./generator_helper/swagger_helper"
       require_relative "./generator_helper/ams_helper"
+      require_relative "./generator_helper/rspec_controller_helper"
       require_relative "./generator_helper/controller_helper"
       require_relative "./generator_helper/routes_helper"
       require_relative "./generator_helper/pagination_helper"

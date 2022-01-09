@@ -4,6 +4,7 @@ module PowerApi
     include GeneratorHelper::ResourceHelper
     include GeneratorHelper::ApiHelper
     include GeneratorHelper::SwaggerHelper
+    include GeneratorHelper::RspecControllerHelper
     include GeneratorHelper::AmsHelper
     include GeneratorHelper::ControllerHelper
     include GeneratorHelper::RoutesHelper

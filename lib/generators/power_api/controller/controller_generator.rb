@@ -102,6 +102,13 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     create_swagger_resource_spec
   end
 
+  def add_rspec_tests
+    return if helper.versioned_api?
+
+    create_file(helper.resource_spec_path, helper.resource_spec_tpl)
+    helper.format_ruby_file(helper.resource_spec_path)
+  end
+
   private
 
   def create_swagger_schema

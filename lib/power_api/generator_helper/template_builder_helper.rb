@@ -5,6 +5,12 @@ module PowerApi::GeneratorHelper::TemplateBuilderHelper
     methods.reject(&:blank?).join("\n")
   end
 
+  def conditional_code(condition)
+    return unless condition
+
+    yield
+  end
+
   def concat_tpl_method(method_name, *method_lines)
     concat_tpl_statements(
       "def #{method_name}",
