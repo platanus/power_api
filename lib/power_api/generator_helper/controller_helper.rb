@@ -124,7 +124,8 @@ fallback: :exception\n"
 
     concat_tpl_method(
       "update",
-      "respond_with #{resource.snake_case}.update!(#{resource.snake_case}_params)"
+      "#{resource.snake_case}.update!(#{resource.snake_case}_params)",
+      "respond_with #{resource.snake_case}"
     )
   end
 

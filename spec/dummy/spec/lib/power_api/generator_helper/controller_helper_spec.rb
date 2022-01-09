@@ -140,7 +140,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
         respond_with Blog.create!(blog_params)
         end
         def update
-        respond_with blog.update!(blog_params)
+        blog.update!(blog_params)
+        respond_with blog
         end
         def destroy
         respond_with blog.destroy!
@@ -297,7 +298,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           respond_with Blog.create!(blog_params)
           end
           def update
-          respond_with blog.update!(blog_params)
+          blog.update!(blog_params)
+          respond_with blog
           end
           def destroy
           respond_with blog.destroy!
@@ -348,7 +350,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           respond_with blogs.create!(blog_params)
           end
           def update
-          respond_with blog.update!(blog_params)
+          blog.update!(blog_params)
+          respond_with blog
           end
           def destroy
           respond_with blog.destroy!
@@ -396,7 +399,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           respond_with blogs.create!(blog_params)
           end
           def update
-          respond_with blog.update!(blog_params)
+          blog.update!(blog_params)
+          respond_with blog
           end
           def destroy
           respond_with blog.destroy!
@@ -444,7 +448,8 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
           respond_with blogs.create!(blog_params)
           end
           def update
-          respond_with blog.update!(blog_params)
+          blog.update!(blog_params)
+          respond_with blog
           end
           def destroy
           respond_with blog.destroy!
