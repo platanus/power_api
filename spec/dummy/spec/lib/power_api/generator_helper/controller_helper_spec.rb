@@ -318,6 +318,15 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
       end
 
       it { expect(perform).to eq(template) }
+
+      context "without version" do
+        let(:version_number) { nil }
+        let(:expected) do
+          "before_action :authenticate_user!"
+        end
+
+        it { expect(perform).to include(expected) }
+      end
     end
 
     context "with owned_by_authenticated_resource and authenticated_resource" do

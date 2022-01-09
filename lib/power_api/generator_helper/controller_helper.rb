@@ -70,7 +70,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
   def resource_controller_tpl
     tpl_class(
       ctrl_tpl_class_definition_line,
-      ctrl_tpl_acts_as_token_authentication_handler,
+      ctrl_tpl_authentication_code,
       ctrl_tpl_index,
       ctrl_tpl_show,
       ctrl_tpl_create,
@@ -90,11 +90,15 @@ module PowerApi::GeneratorHelper::ControllerHelper
     "#{api_class}::#{resource.camel_plural}Controller < #{api_class}::BaseController"
   end
 
-  def ctrl_tpl_acts_as_token_authentication_handler
+  def ctrl_tpl_authentication_code
     return unless authenticated_resource?
 
-    "acts_as_token_authentication_handler_for #{authenticated_resource.camel}, \
+    if versioned_api?
+      return "acts_as_token_authentication_handler_for #{authenticated_resource.camel}, \
 fallback: :exception\n"
+    end
+
+    "before_action :authenticate_#{authenticated_resource.snake_case}!\n"
   end
 
   def ctrl_tpl_index
