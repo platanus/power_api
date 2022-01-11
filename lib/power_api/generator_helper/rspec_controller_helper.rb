@@ -41,7 +41,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
     return unless authenticated_resource?
 
     res_name = authenticated_resource.snake_case
-    "let(:#{res_name}) { create(:#{res_name}) }\n"
+    "let(:#{res_name}) { create(:#{res_name}) }"
   end
 
   def spec_let_parent_resource_tpl
@@ -216,7 +216,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
   end
 
   def spec_perform_tpl(http_verb: 'get', params: true, single_resource: false)
-    body = "#{http_verb} '/#{spec_collection_path}"
+    body = "#{http_verb} '/#{spec_collection_path(single_resource)}"
     body += "/' + #{resource.snake_case}_id" if single_resource
     body += "'" unless single_resource
     body += ", params: params" if params
@@ -228,11 +228,11 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
     )
   end
 
-  def spec_collection_path
+  def spec_collection_path(single_resource)
     path = ["api"]
     path << (versioned_api? ? "v#{version_number}" : "internal")
 
-    if parent_resource?
+    if parent_resource? && !single_resource
       path << parent_resource.plural
       path << "' + #{parent_resource.snake_case}.id.to_s + '"
     end
@@ -283,6 +283,8 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
 
   def for_each_attribute(attributes)
     attributes.inject("") do |memo, attr|
+      next memo if parent_resource && attr[:name] == parent_resource.id.to_sym
+
       memo += "\n"
       memo += yield(attr)
       memo
