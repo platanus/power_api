@@ -31,8 +31,8 @@ These gems are:
         - [`--authenticated-resources`](#--authenticated-resources)
     - [Internal API mode](#internal-api-mode)
     - [Version Creation (exposed mode only)](#version-creation-exposed-mode-only)
-    - [Controller Generation (exposed model only)](#controller-generation-exposed-model-only)
-      - [Command options:](#command-options-1)
+    - [Controller Generation (exposed and internal modes)](#controller-generation-exposed-and-internal-modes)
+      - [Command options (valid for internal and exposed modes):](#command-options-valid-for-internal-and-exposed-modes)
         - [`--attributes`](#--attributes)
         - [`--controller-actions`](#--controller-actions)
         - [`--version-number`](#--version-number)
@@ -90,7 +90,7 @@ After doing this you will get:
   class Api::BaseController < PowerApi::BaseController
   end
   ```
-  Here you should include everything common to all your API versions. It is usually empty because most of the configuration comes in the `PowerApi::BaseController` that is inside the gem.
+  Here you should include everything common to all your APIs. It is usually empty because most of the configuration comes in the `PowerApi::BaseController` that is inside the gem.
 
 - Some initializers:
   - `/your_api/config/initializers/active_model_serializers.rb`:
@@ -118,7 +118,7 @@ After doing this you will get:
 After running the installer you must choose an API mode.
 ### Exposed API mode
 
-Use this version if your API will be accessed by multiple clients or if your API is served somewhere other than your client application.
+Use this mode if your API will be accessed by multiple clients or if your API is served somewhere other than your client application.
 
 You must run the following command to have the exposed API mode configuration:
 
@@ -128,9 +128,9 @@ rails generate power_api:exposed_api_config
 
 After doing this you will get:
 
-- A base controller for the first version of your API under `/your_api/app/controllers/api/v1/base_controller.rb`
+- A base controller for the first version of your API under `/your_api/app/controllers/api/exposed/v1/base_controller.rb`
   ```ruby
-  class Api::V1::BaseController < Api::BaseController
+  class Api::Exposed::V1::BaseController < Api::BaseController
     before_action do
       self.namespace_for_serializer = ::Api::V1
     end
@@ -212,7 +212,7 @@ After doing this you will get:
     }
   end
   ```
-- An empty directory indicating where you should put your serializers for the first version: `/your_api/app/serializers/api/v1/.gitkeep`
+- An empty directory indicating where you should put your serializers for the first version: `/your_api/app/serializers/api/exposed/v1/.gitkeep`
 - An empty directory indicating where you should put your API tests: `/your_api/spec/integration/.gitkeep`
 - An empty directory indicating where you should put your swagger schemas `/your_api/spec/swagger/v1/schemas/.gitkeep`
 
@@ -243,7 +243,35 @@ Running the above code will generate, in addition to everything described in the
 
 ### Internal API mode
 
-TODO
+Use this mode if your API will be accessed by a web application served somewhere other than your client application.
+
+You must run the following command to have the internal API mode configuration:
+
+```bash
+rails generate power_api:internal_api_config
+```
+
+After doing this you will get:
+
+- A base controller for the first version of your API under `/your_api/app/controllers/api/internal/base_controller.rb`
+  ```ruby
+  class Api::Internal::BaseController < Api::BaseController
+    before_action do
+      self.namespace_for_serializer = ::Api::Internal
+    end
+  end
+  ```
+  Anything shared by the internal API controllers should go here.
+
+- A modified `/your_api/config/routes.rb` file:
+  ```ruby
+  namespace :api, defaults: { format: :json } do
+    namespace :internal do
+    end
+  end
+  ```
+
+- An empty directory indicating where you should put your serializers: `/your_api/app/serializers/api/internal/.gitkeep`
 
 ### Version Creation (exposed mode only)
 
@@ -258,7 +286,7 @@ rails g power_api:version 2
 
 Doing this will add the same thing that was added for version one in the initial setup but this time for the number version provided as parameter.
 
-### Controller Generation (exposed model only)
+### Controller Generation (exposed and internal modes)
 
 To add a controller you must run the following command:
 ```bash
@@ -288,18 +316,29 @@ end
 after doing this you will get:
 
 - A modified `/your_api/config/routes.rb` file with the new resource:
-  ```ruby
-  Rails.application.routes.draw do
-    scope path: '/api' do
-      api_version(module: 'Api::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
-        resources :blogs
+  - Exposed mode:
+    ```ruby
+    Rails.application.routes.draw do
+      scope path: '/api' do
+        api_version(module: 'Api::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
+          resources :blogs
+        end
       end
     end
-  end
-  ```
-- A controller under `/your_api/app/controllers/api/v1/blogs_controller.rb`
+    ```
+  - Internal mode:
+    ```ruby
+    Rails.application.routes.draw do
+      namespace :api, defaults: { format: :json } do
+        namespace :internal do
+          resources :blogs
+        end
+      end
+    end
+    ```
+- A controller under `/your_api/app/controllers/api/exposed/v1/blogs_controller.rb`
   ```ruby
-  class Api::V1::BlogsController < Api::V1::BaseController
+  class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
     def index
       respond_with Blog.all
     end
@@ -334,9 +373,11 @@ after doing this you will get:
     end
   end
   ```
-- A serializer under `/your_api/app/serializers/api/v1/blog_serializer.rb`
+  > With internal mode the file path will be: `/your_api/app/controllers/api/internal/blogs_controller.rb` and the class name: `Api::Internal::BlogsController`
+
+- A serializer under `/your_api/app/serializers/api/exposed/v1/blog_serializer.rb`
   ```ruby
-  class Api::V1::BlogSerializer < ActiveModel::Serializer
+  class Api::Exposed::V1::BlogSerializer < ActiveModel::Serializer
     type :blog
 
     attributes(
@@ -347,7 +388,10 @@ after doing this you will get:
     )
   end
   ```
-- A spec file under `/your_api/spec/integration/api/v1/blogs_spec.rb`
+  > With internal mode the file path will be: `/your_api/app/serializers/api/internal/blog_serializer.rb` and the class name: `Api::Internal::BlogSerializer`
+
+- A spec file under `/your_api/spec/integration/api/exposed/v1/blogs_spec.rb`
+  - Exposed mode:
   ```ruby
   require 'swagger_helper'
 
@@ -446,7 +490,160 @@ after doing this you will get:
     end
   end
   ```
-- A swagger schema definition under `/your_api/spec/swagger/v1/schemas/blog_schema.rb`
+  - Internal mode:
+  ```ruby
+  require 'rails_helper'
+
+  RSpec.describe 'Api::Internal::BlogsControllers', type: :request do
+    describe 'GET /index' do
+      let!(:blogs) { create_list(:blog, 5) }
+      let(:collection) { JSON.parse(response.body)['data'] }
+      let(:params) { {} }
+
+      def perform
+        get '/api/internal/blogs', params: params
+      end
+
+      before do
+        perform
+      end
+
+      it { expect(collection.count).to eq(5) }
+      it { expect(response.status).to eq(200) }
+    end
+
+    describe 'POST /create' do
+      let(:params) do
+        {
+          blog: {
+            title: 'Some title'
+          }
+        }
+      end
+
+      let(:attributes) do
+        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+      end
+
+      def perform
+        post '/api/internal/blogs', params: params
+      end
+
+      before do
+        perform
+      end
+
+      it { expect(attributes).to include(params[:blog]) }
+      it { expect(response.status).to eq(201) }
+
+      context 'with invalid attributes' do
+        let(:params) do
+          {
+            blog: {
+              title: nil
+            }
+          }
+        end
+
+        it { expect(response.status).to eq(400) }
+      end
+    end
+
+    describe 'GET /show' do
+      let(:blog) { create(:blog) }
+      let(:blog_id) { blog.id.to_s }
+
+      let(:attributes) do
+        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+      end
+
+      def perform
+        get '/api/internal/blogs/' + blog_id
+      end
+
+      before do
+        perform
+      end
+
+      it { expect(response.status).to eq(200) }
+
+      context 'with resource not found' do
+        let(:blog_id) { '666' }
+
+        it { expect(response.status).to eq(404) }
+      end
+    end
+
+    describe 'PUT /update' do
+      let(:blog) { create(:blog) }
+      let(:blog_id) { blog.id.to_s }
+
+      let(:params) do
+        {
+          blog: {
+            title: 'Some title'
+          }
+        }
+      end
+
+      let(:attributes) do
+        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+      end
+
+      def perform
+        put '/api/internal/blogs/' + blog_id, params: params
+      end
+
+      before do
+        perform
+      end
+
+      it { expect(attributes).to include(params[:blog]) }
+      it { expect(response.status).to eq(200) }
+
+      context 'with invalid attributes' do
+        let(:params) do
+          {
+            blog: {
+              title: nil
+            }
+          }
+        end
+
+        it { expect(response.status).to eq(400) }
+      end
+
+      context 'with resource not found' do
+        let(:blog_id) { '666' }
+
+        it { expect(response.status).to eq(404) }
+      end
+    end
+
+    describe 'DELETE /destroy' do
+      let(:blog) { create(:blog) }
+      let(:blog_id) { blog.id.to_s }
+
+      def perform
+        get '/api/internal/blogs/' + blog_id
+      end
+
+      before do
+        perform
+      end
+
+      it { expect(response.status).to eq(200) }
+
+      context 'with resource not found' do
+        let(:blog_id) { '666' }
+
+        it { expect(response.status).to eq(404) }
+      end
+    end
+  end
+
+  ```
+- A swagger schema definition under `/your_api/spec/swagger/v1/schemas/blog_schema.rb` (only for exposed mode)
   ```ruby
   BLOG_SCHEMA = {
     type: :object,
@@ -495,7 +692,7 @@ after doing this you will get:
     ]
   }
   ```
-- An edited version of `your_api/api_example/spec/swagger/v1/definition.rb` with the schema definitions for the `Blog` resource.
+- An edited version of `your_api/api_example/spec/swagger/v1/definition.rb` with the schema definitions for the `Blog` resource. (only for exposed mode)
   ```ruby
   API_V1 = {
     swagger: '2.0',
@@ -512,7 +709,7 @@ after doing this you will get:
   }
   ```
 
-#### Command options:
+#### Command options (valid for internal and exposed modes):
 
 ##### `--attributes`
 
@@ -524,9 +721,9 @@ rails g power_api:controller blog --attributes=title
 
 When you do this, you will see permited_params, serializers, swagger definitions, etc. showing only the selected attributes
 
-For example, the serializer under `/your_api/app/serializers/api/v1/blog_serializer.rb` will show:
+For example, the serializer under `/your_api/app/serializers/api/exposed/v1/blog_serializer.rb` will show:
 ```ruby
-class Api::V1::BlogSerializer < ActiveModel::Serializer
+class Api::Exposed::V1::BlogSerializer < ActiveModel::Serializer
   type :blog
 
   attributes(
@@ -548,7 +745,7 @@ When you do this, you will see that only relevant code is generated in controlle
 For example, the controller would only include the `show` and `destroy` actions and wouldn't include the `blog_params` method:
 
 ```ruby
-class Api::V1::BlogSerializer < Api::V1::BaseController
+class Api::Exposed::V1::BlogSerializer < Api::Exposed::V1::BaseController
   def show
     respond_with blog
   end
@@ -573,6 +770,8 @@ Use this option if you want to decide which version the new controller will belo
 rails g power_api:controller blog --version-number=2
 ```
 
+> Important! When working with exposed api you should always specify the version, otherwise the controller will be generated for the internal api mode.
+
 ##### `--use-paginator`
 
 Use this option if you want to paginate the index endpoint collection.
@@ -581,10 +780,10 @@ Use this option if you want to paginate the index endpoint collection.
 rails g power_api:controller blog --use-paginator
 ```
 
-The controller under `/your_api/app/controllers/api/v1/blogs_controller.rb` will be modified to use the paginator like this:
+The controller under `/your_api/app/controllers/api/exposed/v1/blogs_controller.rb` will be modified to use the paginator like this:
 
 ```ruby
-class Api::V1::BlogsController < Api::V1::BaseController
+class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
   def index
     respond_with paginate(Blog.all)
   end
@@ -605,10 +804,10 @@ Use this option if you want to filter your index endpoint collection with [Ransa
 rails g power_api:controller blog --allow-filters
 ```
 
-The controller under `/your_api/app/controllers/api/v1/blogs_controller.rb` will be modified like this:
+The controller under `/your_api/app/controllers/api/exposed/v1/blogs_controller.rb` will be modified like this:
 
 ```ruby
-class Api::V1::BlogsController < Api::V1::BaseController
+class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
   def index
     respond_with filtered_collection(Blog.all)
   end
@@ -645,12 +844,14 @@ rails g power_api:controller blog --authenticate-with=user
 When you do this your controller will have the following line:
 
 ```ruby
-class Api::V1::BlogsController < Api::V1::BaseController
+class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
   acts_as_token_authentication_handler_for User, fallback: :exception
 
   # mode code...
 end
 ```
+
+> With internal mode a `before_action :authenticate_user!` statement will be added instead of `acts_as_token_authentication_handler_for` in order to work with devise gem directly.
 
 In addition, the specs under `/your_api/spec/integration/api/v1/blogs_spec.rb` will add tests related with authorization.
 
@@ -673,7 +874,7 @@ rails g power_api:controller blog --authenticate-with=user --owned-by-authentica
 The controller will look like this:
 
 ```ruby
-class Api::V1::BlogsController < Api::V1::BaseController
+class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
   acts_as_token_authentication_handler_for User, fallback: :exception
 
   def index
@@ -751,9 +952,9 @@ rails g power_api:controller comment --attributes=body --parent-resource=blog
 
 Running the previous code we will get:
 
-- The controller under `/your_api/app/controllers/api/v1/comments_controller.rb`:
+- The controller under `/your_api/app/controllers/api/exposed/v1/comments_controller.rb`:
   ```ruby
-  class Api::V1::CommentsController < Api::V1::BaseController
+  class Api::Exposed::V1::CommentsController < Api::Exposed::V1::BaseController
     def index
       respond_with comments
     end
@@ -888,7 +1089,7 @@ This module is useful when you want to mark endpoints as deprecated.
 For example, if you have the following controller:
 
 ```ruby
-class Api::V1::CommentsController < Api::V1::BaseController
+class Api::Exposed::V1::CommentsController < Api::Exposed::V1::BaseController
   deprecate :index
 
   def index
@@ -964,4 +1165,4 @@ Power API is maintained by [platanus](http://platan.us).
 
 ## License
 
-Power API is © 2019 platanus, spa. It is free software and may be redistributed under the terms specified in the LICENSE file.
+Power API is © 2022 platanus, spa. It is free software and may be redistributed under the terms specified in the LICENSE file.
