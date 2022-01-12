@@ -25,7 +25,8 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     type: 'numeric',
     default: nil,
     aliases: '-v',
-    desc: 'the API version number you want to add this controller'
+    desc: 'the API version number you want to add this controller. '\
+'Omitting this attribute will create a controller for the internal api.'
   )
 
   class_option(
