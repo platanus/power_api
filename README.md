@@ -243,7 +243,7 @@ Running the above code will generate, in addition to everything described in the
 
 ### Internal API mode
 
-Use this mode if your API will be accessed by a web application served somewhere other than your client application.
+Use this mode if your API and your client app will be served on the same place.
 
 You must run the following command to have the internal API mode configuration:
 
@@ -253,7 +253,7 @@ rails generate power_api:internal_api_config
 
 After doing this you will get:
 
-- A base controller for the first version of your API under `/your_api/app/controllers/api/internal/base_controller.rb`
+- A base controller for your internal API under `/your_api/app/controllers/api/internal/base_controller.rb`
   ```ruby
   class Api::Internal::BaseController < Api::BaseController
     before_action do
