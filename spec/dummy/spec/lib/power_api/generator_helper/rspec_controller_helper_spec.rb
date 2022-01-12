@@ -204,7 +204,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           it { expect(response.status).to eq(200) }
           end
 
-          context 'with unauthorized user' do
+          context 'with unauthenticated user' do
           before { perform }
 
           it { expect(response.status).to eq(401) }
@@ -250,7 +250,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
           end
 
-          context 'with unauthorized user' do
+          context 'with unauthenticated user' do
           before { perform }
 
           it { expect(response.status).to eq(401) }
@@ -282,7 +282,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
           end
 
-          context 'with unauthorized user' do
+          context 'with unauthenticated user' do
           before { perform }
 
           it { expect(response.status).to eq(401) }
@@ -335,7 +335,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
           end
 
-          context 'with unauthorized user' do
+          context 'with unauthenticated user' do
           before { perform }
 
           it { expect(response.status).to eq(401) }
@@ -364,7 +364,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
           end
 
-          context 'with unauthorized user' do
+          context 'with unauthenticated user' do
           before { perform }
 
           it { expect(response.status).to eq(401) }

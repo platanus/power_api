@@ -262,7 +262,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
 
     authenticated_resource_name = authenticated_resource.snake_case
     concat_tpl_statements(
-      "context 'with unauthorized #{authenticated_resource_name}' do",
+      "context 'with unauthenticated #{authenticated_resource_name}' do",
         "before { perform }\n",
         "it { expect(response.status).to eq(401) }",
       "end\n"
