@@ -66,7 +66,9 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
         perform_block_tpl,
         "it { expect(collection.count).to eq(5) }",
         "it { expect(response.status).to eq(200) }",
-        conditional_code(authenticated_resource?) { "end\n" },
+        if authenticated_resource?
+          "end\n"
+        end,
         unauthorized_spec_tpl,
         "end\n"
     )
@@ -90,7 +92,9 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
       "it { expect(attributes).to include(params[:#{resource.snake_case}]) }",
       "it { expect(response.status).to eq(201) }",
       spec_invalid_attrs_test_tpl,
-      conditional_code(authenticated_resource?) { "end\n" },
+      if authenticated_resource?
+        "end\n"
+      end,
       unauthorized_spec_tpl,
       "end\n"
     )
@@ -112,7 +116,9 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
       "let(:#{resource.snake_case}_id) { '666' }",
       "it { expect(response.status).to eq(404) }",
       "end",
-      conditional_code(authenticated_resource?) { "end\n" },
+      if authenticated_resource?
+        "end\n"
+      end,
       unauthorized_spec_tpl,
       "end\n"
     )
@@ -142,7 +148,9 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
       "let(:#{resource.snake_case}_id) { '666' }",
       "it { expect(response.status).to eq(404) }",
       "end",
-      conditional_code(authenticated_resource?) { "end\n" },
+      if authenticated_resource?
+        "end\n"
+      end,
       unauthorized_spec_tpl,
       "end\n"
     )
@@ -163,7 +171,9 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
       "let(:#{resource.snake_case}_id) { '666' }",
       "it { expect(response.status).to eq(404) }",
       "end",
-      conditional_code(authenticated_resource?) { "end\n" },
+      if authenticated_resource?
+        "end\n"
+      end,
       unauthorized_spec_tpl,
       "end\n"
     )
@@ -191,7 +201,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
   end
 
   def with_authorized_resource_context
-    conditional_code(authenticated_resource?) do
+    if authenticated_resource?
       "context 'with authorized #{authenticated_resource.snake_case}' do"
     end
   end
@@ -207,7 +217,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
   def perform_block_tpl(auth: true)
     concat_tpl_statements(
       "before do",
-        conditional_code(auth && authenticated_resource?) do
+        if auth && authenticated_resource?
           "sign_in(#{authenticated_resource.snake_case})"
         end,
         "perform",
