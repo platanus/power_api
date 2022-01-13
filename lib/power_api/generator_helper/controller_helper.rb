@@ -3,7 +3,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
   extend ActiveSupport::Concern
 
   included do
-    include PowerApi::GeneratorHelper::VersionHelper
+    include PowerApi::GeneratorHelper::ApiHelper
     include PowerApi::GeneratorHelper::ResourceHelper
     include PowerApi::GeneratorHelper::PaginationHelper
     include PowerApi::GeneratorHelper::SimpleTokenAuthHelper
@@ -13,30 +13,55 @@ module PowerApi::GeneratorHelper::ControllerHelper
     attr_accessor :allow_filters
   end
 
-  def api_base_controller_path
+  def api_main_base_controller_path
     "app/controllers/api/base_controller.rb"
   end
 
-  def base_controller_path
-    "app/controllers/api/v#{version_number}/base_controller.rb"
+  def exposed_base_controller_path
+    "app/controllers/#{exposed_file_path}/base_controller.rb"
+  end
+
+  def internal_base_controller_path
+    "app/controllers/#{internal_file_path}/base_controller.rb"
+  end
+
+  def version_base_controller_path
+    "app/controllers/#{version_file_path}/base_controller.rb"
   end
 
   def resource_controller_path
-    "app/controllers/api/v#{version_number}/#{resource.plural}_controller.rb"
+    "app/controllers/#{api_file_path}/#{resource.plural}_controller.rb"
   end
 
-  def api_base_controller_tpl
+  def api_main_base_controller_tpl
     <<~CONTROLLER
       class Api::BaseController < PowerApi::BaseController
       end
     CONTROLLER
   end
 
-  def base_controller_tpl
+  def exposed_base_controller_tpl
     <<~CONTROLLER
-      class Api::V#{version_number}::BaseController < Api::BaseController
+      class #{exposed_class}::BaseController < Api::BaseController
+      end
+    CONTROLLER
+  end
+
+  def internal_base_controller_tpl
+    <<~CONTROLLER
+      class #{internal_class}::BaseController < Api::BaseController
         before_action do
-          self.namespace_for_serializer = ::Api::V#{version_number}
+          self.namespace_for_serializer = ::#{internal_class}
+        end
+      end
+    CONTROLLER
+  end
+
+  def version_base_controller_tpl
+    <<~CONTROLLER
+      class #{version_class}::BaseController < #{exposed_class}::BaseController
+        before_action do
+          self.namespace_for_serializer = ::#{version_class}
         end
       end
     CONTROLLER
@@ -45,7 +70,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
   def resource_controller_tpl
     tpl_class(
       ctrl_tpl_class_definition_line,
-      ctrl_tpl_acts_as_token_authentication_handler,
+      ctrl_tpl_authentication_code,
       ctrl_tpl_index,
       ctrl_tpl_show,
       ctrl_tpl_create,
@@ -62,15 +87,18 @@ module PowerApi::GeneratorHelper::ControllerHelper
   private
 
   def ctrl_tpl_class_definition_line
-    "Api::V#{version_number}::#{resource.camel_plural}Controller < \
-Api::V#{version_number}::BaseController"
+    "#{api_class}::#{resource.camel_plural}Controller < #{api_class}::BaseController"
   end
 
-  def ctrl_tpl_acts_as_token_authentication_handler
+  def ctrl_tpl_authentication_code
     return unless authenticated_resource?
 
-    "acts_as_token_authentication_handler_for #{authenticated_resource.camel}, \
+    if versioned_api?
+      return "acts_as_token_authentication_handler_for #{authenticated_resource.camel}, \
 fallback: :exception\n"
+    end
+
+    "before_action :authenticate_#{authenticated_resource.snake_case}!\n"
   end
 
   def ctrl_tpl_index
@@ -96,7 +124,8 @@ fallback: :exception\n"
 
     concat_tpl_method(
       "update",
-      "respond_with #{resource.snake_case}.update!(#{resource.snake_case}_params)"
+      "#{resource.snake_case}.update!(#{resource.snake_case}_params)",
+      "respond_with #{resource.snake_case}"
     )
   end
 

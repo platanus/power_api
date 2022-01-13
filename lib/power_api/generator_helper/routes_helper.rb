@@ -1,9 +1,9 @@
-# rubocop:disable Layout/AlignArguments
+# rubocop:disable Layout/AlignParameters
 module PowerApi::GeneratorHelper::RoutesHelper
   extend ActiveSupport::Concern
 
   included do
-    include PowerApi::GeneratorHelper::VersionHelper
+    include PowerApi::GeneratorHelper::ApiHelper
     include PowerApi::GeneratorHelper::ResourceHelper
     include PowerApi::GeneratorHelper::TemplateBuilderHelper
   end
@@ -13,13 +13,19 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def routes_line_to_inject_new_version
-    return "routes.draw do\n" if first_version?
+    return routes_first_line if first_version?
 
     "'/api' do\n"
   end
 
-  def api_version_routes_line_regex
-    /Api::V#{version_number}[^\n]*/
+  def routes_first_line
+    "routes.draw do\n"
+  end
+
+  def api_current_route_namespace_line_regex
+    return /#{version_class}[^\n]*/ if versioned_api?
+
+    /namespace :internal[^\n]*/
   end
 
   def parent_resource_routes_line_regex
@@ -30,6 +36,15 @@ module PowerApi::GeneratorHelper::RoutesHelper
     return first_version_route_tpl if first_version?
 
     new_version_route_tpl
+  end
+
+  def internal_route_tpl
+    concat_tpl_statements(
+      "namespace :api, defaults: { format: :json } do",
+        "namespace :internal do",
+        "end",
+      "end\n"
+    )
   end
 
   def resource_route_tpl(actions: [], is_parent: false)
@@ -83,9 +98,9 @@ module PowerApi::GeneratorHelper::RoutesHelper
   end
 
   def api_version_params
-    "module: 'Api::V#{version_number}', \
+    "module: '#{version_class}', \
 path: { value: 'v#{version_number}' }, \
 defaults: { format: 'json' }"
   end
 end
-# rubocop:enable Layout/AlignArguments
+# rubocop:enable Layout/AlignParameters

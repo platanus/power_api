@@ -1,0 +1,5 @@
+Description:
+    Configure internal API in host app.
+
+Example:
+    rails generate power_api:internal_api_config

@@ -14,8 +14,8 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
 
   def add_base_controller
     create_file(
-      helper.base_controller_path,
-      helper.base_controller_tpl
+      helper.version_base_controller_path,
+      helper.version_base_controller_tpl
     )
   end
 
