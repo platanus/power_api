@@ -24,7 +24,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
         RSpec.describe 'Api::Exposed::V1::BlogsControllers', type: :request do
         describe 'GET /index' do
         let!(:blogs) { create_list(:blog, 5) }
-        let(:collection) { JSON.parse(response.body)['data'] }
+        let(:collection) { JSON.parse(response.body)['blogs'] }
         let(:params) { {} }
 
         def perform
@@ -50,7 +50,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
         end
 
         let(:attributes) do
-        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+        JSON.parse(response.body)['blog'].symbolize_keys
         end
         def perform
         post '/api/v1/blogs', params: params
@@ -80,7 +80,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
         let(:blog_id) { blog.id.to_s }
 
         let(:attributes) do
-        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+        JSON.parse(response.body)['blog'].symbolize_keys
         end
         def perform
         get '/api/v1/blogs/' + blog_id
@@ -111,7 +111,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
         end
 
         let(:attributes) do
-        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+        JSON.parse(response.body)['blog'].symbolize_keys
         end
         def perform
         put '/api/v1/blogs/' + blog_id, params: params
@@ -187,7 +187,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           let(:user) { create(:user) }
           describe 'GET /index' do
           let!(:blogs) { create_list(:blog, 5) }
-          let(:collection) { JSON.parse(response.body)['data'] }
+          let(:collection) { JSON.parse(response.body)['blogs'] }
           let(:params) { {} }
 
           def perform
@@ -223,7 +223,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
 
           let(:attributes) do
-          JSON.parse(response.body)['data']['attributes'].symbolize_keys
+          JSON.parse(response.body)['blog'].symbolize_keys
           end
           def perform
           post '/api/v1/blogs', params: params
@@ -263,7 +263,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           let(:blog_id) { blog.id.to_s }
 
           let(:attributes) do
-          JSON.parse(response.body)['data']['attributes'].symbolize_keys
+          JSON.parse(response.body)['blog'].symbolize_keys
           end
           def perform
           get '/api/v1/blogs/' + blog_id
@@ -304,7 +304,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
 
           let(:attributes) do
-          JSON.parse(response.body)['data']['attributes'].symbolize_keys
+          JSON.parse(response.body)['blog'].symbolize_keys
           end
           def perform
           put '/api/v1/blogs/' + blog_id, params: params
@@ -399,7 +399,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
           describe 'GET /index' do
           let!(:blogs) { create_list(:blog, 5, portfolio: portfolio) }
-          let(:collection) { JSON.parse(response.body)['data'] }
+          let(:collection) { JSON.parse(response.body)['blogs'] }
           let(:params) { {} }
 
           def perform
@@ -425,7 +425,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
 
           let(:attributes) do
-          JSON.parse(response.body)['data']['attributes'].symbolize_keys
+          JSON.parse(response.body)['blog'].symbolize_keys
           end
           def perform
           post '/api/v1/portfolios/' + portfolio.id.to_s + '/blogs', params: params
@@ -455,7 +455,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           let(:blog_id) { blog.id.to_s }
 
           let(:attributes) do
-          JSON.parse(response.body)['data']['attributes'].symbolize_keys
+          JSON.parse(response.body)['blog'].symbolize_keys
           end
           def perform
           get '/api/v1/blogs/' + blog_id
@@ -486,7 +486,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
 
           let(:attributes) do
-          JSON.parse(response.body)['data']['attributes'].symbolize_keys
+          JSON.parse(response.body)['blog'].symbolize_keys
           end
           def perform
           put '/api/v1/blogs/' + blog_id, params: params

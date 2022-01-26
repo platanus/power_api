@@ -20,13 +20,7 @@ module PowerApi::GeneratorHelper::AmsHelper
 
   def ams_initializer_tpl
     <<~INITIALIZER
-      class ActiveModelSerializers::Adapter::JsonApi
-        def self.default_key_transform
-          :unaltered
-        end
-      end
-
-      ActiveModelSerializers.config.adapter = :json_api
+      ActiveModelSerializers.config.adapter = :json
     INITIALIZER
   end
 

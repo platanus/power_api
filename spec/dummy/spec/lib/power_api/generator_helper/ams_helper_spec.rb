@@ -64,13 +64,7 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
   describe "ams_initializer_tpl" do
     let(:template) do
       <<~INITIALIZER
-        class ActiveModelSerializers::Adapter::JsonApi
-          def self.default_key_transform
-            :unaltered
-          end
-        end
-
-        ActiveModelSerializers.config.adapter = :json_api
+        ActiveModelSerializers.config.adapter = :json
       INITIALIZER
     end
 

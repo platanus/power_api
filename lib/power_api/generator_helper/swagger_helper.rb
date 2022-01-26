@@ -118,44 +118,32 @@ module PowerApi::GeneratorHelper::SwaggerHelper
     <<~SCHEMA
       #{swagger_model_definition_const} = {
         type: :object,
-        properties: {
-          id: { type: :string, example: '1' },
-          type: { type: :string, example: '#{resource.snake_case}' },
-          attributes: {
-            type: :object,
-            properties: {#{get_swagger_schema_attributes_definitions}
-            },
-            required: [#{get_swagger_schema_attributes_names}
-            ]
-          }
+        properties: {#{get_swagger_schema_attributes_definitions}
         },
-        required: [
-          :id,
-          :type,
-          :attributes
+        required: [#{get_swagger_schema_attributes_names}
         ]
       }
 
       #{swagger_collection_definition_const} = {
         type: "object",
         properties: {
-          data: {
+          #{resource.plural}: {
             type: "array",
             items: { "$ref" => "#/definitions/#{resource.snake_case}" }
           }
         },
         required: [
-          :data
+          :#{resource.plural}
         ]
       }
 
       #{swagger_resource_definition_const} = {
         type: "object",
         properties: {
-          data: { "$ref" => "#/definitions/#{resource.snake_case}" }
+          #{resource.snake_case}: { "$ref" => "#/definitions/#{resource.snake_case}" }
         },
         required: [
-          :data
+          :#{resource.snake_case}
         ]
       }
     SCHEMA
@@ -268,7 +256,7 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
         "response '200', '#{resource.plural_titleized} retrieved' do",
           "schema('$ref' => '#/definitions/#{resource.plural}_collection')\n",
           "run_test! do |response|",
-            "expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)",
+            "expect(JSON.parse(response.body)['#{resource.plural}'].count).to eq(expected_collection_count)",
           "end",
         "end\n",
         spec_tpl_invalid_credentials,
