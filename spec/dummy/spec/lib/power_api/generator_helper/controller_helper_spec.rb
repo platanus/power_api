@@ -97,6 +97,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     let(:template) do
       <<~CONTROLLER
         class Api::Exposed::BaseController < Api::BaseController
+          skip_before_action :verify_authenticity_token
         end
       CONTROLLER
     end

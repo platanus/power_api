@@ -43,6 +43,7 @@ module PowerApi::GeneratorHelper::ControllerHelper
   def exposed_base_controller_tpl
     <<~CONTROLLER
       class #{exposed_class}::BaseController < Api::BaseController
+        skip_before_action :verify_authenticity_token
       end
     CONTROLLER
   end
