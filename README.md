@@ -95,15 +95,8 @@ After doing this you will get:
 - Some initializers:
   - `/your_api/config/initializers/active_model_serializers.rb`:
     ```ruby
-    class ActiveModelSerializers::Adapter::JsonApi
-      def self.default_key_transform
-        :unaltered
-      end
-    end
-
-    ActiveModelSerializers.config.adapter = :json_api
+    ActiveModelSerializers.config.adapter = :json
     ```
-    Here we tell AMS that we will use the [json api](https://jsonapi.org/) format.
 
   - `/your_api/config/initializers/api_pagination.rb`:
     ```ruby
@@ -410,7 +403,7 @@ after doing this you will get:
           schema('$ref' => '#/definitions/blogs_collection')
 
           run_test! do |response|
-            expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)
+            expect(JSON.parse(response.body)['blogs'].count).to eq(expected_collection_count)
           end
         end
       end
@@ -421,11 +414,21 @@ after doing this you will get:
         produces 'application/json'
         parameter(name: :blog, in: :body)
 
-        response '201', 'blog creaed' do
+        response '201', 'blog created' do
           let(:blog) do
             {
               title: 'Some title',
               body: 'Some body'
+            }
+          end
+
+          run_test!
+        end
+
+        response '400', 'invalid attributes' do
+          let(:blog) do
+            {
+              title: nil
             }
           end
 
@@ -471,6 +474,16 @@ after doing this you will get:
 
           run_test!
         end
+
+        response '400', 'invalid attributes' do
+          let(:blog) do
+            {
+              title: nil
+            }
+          end
+
+          run_test!
+        end
       end
 
       delete 'Deletes Blog' do
@@ -489,15 +502,16 @@ after doing this you will get:
       end
     end
   end
+
   ```
   - Internal mode:
   ```ruby
   require 'rails_helper'
 
-  RSpec.describe 'Api::Internal::BlogsControllers', type: :request do
+  describe 'Api::Internal::BlogsControllers', type: :request do
     describe 'GET /index' do
       let!(:blogs) { create_list(:blog, 5) }
-      let(:collection) { JSON.parse(response.body)['data'] }
+      let(:collection) { JSON.parse(response.body)['blogs'] }
       let(:params) { {} }
 
       def perform
@@ -522,7 +536,7 @@ after doing this you will get:
       end
 
       let(:attributes) do
-        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+        JSON.parse(response.body).symbolize_keys
       end
 
       def perform
@@ -554,7 +568,7 @@ after doing this you will get:
       let(:blog_id) { blog.id.to_s }
 
       let(:attributes) do
-        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+        JSON.parse(response.body)['blog'].symbolize_keys
       end
 
       def perform
@@ -587,7 +601,7 @@ after doing this you will get:
       end
 
       let(:attributes) do
-        JSON.parse(response.body)['data']['attributes'].symbolize_keys
+        JSON.parse(response.body)['blog'].symbolize_keys
       end
 
       def perform
@@ -648,47 +662,38 @@ after doing this you will get:
   BLOG_SCHEMA = {
     type: :object,
     properties: {
-      id: { type: :string, example: '1' },
-      type: { type: :string, example: 'blog' },
-      attributes: {
-        type: :object,
-        properties: {
-          title: { type: :string, example: 'Some title', 'x-nullable': true },
-          body: { type: :string, example: 'Some body', 'x-nullable': true },
-          created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
-          updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true }
-        },
-        required: [
-        ]
-      }
+      title: { type: :string, example: 'Some title' },
+      body: { type: :string, example: 'Some body' },
+      created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
+      updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
+      portfolio_id: { type: :integer, example: 666, 'x-nullable': true }
     },
     required: [
-      :id,
-      :type,
-      :attributes
+      :title,
+      :body
     ]
   }
 
   BLOGS_COLLECTION_SCHEMA = {
     type: "object",
     properties: {
-      data: {
+      blogs: {
         type: "array",
         items: { "$ref" => "#/definitions/blog" }
       }
     },
     required: [
-      :data
+      :blogs
     ]
   }
 
   BLOG_RESOURCE_SCHEMA = {
     type: "object",
     properties: {
-      data: { "$ref" => "#/definitions/blog" }
+      blog: { "$ref" => "#/definitions/blog" }
     },
     required: [
-      :data
+      :blog
     ]
   }
   ```
@@ -745,7 +750,7 @@ When you do this, you will see that only relevant code is generated in controlle
 For example, the controller would only include the `show` and `destroy` actions and wouldn't include the `blog_params` method:
 
 ```ruby
-class Api::Exposed::V1::BlogSerializer < Api::Exposed::V1::BaseController
+class Api::Exposed::V1::BlogController < Api::Exposed::V1::BaseController
   def show
     respond_with blog
   end
