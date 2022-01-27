@@ -22,7 +22,10 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
 
   def resource_attributes=(collection)
     attributes = format_attributes(collection)
-    raise PowerApi::GeneratorError.new("at least one attribute must be added") if attributes.none?
+
+    if attributes.count == 1 && attributes.first[:name] == :id
+      raise PowerApi::GeneratorError.new("at least one attribute must be added")
+    end
 
     @resource_attributes = attributes
   end
@@ -85,12 +88,14 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
 
   def permitted_attributes
     resource_attributes.reject do |attr|
-      [:created_at, :updated_at].include?(attr[:name])
+      [:created_at, :updated_at, :id].include?(attr[:name])
     end
   end
 
-  def required_resource_attributes
-    permitted_attributes.select { |attr| attr[:required] }
+  def required_resource_attributes(include_id: false)
+    resource_attributes.select do |attr|
+      attr[:required] || (include_id && attr[:name] == :id)
+    end
   end
 
   def optional_resource_attributes
@@ -122,7 +127,6 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
   def format_attributes(attrs)
     columns = resource_class.columns.inject([]) do |memo, col|
       col_name = col.name.to_sym
-      next memo if col_name == :id
 
       memo << {
         name: col_name,
@@ -137,7 +141,7 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
 
     return columns if attrs.blank?
 
-    attrs = attrs.map(&:to_sym)
+    attrs = (attrs.map(&:to_sym) + [:id]).uniq
     columns.select { |col| attrs.include?(col[:name]) }
   end
 

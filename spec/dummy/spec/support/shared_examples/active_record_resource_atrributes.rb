@@ -3,6 +3,7 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
   describe "#resource_attributes" do
     let(:expected_attributes) do
       [
+        { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
         { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
         { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true },
         { name: :created_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false },
@@ -21,27 +22,30 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
       let(attributes_key) { %w{title body} }
       let(:expected_attributes) do
         [
+          { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
           { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
           { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
         ]
       end
 
-      it { expect(perform).to eq(expected_attributes) }
+      it { expect(perform).to match(expected_attributes) }
     end
 
     context "with attributes not present in model" do
       let(attributes_key) { %w{title bloody} }
       let(:expected_attributes) do
         [
+          { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
           { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true }
         ]
       end
 
-      it { expect(perform).to eq(expected_attributes) }
+      it { expect(perform).to match(expected_attributes) }
     end
   end
 
   describe "#required_resource_attributes" do
+    let(:include_id) { false }
     let(:expected_attributes) do
       [
         { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
@@ -50,10 +54,21 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
     end
 
     def perform
-      resource.required_resource_attributes
+      resource.required_resource_attributes(include_id: include_id)
     end
 
     it { expect(perform).to eq(expected_attributes) }
+
+    context "with included id" do
+      let(:include_id) { true }
+      let(:expected_attributes) do
+        [
+          { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
+          { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
+          { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+        ]
+      end
+    end
   end
 
   describe "#required_attributes_names" do
@@ -88,6 +103,7 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
   describe "#attributes_names" do
     let(:expected_attributes) do
       [
+        :id,
         :title,
         :body,
         :created_at,
@@ -138,6 +154,7 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
   describe "#attributes_symbols_text_list" do
     let(:expected_result) do
       <<~ATTRS
+        :id,
         :title,
         :body,
         :created_at,

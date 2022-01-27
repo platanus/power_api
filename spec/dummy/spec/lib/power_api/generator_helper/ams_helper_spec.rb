@@ -82,7 +82,8 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
           type :blog
 
           attributes(
-            :title,
+            :id,
+        :title,
         :body,
         :created_at,
         :updated_at,
@@ -107,7 +108,8 @@ RSpec.describe PowerApi::GeneratorHelper::AmsHelper, type: :generator do
             type :blog
 
             attributes(
-              :title,
+              :id,
+          :title,
           :body,
           :created_at,
           :updated_at,

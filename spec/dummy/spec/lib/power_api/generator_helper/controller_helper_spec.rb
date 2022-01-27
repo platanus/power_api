@@ -1,4 +1,4 @@
-RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
+describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
   describe "#api_main_base_controller_path" do
     let(:expected_path) { "app/controllers/api/base_controller.rb" }
 

@@ -360,6 +360,7 @@ after doing this you will get:
 
     def blog_params
       params.require(:blog).permit(
+        :id,
         :title,
         :body,
       )
@@ -374,6 +375,7 @@ after doing this you will get:
     type :blog
 
     attributes(
+      :id,
       :title,
       :body,
       :created_at,
@@ -662,6 +664,7 @@ after doing this you will get:
   BLOG_SCHEMA = {
     type: :object,
     properties: {
+      id: { type: :integer, example: 666 },
       title: { type: :string, example: 'Some title' },
       body: { type: :string, example: 'Some body' },
       created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
@@ -914,6 +917,7 @@ class Api::Exposed::V1::BlogsController < Api::Exposed::V1::BaseController
 
   def blog_params
     params.require(:blog).permit(
+      :id,
       :title,
       :body
     )
@@ -996,6 +1000,7 @@ Running the previous code we will get:
 
     def comment_params
       params.require(:comment).permit(
+        :id,
         :body
       )
     end

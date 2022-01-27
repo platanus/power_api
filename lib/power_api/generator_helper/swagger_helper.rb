@@ -440,7 +440,7 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   def get_swagger_schema_attributes_definitions
     for_each_schema_attribute(resource.resource_attributes) do |attr|
       opts = ["example: #{attr[:example]}"]
-      opts << "'x-nullable': true" unless attr[:required]
+      opts << "'x-nullable': true" unless attr[:required] || attr[:name] == :id
       opts
 
       "#{attr[:name]}: { type: :#{attr[:swagger_type]}, #{opts.join(', ')} },"
@@ -448,7 +448,9 @@ swagger_doc: 'v#{version_number}/swagger.json' do"
   end
 
   def get_swagger_schema_attributes_names
-    for_each_schema_attribute(resource.required_resource_attributes) do |attr|
+    for_each_schema_attribute(
+      resource.required_resource_attributes(include_id: true)
+    ) do |attr|
       ":#{attr[:name]},"
     end
   end

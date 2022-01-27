@@ -1,4 +1,4 @@
-RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
+describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
   describe "#swagger_helper_path" do
     let(:expected_path) { "spec/swagger_helper.rb" }
 
@@ -206,6 +206,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
         BLOG_SCHEMA = {
           type: :object,
           properties: {
+        id: { type: :integer, example: 666 },
         title: { type: :string, example: 'Some title' },
         body: { type: :string, example: 'Some body' },
         created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
@@ -213,6 +214,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
         portfolio_id: { type: :integer, example: 666, 'x-nullable': true }
           },
           required: [
+        :id,
         :title,
         :body
           ]
