@@ -45,6 +45,7 @@ These gems are:
     - [The `Api::Error` concern](#the-apierror-concern)
     - [The `Api::Deprecated` concern](#the-apideprecated-concern)
     - [The `ApiResponder`](#the-apiresponder)
+    - [The `PowerApi::ApplicationHelper#serialize_resource` helper method](#the-powerapiapplicationhelperserialize_resource-helper-method)
   - [Testing](#testing)
   - [Publishing](#publishing)
   - [Contributing](#contributing)
@@ -1135,6 +1136,28 @@ end
 ```
 
 As you can see, this simple [Responder](https://github.com/heartcombo/responders) handles the API response based on the HTTP verbs.
+
+### The `PowerApi::ApplicationHelper#serialize_resource` helper method
+
+This helper method is useful if you want to serialize ActiveRecord resources to use in your views. For example, you can do:
+
+```
+<pre>
+  <%= serialize_resource(@resource, @options) %>
+</pre>
+```
+
+To get:
+
+```
+{"id":1,"title":"lean","body":"bla","createdAt":"2022-01-08T18:15:46.624Z","updatedAt":"2022-01-08T18:15:46.624Z","portfolioId":null}
+```
+
+The `@resource` parameter must be an ActiveRecord instance (`ApplicationRecord`) or collection (`ActiveRecord_Relation`).
+
+The `@options` parameter must be a `Hash` and can contain the options you commonly use with Active Model Serializer gem (`fields`, `transform_key`, etc.) and some others:
+- `include_root`: to get something like: `{"id":1,"title":"lean"}` or `{"blog": {"id":1,"title":"lean"}}`.
+- `output`: can be `:hash` or `:json`.
 
 ## Testing
 
