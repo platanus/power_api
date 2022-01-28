@@ -68,6 +68,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
           { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
         ]
       end
+
+      it { expect(perform).to match(expected_attributes) }
     end
   end
 
