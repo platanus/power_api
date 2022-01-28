@@ -538,7 +538,7 @@ after doing this you will get:
       end
 
       let(:attributes) do
-        JSON.parse(response.body).symbolize_keys
+        JSON.parse(response.body)['blog'].symbolize_keys
       end
 
       def perform
