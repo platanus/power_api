@@ -105,10 +105,10 @@ describe PowerApi::ApplicationHelper do
       it { expect { data }.to raise_error(PowerApi::InvalidSerializableResource, /Invalid Hash/) }
     end
 
-    context "with hash output" do
+    context "with hash output_format" do
       let(:options) do
         {
-          output: :hash
+          output_format: :hash
         }
       end
 
@@ -134,10 +134,10 @@ describe PowerApi::ApplicationHelper do
 
     context "with invalid output option" do
       let(:options) do
-        { output: "invalid" }
+        { output_format: "invalid" }
       end
 
-      it { expect { data }.to raise_error(PowerApi::InvalidSerializerOutput, /:json, :hash/) }
+      it { expect { data }.to raise_error(PowerApi::InvalidSerializerOutputFormat, /:json, :hash/) }
     end
 
     context "with meta option" do

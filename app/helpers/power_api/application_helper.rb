@@ -1,6 +1,6 @@
 module PowerApi
   module ApplicationHelper
-    VALID_SERIALIZER_OUTPUTS = %i{json hash}
+    VALID_SERIALIZER_OUTPUT_FORMATS = %i{json hash}
 
     def serialize_resource(resource, options = {})
       load_default_serializer_options(options)
@@ -20,9 +20,9 @@ module PowerApi
     private
 
     def render_serialized_data(serialized_data, options)
-      output = options.delete(:output)
+      output_format = options.delete(:output_format)
       serialized_data = serialized_data[:root] if options[:root] == :root
-      return serialized_data if output == :hash
+      return serialized_data if output_format == :hash
 
       serialized_data.to_json
     end
@@ -31,8 +31,8 @@ module PowerApi
       options[:namespace] ||= "Api::Internal"
       options[:key_transform] ||= :camel_lower
       options[:include_root] ||= false
-      options[:output] = format_serializer_output!(options[:output])
-      options[:key_transform] = :unaltered if options[:output] == :hash
+      options[:output_format] = format_serializer_output_format!(options[:output_format])
+      options[:key_transform] = :unaltered if options[:output_format] == :hash
 
       load_root_option(options)
       options
@@ -44,18 +44,18 @@ module PowerApi
       options[:root] = :root
     end
 
-    def format_serializer_output!(output)
-      return :json if output.blank?
+    def format_serializer_output_format!(output_format)
+      return :json if output_format.blank?
 
-      output = output.to_s.to_sym
+      output_format = output_format.to_s.to_sym
 
-      if !VALID_SERIALIZER_OUTPUTS.include?(output)
-        raise ::PowerApi::InvalidSerializerOutput.new(
-          "Only #{VALID_SERIALIZER_OUTPUTS} values are allowed."
+      if !VALID_SERIALIZER_OUTPUT_FORMATS.include?(output_format)
+        raise ::PowerApi::InvalidSerializerOutputFormat.new(
+          "Only #{VALID_SERIALIZER_OUTPUT_FORMATS} values are allowed."
         )
       end
 
-      output
+      output_format
     end
   end
 end

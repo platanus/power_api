@@ -1157,7 +1157,7 @@ The `@resource` parameter must be an ActiveRecord instance (`ApplicationRecord`)
 
 The `@options` parameter must be a `Hash` and can contain the options you commonly use with Active Model Serializer gem (`fields`, `transform_key`, etc.) and some others:
 - `include_root`: to get something like: `{"id":1,"title":"lean"}` or `{"blog": {"id":1,"title":"lean"}}`.
-- `output`: can be `:hash` or `:json`.
+- `output_format`: can be `:hash` or `:json`.
 
 ## Testing
 
