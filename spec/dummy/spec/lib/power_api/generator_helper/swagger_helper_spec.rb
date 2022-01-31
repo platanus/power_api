@@ -1,4 +1,4 @@
-RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
+describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
   describe "#swagger_helper_path" do
     let(:expected_path) { "spec/swagger_helper.rb" }
 
@@ -206,50 +206,40 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
         BLOG_SCHEMA = {
           type: :object,
           properties: {
-            id: { type: :string, example: '1' },
-            type: { type: :string, example: 'blog' },
-            attributes: {
-              type: :object,
-              properties: {
+        id: { type: :integer, example: 666 },
         title: { type: :string, example: 'Some title' },
         body: { type: :string, example: 'Some body' },
         created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
         updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
         portfolio_id: { type: :integer, example: 666, 'x-nullable': true }
-              },
-              required: [
-        :title,
-        :body
-              ]
-            }
           },
           required: [
-            :id,
-            :type,
-            :attributes
+        :id,
+        :title,
+        :body
           ]
         }
 
         BLOGS_COLLECTION_SCHEMA = {
           type: "object",
           properties: {
-            data: {
+            blogs: {
               type: "array",
               items: { "$ref" => "#/definitions/blog" }
             }
           },
           required: [
-            :data
+            :blogs
           ]
         }
 
         BLOG_RESOURCE_SCHEMA = {
           type: "object",
           properties: {
-            data: { "$ref" => "#/definitions/blog" }
+            blog: { "$ref" => "#/definitions/blog" }
           },
           required: [
-            :data
+            :blog
           ]
         }
       SCHEMA
@@ -281,7 +271,7 @@ RSpec.describe PowerApi::GeneratorHelper::SwaggerHelper, type: :generator do
         schema('$ref' => '#/definitions/blogs_collection')
 
         run_test! do |response|
-        expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)
+        expect(JSON.parse(response.body)['blogs'].count).to eq(expected_collection_count)
         end
         end
 

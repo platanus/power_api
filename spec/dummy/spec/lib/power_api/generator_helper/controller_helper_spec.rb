@@ -1,4 +1,4 @@
-RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
+describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
   describe "#api_main_base_controller_path" do
     let(:expected_path) { "app/controllers/api/base_controller.rb" }
 
@@ -97,6 +97,7 @@ RSpec.describe PowerApi::GeneratorHelper::ControllerHelper, type: :generator do
     let(:template) do
       <<~CONTROLLER
         class Api::Exposed::BaseController < Api::BaseController
+          skip_before_action :verify_authenticity_token
         end
       CONTROLLER
     end

@@ -59,7 +59,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
     concat_tpl_statements(
       "describe 'GET /index' do",
         "let!(:#{resource.plural}) { #{spec_index_creation_list_tpl} }",
-        "let(:collection) { JSON.parse(response.body)['data'] }",
+        "let(:collection) { JSON.parse(response.body)['#{resource.plural}'] }",
         "let(:params) { {} }\n",
         spec_perform_tpl,
         with_authorized_resource_context,
@@ -209,7 +209,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
   def let_resource_attrs
     concat_tpl_statements(
       "let(:attributes) do",
-        "JSON.parse(response.body)['data']['attributes'].symbolize_keys",
+        "JSON.parse(response.body)['#{resource.snake_case}'].symbolize_keys",
       "end"
     )
   end
