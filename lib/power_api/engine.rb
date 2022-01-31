@@ -26,5 +26,11 @@ module PowerApi
       require_relative "./generator_helper/template_builder_helper"
       require_relative "./generator_helpers"
     end
+
+    initializer 'local_helper.action_controller' do
+      ActiveSupport.on_load :action_controller do
+        ApplicationController.helper PowerApi::ApplicationHelper
+      end
+    end
   end
 end
