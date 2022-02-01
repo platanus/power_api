@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+### v2.0.0
+
+* Add API internal and exposed modes.
+* Replace `json_api` with `json` adapter.
+* Add view helper to serialize resources.
 
 ### v1.0.0
 
