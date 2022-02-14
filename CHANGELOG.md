@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### Unreleased
+
+* Fix: change the way PowerApi::ApplicationHelper is loaded into host app.
+
 ### v2.0.1
 
 * Fix: trying to reference ApplicationController in wrong namespace.

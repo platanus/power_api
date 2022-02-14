@@ -27,10 +27,8 @@ module PowerApi
       require_relative "./generator_helpers"
     end
 
-    initializer 'local_helper.action_controller' do
-      ActiveSupport.on_load :action_controller do
-        ::ApplicationController.helper PowerApi::ApplicationHelper
-      end
+    initializer "power_api.view_helpers" do
+      ActiveSupport.on_load(:action_view) { include ::PowerApi::ApplicationHelper }
     end
   end
 end
