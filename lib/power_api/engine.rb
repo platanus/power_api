@@ -29,7 +29,7 @@ module PowerApi
 
     initializer 'local_helper.action_controller' do
       ActiveSupport.on_load :action_controller do
-        ApplicationController.helper PowerApi::ApplicationHelper
+        ::ApplicationController.helper PowerApi::ApplicationHelper
       end
     end
   end
