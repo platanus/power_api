@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    power_api (2.0.1)
+    power_api (2.0.2)
       active_model_serializers (~> 0.10.0)
       api-pagination
       kaminari
