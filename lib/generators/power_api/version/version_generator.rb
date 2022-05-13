@@ -23,29 +23,6 @@ class PowerApi::VersionGenerator < Rails::Generators::NamedBase
     create_file(helper.ams_serializers_path)
   end
 
-  def add_swagger_related
-    create_file(helper.swagger_schemas_path)
-
-    create_file(
-      helper.swagger_version_definition_path,
-      helper.swagger_definition_tpl
-    )
-
-    insert_into_file(
-      helper.rswag_ui_initializer_path,
-      after: helper.rswag_ui_configure_line
-    ) do
-      helper.rswag_ui_swagger_endpoint
-    end
-
-    insert_into_file(
-      helper.swagger_helper_path,
-      after: helper.swagger_helper_api_definition_line
-    ) do
-      helper.swagger_helper_api_definition
-    end
-  end
-
   private
 
   def helper

@@ -95,40 +95,12 @@ class PowerApi::ControllerGenerator < Rails::Generators::NamedBase
     helper.format_ruby_file(helper.ams_serializer_path)
   end
 
-  def configure_swagger
-    return unless helper.versioned_api?
-
-    create_swagger_schema
-    add_swagger_schema_to_definition
-    create_swagger_resource_spec
-  end
-
   def add_rspec_tests
-    return if helper.versioned_api?
-
     create_file(helper.resource_spec_path, helper.resource_spec_tpl)
     helper.format_ruby_file(helper.resource_spec_path)
   end
 
   private
-
-  def create_swagger_schema
-    create_file(helper.swagger_resource_schema_path, helper.swagger_schema_tpl)
-    helper.format_ruby_file(helper.swagger_resource_schema_path)
-  end
-
-  def add_swagger_schema_to_definition
-    insert_into_file(
-      helper.swagger_version_definition_path,
-      helper.swagger_definition_entry,
-      after: helper.swagger_definition_line_to_inject_schema
-    )
-  end
-
-  def create_swagger_resource_spec
-    create_file(helper.swagger_resource_spec_path, helper.swagger_resource_spec_tpl)
-    helper.format_ruby_file(helper.swagger_resource_spec_path)
-  end
 
   def add_nested_route
     line_to_replace = helper.parent_resource_routes_line_regex

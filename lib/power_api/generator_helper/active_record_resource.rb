@@ -131,7 +131,6 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
       memo << {
         name: col_name,
         type: col.type,
-        swagger_type: get_swagger_type(col.type),
         required: required_attribute?(col_name),
         example: get_attribute_example(col.type, col_name)
       }
@@ -143,19 +142,6 @@ module PowerApi::GeneratorHelper::ActiveRecordResource
 
     attrs = (attrs.map(&:to_sym) + [:id]).uniq
     columns.select { |col| attrs.include?(col[:name]) }
-  end
-
-  def get_swagger_type(data_type)
-    case data_type
-    when :integer
-      :integer
-    when :float, :decimal
-      :float
-    when :boolean
-      :boolean
-    else
-      :string
-    end
   end
 
   def get_attribute_example(data_type, col_name)

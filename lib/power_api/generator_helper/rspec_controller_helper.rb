@@ -111,7 +111,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
       spec_perform_tpl(http_verb: 'get', params: false, single_resource: true),
       with_authorized_resource_context,
       perform_block_tpl,
-      "it { expect(response.status).to eq(200) }",
+      "it { expect(response.status).to eq(200) }\n",
       "context 'with resource not found' do",
       "let(:#{resource.snake_case}_id) { '666' }",
       "it { expect(response.status).to eq(404) }",
@@ -163,10 +163,10 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
       "describe 'DELETE /destroy' do",
       spec_let_existent_resource_tpl,
       "let(:#{resource.snake_case}_id) { #{resource.snake_case}.id.to_s }\n",
-      spec_perform_tpl(http_verb: 'get', params: false, single_resource: true),
+      spec_perform_tpl(http_verb: 'delete', params: false, single_resource: true),
       with_authorized_resource_context,
       perform_block_tpl,
-      "it { expect(response.status).to eq(200) }",
+      "it { expect(response.status).to eq(204) }\n",
       "context 'with resource not found' do",
       "let(:#{resource.snake_case}_id) { '666' }",
       "it { expect(response.status).to eq(404) }",
@@ -189,7 +189,7 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
     return if resource.required_resource_attributes.blank?
 
     concat_tpl_statements(
-      "context 'with invalid attributes' do",
+      "\ncontext 'with invalid attributes' do",
         "let(:params) do",
           "{",
             "#{resource.snake_case}: {#{invalid_resource_params}}",
@@ -198,6 +198,22 @@ module PowerApi::GeneratorHelper::RspecControllerHelper
         "it { expect(response.status).to eq(400) }",
       "end\n"
     )
+  end
+
+  def invalid_resource_params
+    return unless resource.required_resource_attributes.any?
+
+    for_each_schema_attribute([resource.required_resource_attributes.first]) do |attr|
+      "#{attr[:name]}: nil,"
+    end
+  end
+
+  def for_each_schema_attribute(attributes)
+    attributes.inject("") do |memo, attr|
+      memo += "\n"
+      memo += yield(attr)
+      memo
+    end.delete_suffix(",")
   end
 
   def with_authorized_resource_context
