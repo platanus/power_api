@@ -3,8 +3,6 @@ require "api-pagination"
 require "kaminari"
 require "ransack"
 require "responders"
-require "rswag/api"
-require "rswag/ui"
 require "simple_token_authentication"
 require "versionist"
 

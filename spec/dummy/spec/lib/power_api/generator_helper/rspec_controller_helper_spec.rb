@@ -62,6 +62,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
         it { expect(attributes).to include(params[:blog]) }
         it { expect(response.status).to eq(201) }
+
         context 'with invalid attributes' do
         let(:params) do
         {
@@ -91,6 +92,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
         end
 
         it { expect(response.status).to eq(200) }
+
         context 'with resource not found' do
         let(:blog_id) { '666' }
         it { expect(response.status).to eq(404) }
@@ -123,6 +125,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
         it { expect(attributes).to include(params[:blog]) }
         it { expect(response.status).to eq(200) }
+
         context 'with invalid attributes' do
         let(:params) do
         {
@@ -145,14 +148,15 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
         let(:blog_id) { blog.id.to_s }
 
         def perform
-        get '/api/v1/blogs/' + blog_id
+        delete '/api/v1/blogs/' + blog_id
         end
 
         before do
         perform
         end
 
-        it { expect(response.status).to eq(200) }
+        it { expect(response.status).to eq(204) }
+
         context 'with resource not found' do
         let(:blog_id) { '666' }
         it { expect(response.status).to eq(404) }
@@ -237,6 +241,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
           it { expect(attributes).to include(params[:blog]) }
           it { expect(response.status).to eq(201) }
+
           context 'with invalid attributes' do
           let(:params) do
           {
@@ -276,6 +281,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
 
           it { expect(response.status).to eq(200) }
+
           context 'with resource not found' do
           let(:blog_id) { '666' }
           it { expect(response.status).to eq(404) }
@@ -318,6 +324,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
           it { expect(attributes).to include(params[:blog]) }
           it { expect(response.status).to eq(200) }
+
           context 'with invalid attributes' do
           let(:params) do
           {
@@ -348,7 +355,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           let(:blog_id) { blog.id.to_s }
 
           def perform
-          get '/api/v1/blogs/' + blog_id
+          delete '/api/v1/blogs/' + blog_id
           end
 
           context 'with authorized user' do
@@ -357,7 +364,8 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           perform
           end
 
-          it { expect(response.status).to eq(200) }
+          it { expect(response.status).to eq(204) }
+
           context 'with resource not found' do
           let(:blog_id) { '666' }
           it { expect(response.status).to eq(404) }
@@ -437,6 +445,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
           it { expect(attributes).to include(params[:blog]) }
           it { expect(response.status).to eq(201) }
+
           context 'with invalid attributes' do
           let(:params) do
           {
@@ -466,6 +475,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           end
 
           it { expect(response.status).to eq(200) }
+
           context 'with resource not found' do
           let(:blog_id) { '666' }
           it { expect(response.status).to eq(404) }
@@ -498,6 +508,7 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
 
           it { expect(attributes).to include(params[:blog]) }
           it { expect(response.status).to eq(200) }
+
           context 'with invalid attributes' do
           let(:params) do
           {
@@ -520,14 +531,15 @@ describe PowerApi::GeneratorHelper::RspecControllerHelper, type: :generator do
           let(:blog_id) { blog.id.to_s }
 
           def perform
-          get '/api/v1/blogs/' + blog_id
+          delete '/api/v1/blogs/' + blog_id
           end
 
           before do
           perform
           end
 
-          it { expect(response.status).to eq(200) }
+          it { expect(response.status).to eq(204) }
+
           context 'with resource not found' do
           let(:blog_id) { '666' }
           it { expect(response.status).to eq(404) }

@@ -15,17 +15,6 @@ class PowerApi::ExposedApiConfigGenerator < Rails::Generators::Base
     )
   end
 
-  def install_rswag
-    generate "rswag:ui:install"
-    generate "rswag:api:install"
-    generate "rswag:specs:install"
-
-    create_file(helper.rswag_ui_initializer_path, helper.rswag_ui_initializer_tpl, force: true)
-    create_file(helper.swagger_helper_path, helper.swagger_helper_tpl, force: true)
-    create_file(helper.spec_swagger_path)
-    create_file(helper.spec_integration_path)
-  end
-
   def install_first_version
     generate "power_api:version 1"
   end

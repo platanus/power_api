@@ -126,27 +126,13 @@ After doing this you will get:
   ```ruby
   class Api::Exposed::V1::BaseController < Api::BaseController
     before_action do
-      self.namespace_for_serializer = ::Api::V1
+      self.namespace_for_serializer = ::Api::Exposed::V1
     end
   end
   ```
   Everything related to version 1 of your API must be included here.
 
 - Some initializers:
-  - `/your_api/config/initializers/rswag-api.rb`:
-    ```ruby
-    Rswag::Api.configure do |c|
-      c.swagger_root = Rails.root.to_s + '/swagger'
-    end
-    ```
-    We use the default options but setting the `your_api/swagger` directory as container for the generated Swagger JSON files.
-
-  - `/your_api/config/initializers/rswag-ui.rb`:
-    ```ruby
-    Rswag::Ui.configure do |c|
-      c.swagger_endpoint '/api-docs/v1/swagger.json', 'API V1 Docs'
-    end
-    ```
     We configure the first version to be seen in the documentation view.
 
   - `/your_api/config/initializers/simple_token_authentication.rb`:
@@ -160,56 +146,12 @@ After doing this you will get:
   ```ruby
   Rails.application.routes.draw do
     scope path: '/api' do
-      api_version(module: 'Api::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
+      api_version(module: 'Api::Exposed::V1', path: { value: 'v1' }, defaults: { format: 'json' }) do
       end
     end
-    mount Rswag::Api::Engine => '/api-docs'
-    mount Rswag::Ui::Engine => '/api-docs'
     # ...
   end
   ```
-  Here we create the first version with [Versionist](https://github.com/bploetz/versionist) and mount Rswag.
-- A file with the swagger definition for the first version under `/your_api/spec/swagger/v1/definition.rb`
-  ```ruby
-  API_V1 = {
-    swagger: '2.0',
-    info: {
-      title: 'API V1',
-      version: 'v1'
-    },
-    basePath: '/api/v1',
-    definitions: {
-    }
-  }
-  ```
-- The `/your_api/spec/swagger_helper.rb` (similar to rails_helper.rb file):
-  ```ruby
-  require 'rails_helper'
-
-  Dir[::Rails.root.join("spec/swagger/**/schemas/*.rb")].each { |f| require f }
-  Dir[::Rails.root.join("spec/swagger/**/definition.rb")].each { |f| require f }
-
-  RSpec.configure do |config|
-    # Specify a root folder where Swagger JSON files are generated
-    # NOTE: If you're using the rswag-api to serve API descriptions, you'll need
-    # to ensure that it's confiugred to serve Swagger from the same folder
-    config.swagger_root = Rails.root.to_s + '/swagger'
-
-    # Define one or more Swagger documents and provide global metadata for each one
-    # When you run the 'rswag:specs:to_swagger' rake task, the complete Swagger will
-    # be generated at the provided relative path under swagger_root
-    # By default, the operations defined in spec files are added to the first
-    # document below. You can override this behavior by adding a swagger_doc tag to the
-    # the root example_group in your specs, e.g. describe '...', swagger_doc: 'v2/swagger.json'
-    config.swagger_docs = {
-      'v1/swagger.json' => API_V1
-    }
-  end
-  ```
-- An empty directory indicating where you should put your serializers for the first version: `/your_api/app/serializers/api/exposed/v1/.gitkeep`
-- An empty directory indicating where you should put your API tests: `/your_api/spec/integration/.gitkeep`
-- An empty directory indicating where you should put your swagger schemas `/your_api/spec/swagger/v1/schemas/.gitkeep`
-
 #### Command options:
 
 ##### `--authenticated-resources`
@@ -387,138 +329,17 @@ after doing this you will get:
   > With internal mode the file path will be: `/your_api/app/serializers/api/internal/blog_serializer.rb` and the class name: `Api::Internal::BlogSerializer`
 
 - A spec file under `/your_api/spec/integration/api/exposed/v1/blogs_spec.rb`
-  - Exposed mode:
-  ```ruby
-  require 'swagger_helper'
-
-  describe 'API V1 Blogs', swagger_doc: 'v1/swagger.json' do
-    path '/blogs' do
-      get 'Retrieves Blogs' do
-        description 'Retrieves all the blogs'
-        produces 'application/json'
-
-        let(:collection_count) { 5 }
-        let(:expected_collection_count) { collection_count }
-
-        before { create_list(:blog, collection_count) }
-
-        response '200', 'Blogs retrieved' do
-          schema('$ref' => '#/definitions/blogs_collection')
-
-          run_test! do |response|
-            expect(JSON.parse(response.body)['blogs'].count).to eq(expected_collection_count)
-          end
-        end
-      end
-
-      post 'Creates Blog' do
-        description 'Creates Blog'
-        consumes 'application/json'
-        produces 'application/json'
-        parameter(name: :blog, in: :body)
-
-        response '201', 'blog created' do
-          let(:blog) do
-            {
-              title: 'Some title',
-              body: 'Some body'
-            }
-          end
-
-          run_test!
-        end
-
-        response '400', 'invalid attributes' do
-          let(:blog) do
-            {
-              title: nil
-            }
-          end
-
-          run_test!
-        end
-      end
-    end
-
-    path '/blogs/{id}' do
-      parameter name: :id, in: :path, type: :integer
-
-      let(:existent_blog) { create(:blog) }
-      let(:id) { existent_blog.id }
-
-      get 'Retrieves Blog' do
-        produces 'application/json'
-
-        response '200', 'blog retrieved' do
-          schema('$ref' => '#/definitions/blog_resource')
-
-          run_test!
-        end
-
-        response '404', 'invalid blog id' do
-          let(:id) { 'invalid' }
-          run_test!
-        end
-      end
-
-      put 'Updates Blog' do
-        description 'Updates Blog'
-        consumes 'application/json'
-        produces 'application/json'
-        parameter(name: :blog, in: :body)
-
-        response '200', 'blog updated' do
-          let(:blog) do
-            {
-              title: 'Some title',
-              body: 'Some body'
-            }
-          end
-
-          run_test!
-        end
-
-        response '400', 'invalid attributes' do
-          let(:blog) do
-            {
-              title: nil
-            }
-          end
-
-          run_test!
-        end
-      end
-
-      delete 'Deletes Blog' do
-        produces 'application/json'
-        description 'Deletes specific blog'
-
-        response '204', 'blog deleted' do
-          run_test!
-        end
-
-        response '404', 'blog not found' do
-          let(:id) { 'invalid' }
-
-          run_test!
-        end
-      end
-    end
-  end
-
-  ```
-  - Internal mode:
   ```ruby
   require 'rails_helper'
 
-  describe 'Api::Internal::BlogsControllers', type: :request do
+  RSpec.describe 'Api::Exposed::V1::BlogsControllers', type: :request do
     describe 'GET /index' do
       let!(:blogs) { create_list(:blog, 5) }
       let(:collection) { JSON.parse(response.body)['blogs'] }
       let(:params) { {} }
 
       def perform
-        get '/api/internal/blogs', params: params
+        get '/api/v1/blogs', params: params
       end
 
       before do
@@ -533,7 +354,8 @@ after doing this you will get:
       let(:params) do
         {
           blog: {
-            title: 'Some title'
+            title: 'Some title',
+            body: 'Some body'
           }
         }
       end
@@ -543,7 +365,7 @@ after doing this you will get:
       end
 
       def perform
-        post '/api/internal/blogs', params: params
+        post '/api/v1/blogs', params: params
       end
 
       before do
@@ -575,7 +397,7 @@ after doing this you will get:
       end
 
       def perform
-        get '/api/internal/blogs/' + blog_id
+        get '/api/v1/blogs/' + blog_id
       end
 
       before do
@@ -598,7 +420,8 @@ after doing this you will get:
       let(:params) do
         {
           blog: {
-            title: 'Some title'
+            title: 'Some title',
+            body: 'Some body'
           }
         }
       end
@@ -608,7 +431,7 @@ after doing this you will get:
       end
 
       def perform
-        put '/api/internal/blogs/' + blog_id, params: params
+        put '/api/v1/blogs/' + blog_id, params: params
       end
 
       before do
@@ -642,14 +465,14 @@ after doing this you will get:
       let(:blog_id) { blog.id.to_s }
 
       def perform
-        get '/api/internal/blogs/' + blog_id
+        delete '/api/v1/blogs/' + blog_id
       end
 
       before do
         perform
       end
 
-      it { expect(response.status).to eq(200) }
+      it { expect(response.status).to eq(204) }
 
       context 'with resource not found' do
         let(:blog_id) { '666' }
@@ -658,66 +481,8 @@ after doing this you will get:
       end
     end
   end
-
   ```
-- A swagger schema definition under `/your_api/spec/swagger/v1/schemas/blog_schema.rb` (only for exposed mode)
-  ```ruby
-  BLOG_SCHEMA = {
-    type: :object,
-    properties: {
-      id: { type: :integer, example: 666 },
-      title: { type: :string, example: 'Some title' },
-      body: { type: :string, example: 'Some body' },
-      created_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
-      updated_at: { type: :string, example: '1984-06-04 09:00', 'x-nullable': true },
-      portfolio_id: { type: :integer, example: 666, 'x-nullable': true }
-    },
-    required: [
-      :title,
-      :body
-    ]
-  }
-
-  BLOGS_COLLECTION_SCHEMA = {
-    type: "object",
-    properties: {
-      blogs: {
-        type: "array",
-        items: { "$ref" => "#/definitions/blog" }
-      }
-    },
-    required: [
-      :blogs
-    ]
-  }
-
-  BLOG_RESOURCE_SCHEMA = {
-    type: "object",
-    properties: {
-      blog: { "$ref" => "#/definitions/blog" }
-    },
-    required: [
-      :blog
-    ]
-  }
-  ```
-- An edited version of `your_api/api_example/spec/swagger/v1/definition.rb` with the schema definitions for the `Blog` resource. (only for exposed mode)
-  ```ruby
-  API_V1 = {
-    swagger: '2.0',
-    info: {
-      title: 'API V1',
-      version: 'v1'
-    },
-    basePath: '/api/v1',
-    definitions: {
-      blog: BLOG_SCHEMA,
-      blogs_collection: BLOGS_COLLECTION_SCHEMA,
-      blog_resource: BLOG_RESOURCE_SCHEMA,
-    }
-  }
-  ```
-
+  > With internal mode the file path will be: `your_api/spec/integration/api/internal/blogs_spec.rb` and the class name: `Api::Internal::BlogsControllers`
 #### Command options (valid for internal and exposed modes):
 
 ##### `--attributes`
@@ -728,7 +493,7 @@ Use this option if you want to choose which attributes of your model to add to t
 rails g power_api:controller blog --attributes=title
 ```
 
-When you do this, you will see permited_params, serializers, swagger definitions, etc. showing only the selected attributes
+When you do this, you will see permited_params, serializers, etc. showing only the selected attributes
 
 For example, the serializer under `/your_api/app/serializers/api/exposed/v1/blog_serializer.rb` will show:
 ```ruby
@@ -1022,38 +787,7 @@ Running the previous code we will get:
     end
   end
   ```
-- A spec file under `/your_api/spec/integration/api/v1/blogs_spec.rb` reflecting the nested resources:
-  ```ruby
-  require 'swagger_helper'
 
-  describe 'API V1 Comments', swagger_doc: 'v1/swagger.json' do
-    let(:blog) { create(:blog) }
-    let(:blog_id) { blog.id }
-
-    path '/blogs/{blog_id}/comments' do
-      parameter name: :blog_id, in: :path, type: :integer
-      get 'Retrieves Comments' do
-        description 'Retrieves all the comments'
-        produces 'application/json'
-
-        let(:collection_count) { 5 }
-        let(:expected_collection_count) { collection_count }
-
-        before { create_list(:comment, collection_count, blog: blog) }
-
-        response '200', 'Comments retrieved' do
-          schema('$ref' => '#/definitions/comments_collection')
-
-          run_test! do |response|
-            expect(JSON.parse(response.body)['data'].count).to eq(expected_collection_count)
-          end
-        end
-      end
-    end
-
-    # more code...
-  end
-  ```
 > Note that the options: `--parent-resource` and `--owned-by-authenticated-resource` cannot be used together.
 
 ## Inside the gem

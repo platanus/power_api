@@ -3,12 +3,12 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
   describe "#resource_attributes" do
     let(:expected_attributes) do
       [
-        { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
-        { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
-        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true },
-        { name: :created_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false },
-        { name: :updated_at, type: :datetime, swagger_type: :string, example: "'1984-06-04 09:00'", required: false },
-        { name: :portfolio_id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false }
+        { name: :id, type: :integer, example: kind_of(Integer), required: false },
+        { name: :title, type: :string, example: "'Some title'", required: true },
+        { name: :body, type: :text, example: "'Some body'", required: true },
+        { name: :created_at, type: :datetime, example: "'1984-06-04 09:00'", required: false },
+        { name: :updated_at, type: :datetime, example: "'1984-06-04 09:00'", required: false },
+        { name: :portfolio_id, type: :integer, example: kind_of(Integer), required: false }
       ]
     end
 
@@ -22,9 +22,9 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
       let(attributes_key) { %w{title body} }
       let(:expected_attributes) do
         [
-          { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
-          { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
-          { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+          { name: :id, type: :integer, example: kind_of(Integer), required: false },
+          { name: :title, type: :string, example: "'Some title'", required: true },
+          { name: :body, type: :text, example: "'Some body'", required: true }
         ]
       end
 
@@ -35,8 +35,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
       let(attributes_key) { %w{title bloody} }
       let(:expected_attributes) do
         [
-          { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
-          { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true }
+          { name: :id, type: :integer, example: kind_of(Integer), required: false },
+          { name: :title, type: :string, example: "'Some title'", required: true }
         ]
       end
 
@@ -48,8 +48,8 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
     let(:include_id) { false }
     let(:expected_attributes) do
       [
-        { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
-        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+        { name: :title, type: :string, example: "'Some title'", required: true },
+        { name: :body, type: :text, example: "'Some body'", required: true }
       ]
     end
 
@@ -63,9 +63,9 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
       let(:include_id) { true }
       let(:expected_attributes) do
         [
-          { name: :id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false },
-          { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
-          { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true }
+          { name: :id, type: :integer, example: kind_of(Integer), required: false },
+          { name: :title, type: :string, example: "'Some title'", required: true },
+          { name: :body, type: :text, example: "'Some body'", required: true }
         ]
       end
 
@@ -91,7 +91,7 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
   describe "#optional_resource_attributes" do
     let(:expected_attributes) do
       [
-        { name: :portfolio_id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false }
+        { name: :portfolio_id, type: :integer, example: kind_of(Integer), required: false }
       ]
     end
 
@@ -124,9 +124,9 @@ shared_examples 'ActiveRecord resource attributes' do |attributes_key|
   describe "#permitted_attributes" do
     let(:expected_attributes) do
       [
-        { name: :title, type: :string, swagger_type: :string, example: "'Some title'", required: true },
-        { name: :body, type: :text, swagger_type: :string, example: "'Some body'", required: true },
-        { name: :portfolio_id, type: :integer, swagger_type: :integer, example: kind_of(Integer), required: false }
+        { name: :title, type: :string, example: "'Some title'", required: true },
+        { name: :body, type: :text, example: "'Some body'", required: true },
+        { name: :portfolio_id, type: :integer, example: kind_of(Integer), required: false }
       ]
     end
 

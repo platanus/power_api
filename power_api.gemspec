@@ -26,8 +26,6 @@ Gem::Specification.new do |s|
   s.add_dependency "kaminari"
   s.add_dependency "ransack"
   s.add_dependency "responders"
-  s.add_dependency "rswag-api"
-  s.add_dependency "rswag-ui"
   s.add_dependency "simple_token_authentication", "~> 1.0"
   s.add_dependency "versionist", "~> 1.0"
 
@@ -38,7 +36,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry-rails"
   s.add_development_dependency "rspec-rails"
   s.add_development_dependency "rspec_junit_formatter"
-  s.add_development_dependency "rswag-specs"
   s.add_development_dependency "rubocop", "0.65.0"
   s.add_development_dependency "rubocop-rspec"
   s.add_development_dependency "sqlite3", "~> 1.4.2"
