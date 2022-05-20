@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    power_api (2.0.2)
+    power_api (2.1.0)
       active_model_serializers (~> 0.10.0)
       api-pagination
       kaminari
@@ -80,7 +80,7 @@ GEM
       zeitwerk (~> 2.3)
     api-pagination (4.8.2)
     ast (2.4.2)
-    bcrypt (3.1.16)
+    bcrypt (3.1.18)
     builder (3.2.4)
     case_transform (0.2)
       activesupport
@@ -209,9 +209,9 @@ GEM
       thor (~> 1.0)
     rainbow (3.0.0)
     rake (13.0.6)
-    ransack (2.5.0)
-      activerecord (>= 5.2.4)
-      activesupport (>= 5.2.4)
+    ransack (3.2.0)
+      activerecord (>= 6.1.5)
+      activesupport (>= 6.1.5)
       i18n
     rb-fsevent (0.11.0)
     rb-inotify (0.10.1)
