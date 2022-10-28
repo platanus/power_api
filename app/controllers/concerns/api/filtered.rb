@@ -1,8 +1,8 @@
 module Api::Filtered
   extend ActiveSupport::Concern
 
-  def filtered_collection(collection)
-    collection.ransack(query_string_filters).result
+  def filtered_collection(collection, bool = true)
+    collection.ransack(query_string_filters).result(distinct: bool)
   end
 
   private
