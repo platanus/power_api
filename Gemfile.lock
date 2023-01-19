@@ -109,7 +109,7 @@ GEM
       railties (>= 5.0.0)
     ffi (1.15.3)
     formatador (0.3.0)
-    globalid (1.0.0)
+    globalid (1.0.1)
       activesupport (>= 5.0)
     guard (2.17.0)
       formatador (>= 0.2.4)
@@ -125,7 +125,7 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
-    i18n (1.10.0)
+    i18n (1.12.0)
       concurrent-ruby (~> 1.0)
     jaro_winkler (1.5.4)
     json (2.5.1)
@@ -154,7 +154,7 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
-    minitest (5.15.0)
+    minitest (5.17.0)
     nenv (0.3.0)
     nio4r (2.5.8)
     nokogiri (1.13.6-arm64-darwin)
@@ -278,7 +278,7 @@ GEM
     thor (1.2.1)
     tins (1.29.1)
       sync
-    tzinfo (2.0.4)
+    tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
     unicode-display_width (1.4.1)
     versionist (1.7.0)
@@ -293,7 +293,7 @@ GEM
     websocket-extensions (0.1.5)
     yard (0.9.27)
       webrick (~> 1.7.0)
-    zeitwerk (2.5.4)
+    zeitwerk (2.6.6)
 
 PLATFORMS
   arm64-darwin-20
