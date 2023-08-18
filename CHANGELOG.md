@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### Unreleased
+
+* Fix: add `nil` handling in the `serialize_resource` view helper.
+
 ### v2.1.0
 
 * Swagger has been deleted from the Exposed Api version.

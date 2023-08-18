@@ -4,8 +4,7 @@ module PowerApi
 
     def serialize_resource(resource, options = {})
       load_default_serializer_options(options)
-      serializable = ActiveModelSerializers::SerializableResource.new(resource, options)
-      serialized_data = serializable.serializable_hash
+      serialized_data = serialize_data(resource, options)
       render_serialized_data(serialized_data, options)
     rescue NoMethodError => e
       if e.message.include?("undefined method `serializable_hash'")
@@ -19,12 +18,19 @@ module PowerApi
 
     private
 
+    def serialize_data(resource, options)
+      return {} if resource.nil?
+
+      serializable = ActiveModelSerializers::SerializableResource.new(resource, options)
+      serializable.serializable_hash
+    end
+
     def render_serialized_data(serialized_data, options)
       output_format = options.delete(:output_format)
-      serialized_data = serialized_data[:root] if options[:root] == :root
+      serialized_data = serialized_data.fetch(:root, serialized_data)
       return serialized_data if output_format == :hash
 
-      serialized_data.to_json
+      serialized_data.presence.to_json
     end
 
     def load_default_serializer_options(options)
