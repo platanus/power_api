@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    power_api (2.1.0)
+    power_api (2.1.1)
       active_model_serializers (~> 0.10.0)
       api-pagination
       kaminari
@@ -315,4 +315,4 @@ DEPENDENCIES
   sqlite3 (~> 1.4.2)
 
 BUNDLED WITH
-   2.2.24
+   2.4.10
