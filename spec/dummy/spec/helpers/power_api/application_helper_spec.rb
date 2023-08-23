@@ -97,6 +97,13 @@ describe PowerApi::ApplicationHelper do
       it { expect(data).to eq(expected_serialized_data) }
     end
 
+    context "with nil resource" do
+      let(:resource) { nil }
+      let(:expected_serialized_data) { "null" }
+
+      it { expect(data).to eq(expected_serialized_data) }
+    end
+
     context "with invalid resource" do
       let(:resource) do
         { invalid: "resource" }
@@ -127,6 +134,13 @@ describe PowerApi::ApplicationHelper do
 
       context "with key_transform option" do
         before { options[:key_transform] = :camel_lower }
+
+        it { expect(data).to eq(expected_serialized_data) }
+      end
+
+      context "with nil resource" do
+        let(:resource) { nil }
+        let(:expected_serialized_data) { {} }
 
         it { expect(data).to eq(expected_serialized_data) }
       end
